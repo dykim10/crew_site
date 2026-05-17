@@ -30,16 +30,21 @@ class RunningLogController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'run_date'    => ['required', 'date'],
-            'distance_km' => ['required', 'numeric', 'min:0.1', 'max:999'],
-            'duration'    => ['required', 'string', 'regex:/^\d+:\d{2}(:\d{2})?$/'],
-            'is_indoor'   => ['boolean'],
-            'calories'    => ['nullable', 'integer', 'min:0'],
+            'run_date'       => ['required', 'date'],
+            'distance_km'    => ['required', 'numeric', 'min:0.1', 'max:999'],
+            'duration'       => ['required', 'string', 'regex:/^\d+:\d{2}(:\d{2})?$/'],
+            'is_indoor'      => ['nullable', 'boolean'],
+            'calories'       => ['nullable', 'integer', 'min:0'],
             'avg_heart_rate' => ['nullable', 'integer', 'min:0', 'max:300'],
             'elevation_m'    => ['nullable', 'numeric'],
             'weather_desc'   => ['nullable', 'string', 'max:50'],
             'memo'           => ['nullable', 'string', 'max:500'],
             'image'          => ['nullable', 'image', 'max:10240'],
+            // 이미지 파싱으로 채워진 hidden 필드
+            'avg_pace_seconds'  => ['nullable', 'integer'],
+            'best_pace_seconds' => ['nullable', 'integer'],
+            'image_url'         => ['nullable', 'string'],
+            'parsed_data'       => ['nullable', 'string'],
         ], [
             'run_date.required'    => '날짜를 입력해주세요.',
             'distance_km.required' => '거리를 입력해주세요.',
@@ -47,11 +52,13 @@ class RunningLogController extends Controller
             'duration.regex'       => '시간 형식이 올바르지 않습니다. (예: 1:23:45)',
         ]);
 
-        // 이미지 업로드 및 CORE API 파싱
+        // 이미지 업로드 → CORE API 파싱
         if ($request->hasFile('image')) {
-            $parsed = $this->service->uploadAndParse($request->file('image'), $request->user());
-            $data['image_url']  = $parsed['image_url'];
-            $data['parsed_data'] = $parsed['parsed_data'];
+            $result = $this->service->parseImage($request->file('image'));
+            $data['image_url']          = $result['s3_url'];
+            $data['parsed_data']        = $result['raw_parsed'] ?: null;
+            $data['avg_pace_seconds']   = $result['parsed']['avg_pace_seconds'] ?? $data['avg_pace_seconds'] ?? null;
+            $data['best_pace_seconds']  = $result['parsed']['best_pace_seconds'] ?? $data['best_pace_seconds'] ?? null;
         }
 
         $this->service->create($data, $request->user());
@@ -79,7 +86,7 @@ class RunningLogController extends Controller
             'run_date'       => ['required', 'date'],
             'distance_km'    => ['required', 'numeric', 'min:0.1', 'max:999'],
             'duration'       => ['required', 'string', 'regex:/^\d+:\d{2}(:\d{2})?$/'],
-            'is_indoor'      => ['boolean'],
+            'is_indoor'      => ['nullable', 'boolean'],
             'calories'       => ['nullable', 'integer', 'min:0'],
             'avg_heart_rate' => ['nullable', 'integer', 'min:0', 'max:300'],
             'elevation_m'    => ['nullable', 'numeric'],
