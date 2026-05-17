@@ -116,12 +116,32 @@ member      → 일반 구성원
 ## 개발 우선순위 (v1)
 
 ```
-1. Laravel 기본 설치 및 Supabase 연결
-2. 회원 인증 (초대 코드 기반 클로즈 베타)
-3. 러닝 이미지 업로드 → CORE API 파싱 연동
+1. Laravel 기본 설치 및 Supabase 연결               ✅ 완료 (2026-05-17)
+2. 회원 인증 (초대 코드 기반 클로즈 베타)             ✅ 완료 (2026-05-17)
+3. 러닝 이미지 업로드 → CORE API 파싱 연동           ← 다음 (S3 연동 필요)
 4. 개인 기록 조회 / 관리
 5. 이벤트 점수 관리
 ```
+
+## v1 완료 기능 상세 (2026-05-17 기준)
+
+```
+- Laravel 13 + Breeze (Blade) 설치
+- Supabase pooler 연결 (search_path=public,crew)
+- crew 스키마 생성: running_logs / events / event_scores / user_goals
+- 초대 코드 기반 회원가입 (VALID_INVITE_CODES 상수)
+- User 모델: public.users 공유 테이블, isAdmin() 헬퍼
+- RunningLog 모델: avg_pace_formatted / duration_formatted Attribute
+- RunningLogService: S3 업로드 + CORE API /api/parse-image 연동
+- RunningLogController: CRUD (소유자 검증 포함)
+- 뷰: running-logs/index, create, show, edit (Tailwind)
+- 네비게이션: 대시보드 / 러닝 기록 메뉴
+```
+
+## 다음 작업
+- AWS S3 버킷/IAM 키를 .env에 설정 후 이미지 업로드 테스트
+- CORE API /api/parse-image 파싱 결과 → 기록 자동 입력
+- 개인 기록 통계 (월별 차트)
 
 ---
 
