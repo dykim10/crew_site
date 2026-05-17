@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\CryptoService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,8 +15,9 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    // 유효한 초대 코드 목록 (추후 DB 관리로 전환)
     private const VALID_INVITE_CODES = ['CREW2026', 'PACRUN', 'RUNNING'];
+
+    public function __construct(private CryptoService $crypto) {}
 
     public function create(): View
     {
@@ -47,6 +49,9 @@ class RegisteredUserController extends Controller
             'name'        => $request->name,
             'nickname'    => $request->nickname,
             'email'       => $request->email,
+            'email_hash'  => $this->crypto->hashEmail($request->email),
+            'email_enc'   => $this->crypto->encrypt($request->email),
+            'name_enc'    => $this->crypto->encrypt($request->name),
             'password'    => Hash::make($request->password),
             'invite_code' => strtoupper($request->invite_code),
             'role'        => 'member',
