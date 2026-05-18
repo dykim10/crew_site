@@ -29,14 +29,21 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name'        => ['required', 'string', 'max:100'],
             'nickname'    => ['required', 'string', 'max:50'],
-            'email'       => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'email'       => [
+                'required', 'string', 'lowercase', 'email', 'max:255',
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    $hash = hash('sha256', strtolower(trim($value)));
+                    if (User::where('email_hash', $hash)->exists()) {
+                        $fail('이미 등록된 이메일입니다.');
+                    }
+                },
+            ],
             'password'    => ['required', 'confirmed', Rules\Password::defaults()],
             'invite_code' => ['required', 'string'],
         ], [
             'name.required'        => '이름을 입력해주세요.',
             'nickname.required'    => '닉네임을 입력해주세요.',
             'email.required'       => '이메일을 입력해주세요.',
-            'email.unique'         => '이미 등록된 이메일입니다.',
             'password.required'    => '비밀번호를 입력해주세요.',
             'invite_code.required' => '초대 코드를 입력해주세요.',
         ]);
@@ -46,9 +53,7 @@ class RegisteredUserController extends Controller
         }
 
         $user = User::create([
-            'name'        => $request->name,
             'nickname'    => $request->nickname,
-            'email'       => $request->email,
             'email_hash'  => $this->crypto->hashEmail($request->email),
             'email_enc'   => $this->crypto->encrypt($request->email),
             'name_enc'    => $this->crypto->encrypt($request->name),
