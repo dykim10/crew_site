@@ -25,14 +25,16 @@ class RunningLog extends Model
         'image_url',
         'parsed_data',
         'memo',
+        'is_confirmed',
     ];
 
     protected function casts(): array
     {
         return [
-            'run_date'    => 'date',
-            'is_indoor'   => 'boolean',
-            'parsed_data' => 'array',
+            'run_date'     => 'date',
+            'is_indoor'    => 'boolean',
+            'is_confirmed' => 'boolean',
+            'parsed_data'  => 'array',
         ];
     }
 

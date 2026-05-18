@@ -26,6 +26,7 @@ class RunningLogService
                 return [
                     's3_url' => $data['s3_url'] ?? null,
                     'parsed' => [
+                        'run_date'          => $data['run_date'] ?? null,
                         'distance_km'       => $data['distance_km'] ?? null,
                         'duration_seconds'  => $data['duration_seconds'] ?? null,
                         'avg_pace_seconds'  => $data['avg_pace_seconds'] ?? null,
@@ -65,7 +66,50 @@ class RunningLogService
             'image_url'         => $data['image_url'] ?? null,
             'parsed_data'       => $data['parsed_data'] ?? null,
             'memo'              => $data['memo'] ?? null,
+            'is_confirmed'      => true,
         ]);
+    }
+
+    // 파싱 직후 미확정 상태로 INSERT
+    public function createDraft(array $parseResult, User $user): RunningLog
+    {
+        $p = $parseResult['parsed'];
+        return RunningLog::create([
+            'user_id'           => $user->id,
+            'group_id'          => $user->group_id,
+            'run_date'          => $p['run_date'] ?? now()->toDateString(),
+            'distance_km'       => $p['distance_km'] ?? 0,
+            'duration_seconds'  => $p['duration_seconds'] ?? 0,
+            'avg_pace_seconds'  => $p['avg_pace_seconds'] ?? null,
+            'best_pace_seconds' => $p['best_pace_seconds'] ?? null,
+            'is_indoor'         => (bool) ($p['is_indoor'] ?? false),
+            'calories'          => $p['calories'] ?? null,
+            'avg_heart_rate'    => $p['avg_heart_rate'] ?? null,
+            'elevation_m'       => $p['elevation_m'] ?? null,
+            'image_url'         => $parseResult['s3_url'],
+            'parsed_data'       => $parseResult['raw_parsed'] ?: null,
+            'is_confirmed'      => false,
+        ]);
+    }
+
+    // 사용자 최종 확인 → 데이터 보정 + is_confirmed=true
+    public function confirmLog(RunningLog $log, array $data): RunningLog
+    {
+        $log->update([
+            'run_date'          => $data['run_date'],
+            'distance_km'       => $data['distance_km'],
+            'duration_seconds'  => $this->timeToSeconds($data['duration']),
+            'avg_pace_seconds'  => $data['avg_pace_seconds'] ?? $log->avg_pace_seconds,
+            'best_pace_seconds' => $data['best_pace_seconds'] ?? $log->best_pace_seconds,
+            'is_indoor'         => (bool) ($data['is_indoor'] ?? false),
+            'calories'          => $data['calories'] ?? null,
+            'avg_heart_rate'    => $data['avg_heart_rate'] ?? null,
+            'elevation_m'       => $data['elevation_m'] ?? null,
+            'weather_desc'      => $data['weather_desc'] ?? null,
+            'memo'              => $data['memo'] ?? null,
+            'is_confirmed'      => true,
+        ]);
+        return $log->fresh();
     }
 
     public function update(RunningLog $log, array $data): RunningLog
@@ -92,6 +136,7 @@ class RunningLogService
     public function getByUser(User $user, int $perPage = 20)
     {
         return RunningLog::byUser($user->id)
+            ->where('is_confirmed', true)
             ->orderByDesc('run_date')
             ->paginate($perPage);
     }
