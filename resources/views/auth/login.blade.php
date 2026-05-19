@@ -1,41 +1,56 @@
 <x-guest-layout>
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <div class="px-6 py-8">
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+        <h2 class="font-display text-2xl font-bold text-pac-black-900 uppercase tracking-tight mb-6">로그인</h2>
 
-        <div>
-            <x-input-label for="email" value="이메일" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email"
-                :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+        <x-auth-session-status class="mb-4" :status="session('status')" />
 
-        <div class="mt-4">
-            <x-input-label for="password" value="비밀번호" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password"
-                name="password" required autocomplete="current-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+        <form method="POST" action="{{ route('login') }}">
+            @csrf
 
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox"
-                    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">로그인 유지</span>
-            </label>
-        </div>
+            <div class="space-y-4">
+                <div>
+                    <x-input-label for="email" value="이메일" />
+                    <x-text-input id="email" type="email" name="email"
+                        :value="old('email')" required autofocus autocomplete="username" />
+                    <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                </div>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    href="{{ route('password.request') }}">
-                    비밀번호를 잊으셨나요?
+                <div>
+                    <x-input-label for="password" value="비밀번호" />
+                    <x-text-input id="password" type="password"
+                        name="password" required autocomplete="current-password" />
+                    <x-input-error :messages="$errors->get('password')" class="mt-2" />
+                </div>
+
+                <div class="flex items-center">
+                    <label for="remember_me" class="inline-flex items-center gap-2 cursor-pointer">
+                        <input id="remember_me" type="checkbox" name="remember"
+                               class="rounded border-pac-black-300 text-pac-yellow-500
+                                      focus:ring-pac-yellow-400 w-4 h-4">
+                        <span class="font-body text-sm text-pac-black-500">로그인 유지</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="mt-6 flex items-center justify-between gap-4">
+                @if (Route::has('password.request'))
+                    <a href="{{ route('password.request') }}"
+                       class="font-body text-sm text-pac-black-400 hover:text-pac-yellow-600 transition-colors duration-200">
+                        비밀번호를 잊으셨나요?
+                    </a>
+                @endif
+                <x-primary-button class="w-full md:w-auto">
+                    로그인
+                </x-primary-button>
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-pac-black-100 text-center">
+                <a href="{{ route('register') }}"
+                   class="font-body text-sm text-pac-black-400 hover:text-pac-yellow-600 transition-colors duration-200">
+                    계정이 없으신가요? <span class="font-semibold text-pac-black-900">회원가입</span>
                 </a>
-            @endif
-            <x-primary-button class="ms-3">
-                로그인
-            </x-primary-button>
-        </div>
-    </form>
+            </div>
+        </form>
+    </div>
 </x-guest-layout>
