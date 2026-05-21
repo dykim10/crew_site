@@ -84,7 +84,7 @@ class EventResource extends Resource
                         ->default('upcoming')
                         ->required(),
                 ])
-                ->columns(2),
+                ->columns(1),
 
             // ── 기간 / 대상 ─────────────────────────────────────
             Section::make('기간 및 대상')
