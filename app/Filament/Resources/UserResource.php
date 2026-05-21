@@ -4,17 +4,20 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Password;
 
 class UserResource extends Resource
 {
@@ -122,6 +125,23 @@ class UserResource extends Resource
             ])
             ->actions([
                 EditAction::make()->label('수정'),
+                Action::make('send_password_reset')
+                    ->label('비밀번호 초기화 메일')
+                    ->icon('heroicon-o-envelope')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->modalHeading('비밀번호 초기화 메일 발송')
+                    ->modalDescription(fn ($record) => $record->nickname . ' (' . $record->email . ') 회원에게 비밀번호 초기화 메일을 발송합니다.')
+                    ->modalSubmitActionLabel('발송')
+                    ->action(function ($record) {
+                        $token = Password::broker()->createToken($record);
+                        $record->sendPasswordResetNotification($token);
+                        Notification::make()
+                            ->title('발송 완료')
+                            ->body($record->email . ' 으로 비밀번호 초기화 메일을 발송했습니다.')
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->bulkActions([
                 BulkActionGroup::make([]),
