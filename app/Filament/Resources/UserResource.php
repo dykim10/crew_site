@@ -17,7 +17,6 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Password;
 
 class UserResource extends Resource
 {
@@ -125,20 +124,19 @@ class UserResource extends Resource
             ])
             ->actions([
                 EditAction::make()->label('수정'),
-                Action::make('send_password_reset')
-                    ->label('비밀번호 초기화 메일')
-                    ->icon('heroicon-o-envelope')
+                Action::make('reset_password')
+                    ->label('비밀번호 초기화')
+                    ->icon('heroicon-o-key')
                     ->color('warning')
                     ->requiresConfirmation()
-                    ->modalHeading('비밀번호 초기화 메일 발송')
-                    ->modalDescription(fn ($record) => $record->nickname . ' (' . $record->email . ') 회원에게 비밀번호 초기화 메일을 발송합니다.')
-                    ->modalSubmitActionLabel('발송')
+                    ->modalHeading('비밀번호 초기화')
+                    ->modalDescription(fn ($record) => $record->nickname . ' (' . $record->email . ') 회원의 비밀번호를 초기 비밀번호로 초기화합니다.')
+                    ->modalSubmitActionLabel('초기화')
                     ->action(function ($record) {
-                        $token = Password::broker()->createToken($record);
-                        $record->sendPasswordResetNotification($token);
+                        $record->update(['password' => '1234qwer!@']);
                         Notification::make()
-                            ->title('발송 완료')
-                            ->body($record->email . ' 으로 비밀번호 초기화 메일을 발송했습니다.')
+                            ->title('초기화 완료')
+                            ->body($record->nickname . ' 회원의 비밀번호가 초기화되었습니다.')
                             ->success()
                             ->send();
                     }),
