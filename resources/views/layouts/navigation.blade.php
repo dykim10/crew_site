@@ -25,6 +25,11 @@
                class="font-body text-sm text-pac-black-300 hover:text-pac-yellow-400 transition-colors duration-200">
                 이벤트
             </a>
+            <a href="{{ route('photos.index') }}"
+               class="font-body text-sm transition-colors duration-200
+                      {{ request()->routeIs('photos*') ? 'text-pac-yellow-400 font-semibold' : 'text-pac-black-300 hover:text-pac-yellow-400' }}">
+                포토
+            </a>
             <a href="#"
                class="font-body text-sm text-pac-black-300 hover:text-pac-yellow-400 transition-colors duration-200">
                 순위
@@ -157,6 +162,16 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
                 이벤트
+            </a>
+
+            <a href="{{ route('photos.index') }}"
+               class="flex items-center gap-3 px-3 py-3 rounded-xl font-body text-sm transition-colors duration-200
+                      {{ request()->routeIs('photos*') ? 'bg-pac-yellow-500/15 text-pac-yellow-400 font-semibold' : 'text-pac-black-300 hover:bg-white/5 hover:text-white' }}">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                포토
             </a>
 
             <a href="#"

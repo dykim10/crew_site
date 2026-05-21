@@ -3,6 +3,7 @@
 use App\Http\Controllers\BugReportController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PhotoGalleryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RunningLogController;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,10 @@ Route::middleware(['auth'])->group(function () {
     // 이벤트 참가 신청 (B타입)
     Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
     Route::post('/events/{event}/register', [EventController::class, 'register'])->name('events.register');
+
+    // 포토 갤러리
+    Route::get('/photos', [PhotoGalleryController::class, 'index'])->name('photos.index');
+    Route::get('/photos/{photoGallery}', [PhotoGalleryController::class, 'show'])->name('photos.show');
 });
 
 
