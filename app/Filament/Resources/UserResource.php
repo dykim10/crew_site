@@ -72,6 +72,13 @@ class UserResource extends Resource
                     ->searchable()
                     ->sortable(),
 
+                TextColumn::make('email')
+                    ->label('이메일')
+                    ->getStateUsing(fn ($record) => $record->email)
+                    ->searchable(query: fn ($query, $search) => $query->where('email_hash', hash('sha256', strtolower($search))))
+                    ->copyable()
+                    ->placeholder('-'),
+
                 TextColumn::make('role')
                     ->label('권한')
                     ->badge()
