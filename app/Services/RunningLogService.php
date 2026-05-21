@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Models\RunningLog;
 use App\Models\User;
+use App\Models\UserGoal;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -154,6 +156,58 @@ class RunningLogService
             'total_time'  => $logs->sum('duration_seconds'),
             'avg_pace'    => $logs->avg('avg_pace_seconds') ? (int) $logs->avg('avg_pace_seconds') : null,
         ];
+    }
+
+    // 관리자 검수 확인 — is_confirmed=true 후 마일리지 재집계
+    public function adminConfirm(RunningLog $log): void
+    {
+        if ($log->is_confirmed) return;
+
+        $log->update(['is_confirmed' => true]);
+        $this->recalculateGoals($log->user_id, $log->run_date);
+    }
+
+    // 관리자 검수 취소 — is_confirmed=false 후 마일리지 재집계
+    public function adminUnconfirm(RunningLog $log): void
+    {
+        if (!$log->is_confirmed) return;
+
+        $log->update(['is_confirmed' => false]);
+        $this->recalculateGoals($log->user_id, $log->run_date);
+    }
+
+    // confirmed 기록 기준으로 user_goals.achieved_km 재집계
+    // add/subtract 대신 전체 재합산 — 중복 반영 방지
+    private function recalculateGoals(int $userId, $runDate): void
+    {
+        $date  = Carbon::parse($runDate);
+        $year  = $date->year;
+        $month = $date->month;
+
+        $yearlyKm = RunningLog::where('user_id', $userId)
+            ->where('is_confirmed', true)
+            ->whereYear('run_date', $year)
+            ->sum('distance_km');
+
+        $monthlyKm = RunningLog::where('user_id', $userId)
+            ->where('is_confirmed', true)
+            ->whereYear('run_date', $year)
+            ->whereMonth('run_date', $month)
+            ->sum('distance_km');
+
+        UserGoal::yearly($userId, $year)->each(function (UserGoal $goal) use ($yearlyKm) {
+            $goal->update([
+                'achieved_km' => $yearlyKm,
+                'is_achieved' => $yearlyKm >= $goal->target_km,
+            ]);
+        });
+
+        UserGoal::monthly($userId, $year, $month)->each(function (UserGoal $goal) use ($monthlyKm) {
+            $goal->update([
+                'achieved_km' => $monthlyKm,
+                'is_achieved' => $monthlyKm >= $goal->target_km,
+            ]);
+        });
     }
 
     // "1:23:45" 또는 "23:45" → 초 변환

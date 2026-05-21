@@ -29,6 +29,11 @@
                class="font-body text-sm text-pac-black-300 hover:text-pac-yellow-400 transition-colors duration-200">
                 순위
             </a>
+            <a href="{{ route('bug-reports.index') }}"
+               class="font-body text-sm transition-colors duration-200
+                      {{ request()->routeIs('bug-reports*') ? 'text-pac-yellow-400 font-semibold' : 'text-pac-black-300 hover:text-pac-yellow-400' }}">
+                버그 제보
+            </a>
         </nav>
 
         <!-- 우측 영역 -->
@@ -43,8 +48,28 @@
                 </svg>
             </button>
 
-            <!-- 유저명: 태블릿 이상 -->
-            <span class="hidden md:block font-body text-sm text-pac-black-300 px-1">
+            <!-- 유저명 + 로그아웃: 데스크탑 -->
+            <div class="hidden lg:flex items-center gap-2">
+                <span class="font-body text-sm text-pac-black-300 px-1">
+                    {{ Auth::user()->nickname ?? Auth::user()->name }}
+                </span>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                            class="p-2 text-pac-black-400 hover:text-pac-pink-400 transition-colors duration-200
+                                   min-h-[44px] min-w-[44px] flex items-center justify-center
+                                   focus:outline-none focus:ring-2 focus:ring-pac-yellow-400 focus:ring-offset-2 focus:ring-offset-pac-black-900 rounded-lg"
+                            title="로그아웃">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+
+            <!-- 유저명: 태블릿(md)만 표시 -->
+            <span class="hidden md:block lg:hidden font-body text-sm text-pac-black-300 px-1">
                 {{ Auth::user()->nickname ?? Auth::user()->name }}
             </span>
 
@@ -141,6 +166,16 @@
                           d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 순위
+            </a>
+
+            <a href="{{ route('bug-reports.index') }}"
+               class="flex items-center gap-3 px-3 py-3 rounded-xl font-body text-sm transition-colors duration-200
+                      {{ request()->routeIs('bug-reports*') ? 'bg-pac-yellow-500/15 text-pac-yellow-400 font-semibold' : 'text-pac-black-300 hover:bg-white/5 hover:text-white' }}">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                버그 제보
             </a>
 
             <!-- 하단 구분선 -->

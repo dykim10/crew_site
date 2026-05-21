@@ -298,11 +298,11 @@ MAX_RECRUIT_PER_GENERATION = 100 (상수 관리)
 1. Laravel 기본 설치 및 Supabase 연결               ✅ 완료 (2026-05-17)
 2. 회원 인증 (초대 코드 기반 클로즈 베타)             ✅ 완료 (2026-05-17)
 3. PAC-RUN 디자인 시스템 적용 (레이아웃/컬러/폰트)    ✅ 완료 (2026-05-19)
-4. 대시보드 뷰 구현                                  ← 다음 (PAGE-dashboard.md 기준)
-5. DB 마이그레이션 (신규 테이블 일괄 생성)
-6. Role 4단계 재정의 + 마이그레이션
-7. 기수 신청서 공개 페이지 (/apply)
-8. 관리자 레이아웃 + 구성원 목록/관리
+4. 대시보드 뷰 구현                                  ✅ 완료 (2026-05-19)
+5. Role 4단계 재정의 + 마이그레이션                   ✅ 완료 (2026-05-19)
+6. 관리자 레이아웃 + 구성원 목록/공지사항 관리         ✅ 완료 (2026-05-19)
+7. DB 마이그레이션 (신규 테이블 일괄 생성)             ← 다음
+8. 기수 신청서 공개 페이지 (/apply)
 9. 이벤트 관리 (main/sub/standalone)
 10. 러닝 이미지 파싱 실테스트
 11. 게시판 (자유/기수/지역/이벤트)
@@ -318,15 +318,34 @@ MAX_RECRUIT_PER_GENERATION = 100 (상수 관리)
 - Supabase pooler 연결 (search_path=public,crew)
 - crew 스키마 생성: running_logs / events / event_scores / user_goals
 - 초대 코드 기반 회원가입 (VALID_INVITE_CODES 상수)
-- User 모델: public.users 공유 테이블, isAdmin() 헬퍼
+- User 모델: public.users 공유 테이블
+  isAdmin() / isSuperAdmin() / isRegionAdmin() / isOperator() 헬퍼
 - RunningLog CRUD (Controller → Service → Model 3계층)
 - 러닝 이미지 업로드 → CORE API 파싱 → 기록 저장 (구현 완료, 실테스트 미완)
 - EC2 배포 + Nginx HTTPS 설정
-- [2026-05-19] PAC-RUN 디자인 시스템 적용
+
+[2026-05-19] PAC-RUN 디자인 시스템 적용
   - tailwind.config.js: pac-yellow/pac-black/pac-pink/pac-green/pac-red
   - 폰트: Barlow Condensed(display) + Noto Sans KR(body)
   - layouts/app.blade.php, navigation.blade.php, guest.blade.php 교체
   - 폼 컴포넌트 전체 pac 컬러 적용
+
+[2026-05-19] 대시보드 구현
+  - crew.notices / crew.notice_reads 마이그레이션
+  - Notice 모델 (forUser 스코프)
+  - DashboardService: getStats / getNotices / getMileageProgress / getActiveEvents / getRecentLogs
+  - DashboardController → dashboard.blade.php 5섹션
+    ① 인사 배너 ② 수치카드 4개 ③ 공지사항 ④ 이벤트+마일리지 ⑤ 최근기록
+
+[2026-05-19] Role 4단계 재정의 + 관리자 시스템 구현
+  - 마이그레이션: crew_admin→region_admin, group_admin→operator
+  - AdminMiddleware (operator/region_admin/super_admin 계층 검증)
+  - bootstrap/app.php alias 등록: 'admin'
+  - 관리자 레이아웃 (layouts/admin.blade.php): 좌측 사이드바, 권한별 메뉴 분기
+  - 관리자 라우트 12개 (/admin/*)
+  - 컨트롤러: AdminDashboard / AdminMember / AdminNotice / AdminApplication
+              AdminGeneration / AdminEvent / AdminSms / AdminStats
+  - 뷰: admin/dashboard, members/index, notices/index+create, 플레이스홀더 6개
 ```
 
 ---
