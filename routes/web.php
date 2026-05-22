@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApplyController;
 use App\Http\Controllers\BugReportController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\DashboardController;
@@ -11,6 +12,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+// 기수 신청서 (공개 — 인증 불필요)
+Route::get('/apply', [ApplyController::class, 'index'])->name('apply');
+Route::post('/apply', [ApplyController::class, 'store'])->name('apply.store');
+Route::get('/apply/done', [ApplyController::class, 'done'])->name('apply.done');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth'])

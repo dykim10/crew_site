@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Exports\RunningLogExport;
+use App\Filament\Actions\ExcelExportAction;
 use App\Filament\Resources\RunningLogResource\Pages;
 use App\Models\RunningLog;
 use App\Services\RunningLogService;
@@ -121,6 +123,13 @@ class RunningLogResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                ExcelExportAction::for(
+                    RunningLogExport::class,
+                    fn () => RunningLog::with('user')->orderBy('run_date', 'desc')->get(),
+                    '러닝기록'
+                ),
+            ])
             ->columns([
                 TextColumn::make('user.nickname')
                     ->label('회원')
