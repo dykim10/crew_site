@@ -26,4 +26,5 @@ class ListRunningLogs extends ListRecords
             ),
         ];
     }
+
 }
