@@ -15,10 +15,12 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
+use Illuminate\Support\HtmlString;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -65,6 +67,19 @@ class RunningLogResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->columns(1)->components([
+
+            Section::make('업로드 이미지')
+                ->schema([
+                    Placeholder::make('image_preview')
+                        ->label('')
+                        ->content(fn ($record): HtmlString => new HtmlString(
+                            '<div style="background:#1A1212;border-radius:0.75rem;display:flex;align-items:center;justify-content:center;overflow:hidden;max-height:480px;">'
+                            . '<img src="' . e($record->image_url) . '" style="max-width:100%;object-fit:contain;max-height:480px;" alt="러닝 기록 이미지">'
+                            . '</div>'
+                        )),
+                ])
+                ->visible(fn ($record): bool => (bool) $record?->image_url),
+
             Section::make('기록 정보')
                 ->schema([
                     TextInput::make('user.nickname')
@@ -104,6 +119,23 @@ class RunningLogResource extends Resource
                     TextInput::make('avg_pace_seconds')
                         ->label("평균 페이스 (M'SS\")")
                         ->placeholder("5'30\"")
+                        ->formatStateUsing(function ($state): string {
+                            if (!$state) return '';
+                            $m = intdiv((int)$state, 60);
+                            $s = (int)$state % 60;
+                            return sprintf("%d'%02d\"", $m, $s);
+                        })
+                        ->dehydrateStateUsing(function ($state): ?int {
+                            if (!$state) return null;
+                            if (preg_match("/^(\d+)'(\d{2})\"?$/", trim((string)$state), $mt)) {
+                                return (int)$mt[1] * 60 + (int)$mt[2];
+                            }
+                            return is_numeric($state) ? (int)$state : null;
+                        }),
+
+                    TextInput::make('best_pace_seconds')
+                        ->label("최고 페이스 (M'SS\")")
+                        ->placeholder("4'30\"")
                         ->formatStateUsing(function ($state): string {
                             if (!$state) return '';
                             $m = intdiv((int)$state, 60);
