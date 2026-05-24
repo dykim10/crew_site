@@ -55,6 +55,7 @@ Route::middleware(['auth'])->group(function () {
 
     // 러닝 기록
     Route::post('/running-logs/parse-image', [RunningLogController::class, 'parseImage'])->name('running-logs.parse-image');
+    Route::post('/running-logs/batch-confirm', [RunningLogController::class, 'batchConfirm'])->name('running-logs.batch-confirm');
     Route::post('/running-logs/{runningLog}/confirm', [RunningLogController::class, 'confirm'])->name('running-logs.confirm');
     Route::resource('running-logs', RunningLogController::class);
 

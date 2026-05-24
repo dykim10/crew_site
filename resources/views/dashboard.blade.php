@@ -238,35 +238,64 @@
             </div>
             <div class="p-5">
                 @forelse($recentLogs as $log)
-                    <a href="{{ route('running-logs.show', $log) }}"
-                       class="flex items-center gap-4 py-3 border-b border-pac-black-50 last:border-0
-                              hover:bg-pac-black-50 -mx-5 px-5 transition-colors duration-200">
-                        {{-- 날짜 블록 --}}
-                        <div class="shrink-0 w-11 h-11 rounded-lg bg-pac-black-900
-                                    flex flex-col items-center justify-center">
-                            <p class="font-display text-base font-bold text-pac-yellow-400 leading-none">
-                                {{ $log->run_date->format('d') }}
-                            </p>
-                            <p class="font-body text-[8px] text-pac-black-500 uppercase mt-0.5">
-                                {{ $log->run_date->format('M') }}
-                            </p>
-                        </div>
-                        {{-- 거리 + 페이스 --}}
-                        <div class="flex-1 min-w-0">
-                            <p class="font-display text-xl font-bold text-pac-black-900 leading-none">
-                                {{ number_format($log->distance_km, 2) }}
-                                <span class="font-body text-xs font-normal text-pac-black-400">km</span>
-                            </p>
-                            <p class="font-body text-xs text-pac-black-400 mt-0.5 truncate">
-                                {{ $log->avg_pace_formatted ? $log->avg_pace_formatted . '/km · ' : '' }}{{ $log->duration_formatted }}
-                            </p>
-                        </div>
-                        {{-- 실내/야외 태그 --}}
-                        <span class="font-display text-[9px] font-bold uppercase tracking-widest shrink-0 px-2.5 py-1 rounded
-                                     {{ $log->is_indoor ? 'bg-pac-black-100 text-pac-black-500' : 'bg-pac-yellow-100 text-pac-yellow-700' }}">
-                            {{ $log->is_indoor ? '실내' : '야외' }}
-                        </span>
-                    </a>
+                    @if($log->is_confirmed)
+                        {{-- 확정 기록 --}}
+                        <a href="{{ route('running-logs.show', $log) }}"
+                           class="flex items-center gap-4 py-3 border-b border-pac-black-50 last:border-0
+                                  hover:bg-pac-black-50 -mx-5 px-5 transition-colors duration-200">
+                            <div class="shrink-0 w-11 h-11 rounded-lg bg-pac-black-900
+                                        flex flex-col items-center justify-center">
+                                <p class="font-display text-base font-bold text-pac-yellow-400 leading-none">
+                                    {{ $log->run_date->format('d') }}
+                                </p>
+                                <p class="font-body text-[8px] text-pac-black-500 uppercase mt-0.5">
+                                    {{ $log->run_date->format('M') }}
+                                </p>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-display text-xl font-bold text-pac-black-900 leading-none">
+                                    {{ number_format($log->distance_km, 2) }}
+                                    <span class="font-body text-xs font-normal text-pac-black-400">km</span>
+                                </p>
+                                <p class="font-body text-xs text-pac-black-400 mt-0.5 truncate">
+                                    {{ $log->avg_pace_formatted ? $log->avg_pace_formatted . '/km · ' : '' }}{{ $log->duration_formatted }}
+                                </p>
+                            </div>
+                            <span class="font-display text-[9px] font-bold uppercase tracking-widest shrink-0 px-2.5 py-1 rounded
+                                         {{ $log->is_indoor ? 'bg-pac-black-100 text-pac-black-500' : 'bg-pac-yellow-100 text-pac-yellow-700' }}">
+                                {{ $log->is_indoor ? '실내' : '야외' }}
+                            </span>
+                        </a>
+                    @else
+                        {{-- 미확정(검토 대기) 기록 --}}
+                        <a href="{{ route('running-logs.edit', $log) }}"
+                           class="flex items-center gap-4 py-3 border-b border-pac-yellow-100 last:border-0
+                                  border-l-4 border-l-pac-yellow-400 bg-pac-yellow-50 hover:bg-pac-yellow-100
+                                  -mx-5 px-5 transition-colors duration-200">
+                            <div class="shrink-0 w-11 h-11 rounded-lg bg-pac-black-700
+                                        flex flex-col items-center justify-center">
+                                <p class="font-display text-base font-bold text-pac-yellow-300 leading-none">
+                                    {{ $log->run_date->format('d') }}
+                                </p>
+                                <p class="font-body text-[8px] text-pac-black-400 uppercase mt-0.5">
+                                    {{ $log->run_date->format('M') }}
+                                </p>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-display text-xl font-bold text-pac-black-700 leading-none">
+                                    {{ number_format($log->distance_km, 2) }}
+                                    <span class="font-body text-xs font-normal text-pac-black-400">km</span>
+                                </p>
+                                <p class="font-body text-xs text-pac-black-400 mt-0.5 truncate">
+                                    AI 파싱 완료 · 검토 후 확정 필요
+                                </p>
+                            </div>
+                            <span class="font-display text-[9px] font-bold uppercase tracking-widest shrink-0 px-2.5 py-1 rounded
+                                         bg-pac-yellow-200 text-pac-yellow-700 border border-pac-yellow-300">
+                                검토 대기
+                            </span>
+                        </a>
+                    @endif
                 @empty
                     <div class="py-10 text-center">
                         <p class="font-body text-sm text-pac-black-400 mb-4">아직 기록이 없어요.</p>

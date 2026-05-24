@@ -81,12 +81,42 @@ class RunningLogResource extends Resource
                         ->required(),
 
                     TextInput::make('duration_seconds')
-                        ->label('시간 (초)')
-                        ->numeric(),
+                        ->label('시간 (H:MM:SS)')
+                        ->placeholder('1:23:45')
+                        ->formatStateUsing(function ($state): string {
+                            if (!$state) return '';
+                            $h = intdiv((int)$state, 3600);
+                            $m = intdiv((int)$state % 3600, 60);
+                            $s = (int)$state % 60;
+                            return $h > 0
+                                ? sprintf('%d:%02d:%02d', $h, $m, $s)
+                                : sprintf('%d:%02d', $m, $s);
+                        })
+                        ->dehydrateStateUsing(function ($state): ?int {
+                            if (!$state) return null;
+                            $parts = explode(':', trim((string)$state));
+                            if (count($parts) === 3) {
+                                return (int)$parts[0] * 3600 + (int)$parts[1] * 60 + (int)$parts[2];
+                            }
+                            return (int)$parts[0] * 60 + (int)($parts[1] ?? 0);
+                        }),
 
                     TextInput::make('avg_pace_seconds')
-                        ->label('평균 페이스 (초/km)')
-                        ->numeric(),
+                        ->label("평균 페이스 (M'SS\")")
+                        ->placeholder("5'30\"")
+                        ->formatStateUsing(function ($state): string {
+                            if (!$state) return '';
+                            $m = intdiv((int)$state, 60);
+                            $s = (int)$state % 60;
+                            return sprintf("%d'%02d\"", $m, $s);
+                        })
+                        ->dehydrateStateUsing(function ($state): ?int {
+                            if (!$state) return null;
+                            if (preg_match("/^(\d+)'(\d{2})\"?$/", trim((string)$state), $mt)) {
+                                return (int)$mt[1] * 60 + (int)$mt[2];
+                            }
+                            return is_numeric($state) ? (int)$state : null;
+                        }),
 
                     TextInput::make('calories')
                         ->label('칼로리 (kcal)')

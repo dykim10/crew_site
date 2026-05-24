@@ -20,10 +20,10 @@ use Illuminate\Support\Facades\Log;
  *   parseImage()   : 이미지 → CORE API POST /api/parse-image
  *                    → S3 저장(boto3) + GPT-4o Vision 파싱 → 수치 JSON 반환
  *   createDraft()  : 파싱 결과로 is_confirmed=false draft 행 INSERT
- *   confirmLog()   : 사용자 보정 데이터로 UPDATE + is_confirmed=true
+ *   confirmLog()   : 사용자 보정 데이터로 UPDATE — is_confirmed는 그대로 유지 (관리자만 확정 가능)
  *
  * [CRUD]
- *   create()          : 직접 입력 즉시 확정 저장 (is_confirmed=true)
+ *   create()          : 직접 입력 저장 — is_confirmed=false (관리자 검수 대기)
  *   update()          : 기록 수정
  *   delete()          : 기록 삭제
  *   getByUser()       : 확정 기록 페이지네이션 조회
@@ -96,7 +96,7 @@ class RunningLogService
             'image_url'         => $data['image_url'] ?? null,
             'parsed_data'       => $data['parsed_data'] ?? null,
             'memo'              => $data['memo'] ?? null,
-            'is_confirmed'      => true,
+            'is_confirmed'      => false,
         ]);
     }
 
@@ -107,7 +107,7 @@ class RunningLogService
         return RunningLog::create([
             'user_id'           => $user->id,
             'group_id'          => $user->group_id,
-            'run_date'          => $p['run_date'] ?? now()->toDateString(),
+            'run_date'          => $this->sanitizeRunDate($p['run_date'] ?? null),
             'distance_km'       => $p['distance_km'] ?? 0,
             'duration_seconds'  => $p['duration_seconds'] ?? 0,
             'avg_pace_seconds'  => $p['avg_pace_seconds'] ?? null,
@@ -122,7 +122,7 @@ class RunningLogService
         ]);
     }
 
-    // 사용자 최종 확인 → 데이터 보정 + is_confirmed=true
+    // 사용자 데이터 보정 저장 — is_confirmed는 변경하지 않음 (관리자 검수 후 확정)
     public function confirmLog(RunningLog $log, array $data): RunningLog
     {
         $log->update([
@@ -137,7 +137,6 @@ class RunningLogService
             'elevation_m'       => $data['elevation_m'] ?? null,
             'weather_desc'      => $data['weather_desc'] ?? null,
             'memo'              => $data['memo'] ?? null,
-            'is_confirmed'      => true,
         ]);
         return $log->fresh();
     }
@@ -166,14 +165,15 @@ class RunningLogService
     public function getByUser(User $user, int $perPage = 20)
     {
         return RunningLog::byUser($user->id)
-            ->where('is_confirmed', true)
             ->orderByDesc('run_date')
+            ->orderByDesc('created_at')
             ->paginate($perPage);
     }
 
     public function getMonthlyStats(User $user, int $year, int $month): array
     {
         $logs = RunningLog::byUser($user->id)
+            ->where('is_confirmed', true)
             ->whereYear('run_date', $year)
             ->whereMonth('run_date', $month)
             ->get();
@@ -236,6 +236,30 @@ class RunningLogService
                 'is_achieved' => $monthlyKm >= $goal->target_km,
             ]);
         });
+    }
+
+    // 파싱된 날짜의 연도 교정 — GPT 환각(2020, 2023 등) 방어용 2차 안전망
+    // CORE API에서 1차 교정 후에도 잘못된 연도가 오면 올해로 덮어쓴다
+    private function sanitizeRunDate(?string $date): string
+    {
+        if (!$date) return now()->toDateString();
+
+        $parsed = Carbon::createFromFormat('Y-m-d', $date);
+        if (!$parsed) return now()->toDateString();
+
+        $currentYear = now()->year;
+
+        // 연도가 2년 이상 과거 → 올해로 교정
+        if ($parsed->year < $currentYear - 1) {
+            $parsed->setYear($currentYear);
+        }
+
+        // 미래 날짜 → 전년도로 교정
+        if ($parsed->isFuture()) {
+            $parsed->setYear($currentYear - 1);
+        }
+
+        return $parsed->toDateString();
     }
 
     // "1:23:45" 또는 "23:45" → 초 변환

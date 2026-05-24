@@ -24,7 +24,11 @@ use Illuminate\View\View;
  *          → is_confirmed=false 인 draft 행 INSERT → JSON 응답 (AJAX)
  *   2단계: POST /running-logs/{id}/confirm (confirm)
  *          사용자가 파싱 결과를 확인·수정 후 제출
- *          → draft 행 UPDATE + is_confirmed=true → 기록 목록으로 리다이렉트
+ *          → draft 행 데이터 UPDATE (is_confirmed 변경 없음 — 관리자 검수 대기)
+ *
+ * [확정 흐름]
+ *   사용자 등록/수정 → is_confirmed=false 유지
+ *   관리자 /admin 검수 확인 → RunningLogService::adminConfirm() → is_confirmed=true
  *
  * [Resource 라우트 — CRUD]
  *   index   GET    /running-logs              기록 목록 + 이번달 통계
@@ -45,8 +49,9 @@ class RunningLogController extends Controller
         $logs = $this->service->getByUser($user);
         $now  = now();
         $monthlyStats = $this->service->getMonthlyStats($user, $now->year, $now->month);
+        $pendingCount = RunningLog::byUser($user->id)->where('is_confirmed', false)->count();
 
-        return view('running-logs.index', compact('logs', 'monthlyStats'));
+        return view('running-logs.index', compact('logs', 'monthlyStats', 'pendingCount'));
     }
 
     public function create(): View
@@ -80,7 +85,7 @@ class RunningLogController extends Controller
         ]);
     }
 
-    // 최종 확인 → UPDATE + is_confirmed=true
+    // 사용자 데이터 보정 저장 (is_confirmed 변경 없음 — 관리자 검수 후 확정)
     public function confirm(Request $request, RunningLog $runningLog): RedirectResponse
     {
         abort_if($runningLog->user_id !== auth()->id(), 403);
@@ -107,6 +112,42 @@ class RunningLogController extends Controller
         $this->service->confirmLog($runningLog, $data);
 
         return redirect()->route('running-logs.index')->with('success', '러닝 기록이 등록되었습니다.');
+    }
+
+    // 다중 이미지 파싱 결과 일괄 확정
+    public function batchConfirm(Request $request): JsonResponse
+    {
+        $request->validate([
+            'items'                     => ['required', 'array', 'min:1'],
+            'items.*.log_id'            => ['required', 'integer'],
+            'items.*.run_date'          => ['required', 'date'],
+            'items.*.distance_km'      => ['required', 'numeric', 'min:0.1', 'max:999'],
+            'items.*.duration'          => ['required', 'string', 'regex:/^\d+:\d{2}(:\d{2})?$/'],
+            'items.*.is_indoor'         => ['nullable'],
+            'items.*.avg_pace_seconds'  => ['nullable'],
+            'items.*.best_pace_seconds' => ['nullable'],
+            'items.*.calories'          => ['nullable'],
+            'items.*.avg_heart_rate'    => ['nullable'],
+            'items.*.elevation_m'       => ['nullable'],
+            'items.*.memo'              => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $user      = $request->user();
+        $confirmed = 0;
+
+        foreach ($request->input('items') as $item) {
+            $log = RunningLog::find($item['log_id']);
+            if (!$log || $log->user_id !== $user->id) continue;
+
+            $this->service->confirmLog($log, $item);
+            $confirmed++;
+        }
+
+        return response()->json([
+            'success'  => true,
+            'count'    => $confirmed,
+            'redirect' => route('running-logs.index'),
+        ]);
     }
 
     private function secondsToTime(?int $seconds): ?string

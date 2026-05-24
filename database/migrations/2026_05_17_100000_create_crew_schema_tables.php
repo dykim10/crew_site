@@ -22,8 +22,8 @@ return new class extends Migration
                 user_id           BIGINT NOT NULL,
                 group_id          BIGINT,
                 run_date          DATE NOT NULL,
-                distance_km       NUMERIC(6,2) NOT NULL,
-                duration_seconds  INT NOT NULL,
+                distance_km       NUMERIC(6,2) NOT NULL DEFAULT 0,
+                duration_seconds  INT NOT NULL DEFAULT 0,
                 avg_pace_seconds  INT,
                 best_pace_seconds INT,
                 is_indoor         BOOLEAN NOT NULL DEFAULT false,
@@ -34,6 +34,7 @@ return new class extends Migration
                 image_url         TEXT,
                 parsed_data       JSONB,
                 memo              TEXT,
+                is_confirmed      BOOLEAN NOT NULL DEFAULT false,
                 created_at        TIMESTAMPTZ(6) NOT NULL DEFAULT now(),
                 updated_at        TIMESTAMPTZ(6) NOT NULL DEFAULT now()
             )
@@ -86,7 +87,8 @@ return new class extends Migration
 
         // 인덱스
         DB::statement("CREATE INDEX idx_running_logs_user_date ON crew.running_logs(user_id, run_date DESC)");
-        DB::statement("CREATE INDEX idx_running_logs_group ON crew.running_logs(group_id)");
+        DB::statement("CREATE INDEX idx_running_logs_group     ON crew.running_logs(group_id)");
+        DB::statement("CREATE INDEX idx_running_logs_confirmed ON crew.running_logs(user_id, is_confirmed)");
         DB::statement("CREATE INDEX idx_event_scores_event ON crew.event_scores(event_id)");
         DB::statement("CREATE UNIQUE INDEX idx_event_scores_unique ON crew.event_scores(event_id, user_id)");
         DB::statement("CREATE INDEX idx_user_goals_user_year ON crew.user_goals(user_id, year)");

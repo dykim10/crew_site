@@ -35,9 +35,10 @@ class DashboardService
         $year  = $now->year;
         $month = $now->month;
 
-        // 이번 달 거리
+        // 이번 달 거리 (확정 기록만)
         $monthlyKm = (float) DB::table('crew.running_logs')
             ->where('user_id', $user->id)
+            ->where('is_confirmed', true)
             ->whereYear('run_date', $year)
             ->whereMonth('run_date', $month)
             ->sum('distance_km');
@@ -54,9 +55,10 @@ class DashboardService
             $monthlyPercent = min(100, round($monthlyKm / $monthlyGoal->target_km * 100));
         }
 
-        // 누적 거리 + 횟수
+        // 누적 거리 + 횟수 (확정 기록만)
         $totalRow = DB::table('crew.running_logs')
             ->where('user_id', $user->id)
+            ->where('is_confirmed', true)
             ->selectRaw('SUM(distance_km) as total_km, COUNT(*) as total_count')
             ->first();
 
@@ -84,6 +86,7 @@ class DashboardService
             $groupMembers = DB::table('crew.running_logs')
                 ->join('users', 'crew.running_logs.user_id', '=', 'users.id')
                 ->where('users.group_id', $user->group_id)
+                ->where('crew.running_logs.is_confirmed', true)
                 ->whereYear('crew.running_logs.run_date', $year)
                 ->whereMonth('crew.running_logs.run_date', $month)
                 ->selectRaw('crew.running_logs.user_id, SUM(crew.running_logs.distance_km) as total_km')
@@ -136,6 +139,7 @@ class DashboardService
 
         $achieved = (float) DB::table('crew.running_logs')
             ->where('user_id', $user->id)
+            ->where('is_confirmed', true)
             ->whereDate('run_date', '>=', $event->start_date)
             ->whereDate('run_date', '<=', $event->end_date)
             ->sum('distance_km');
@@ -167,7 +171,7 @@ class DashboardService
             ->get();
     }
 
-    // ⑤ 최근 러닝 기록
+    // ⑤ 최근 러닝 기록 (확정·미확정 모두 포함, 뷰에서 시각 구분)
     public function getRecentLogs(User $user, int $limit = 3): Collection
     {
         return RunningLog::byUser($user->id)
