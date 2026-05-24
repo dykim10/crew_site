@@ -10,6 +10,34 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * 러닝 기록 서비스 (app/Services/RunningLogService.php)
+ *
+ * 러닝 기록 관련 비즈니스 로직 전담.
+ * RunningLogController 와 Filament 관리자 패널 모두에서 사용한다.
+ *
+ * [이미지 파싱 흐름]
+ *   parseImage()   : 이미지 → CORE API POST /api/parse-image
+ *                    → S3 저장(boto3) + GPT-4o Vision 파싱 → 수치 JSON 반환
+ *   createDraft()  : 파싱 결과로 is_confirmed=false draft 행 INSERT
+ *   confirmLog()   : 사용자 보정 데이터로 UPDATE + is_confirmed=true
+ *
+ * [CRUD]
+ *   create()          : 직접 입력 즉시 확정 저장 (is_confirmed=true)
+ *   update()          : 기록 수정
+ *   delete()          : 기록 삭제
+ *   getByUser()       : 확정 기록 페이지네이션 조회
+ *   getMonthlyStats() : 이번달 거리·횟수·총 시간·평균 페이스 집계
+ *
+ * [관리자 검수]
+ *   adminConfirm()   : is_confirmed=true 후 recalculateGoals() 트리거
+ *   adminUnconfirm() : is_confirmed=false 후 recalculateGoals() 트리거
+ *
+ * [내부 유틸]
+ *   timeToSeconds()    : "1:23:45" / "23:45" → 초 변환
+ *   recalculateGoals() : confirmed 기록 전체 재합산 → user_goals 업데이트
+ *                        (가산·감산 대신 전체 재합산으로 중복 반영 방지)
+ */
 class RunningLogService
 {
     /**

@@ -4,6 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * 이벤트 모델 (app/Models/Event.php)
+ *
+ * crew.events 테이블과 매핑. 이벤트 타입(A/B)에 따라 동작 방식이 다르다.
+ *
+ * [이벤트 타입]
+ *   A타입 : 마라톤 대회 등 대외 참가 이벤트 — 관리자가 점수를 직접 부여
+ *   B타입 : 크루 자체 모임·신청 이벤트
+ *           form_schema(JSONB) 로 동적 입력 필드를 정의
+ *           score_rules(JSONB) 로 점수 산정 규칙을 관리
+ *
+ * [계층 구조]
+ *   parent_event_id : 상위 이벤트 참조 (서브 이벤트 지원)
+ *   subEvents()     : 하위 이벤트 목록 (HasMany)
+ *   parentEvent()   : 상위 이벤트 참조 (BelongsTo)
+ *
+ * [헬퍼 메서드]
+ *   isActive()         : 현재 날짜 기준 진행 중 여부 (status=active + 기간 확인)
+ *   isTypeA/B()        : 이벤트 타입 확인
+ *   getFieldByKey(key) : form_schema 배열에서 특정 key 의 필드 검색
+ */
 class Event extends Model
 {
     protected $table = 'crew.events';

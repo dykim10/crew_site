@@ -10,6 +10,29 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * 사용자 모델 (app/Models/User.php)
+ *
+ * public.users 테이블과 매핑. Supabase 의 기존 테이블이므로 DROP/CREATE 금지,
+ * 컬럼 추가 시 Schema::table + hasColumn 으로 멱등성을 보장한다.
+ *
+ * [개인정보 암호화 구조]
+ *   email_hash : SHA-256 해시 → 로그인 조회용 (역복호화 불가)
+ *   email_enc  : AES 암호화 → getEmailAttribute() 가상 속성으로 투명하게 복호화
+ *   name_enc   : AES 암호화 → getNameAttribute()  가상 속성으로 투명하게 복호화
+ *   복호화는 CryptoService → CORE API 에 위임 (AES 키를 PHP 측에 보관하지 않음)
+ *
+ * [역할 계층]
+ *   super_admin  : 전체 관리자
+ *   region_admin : 지역 관리자 (super_admin 권한 포함)
+ *   operator     : 운영자 (super_admin + region_admin 권한 포함)
+ *   member       : 일반 구성원
+ *   → isAdmin() / isSuperAdmin() / isRegionAdmin() / isOperator() 헬퍼 메서드 제공
+ *
+ * [Filament 관리자 패널]
+ *   FilamentUser / HasName 인터페이스 구현
+ *   canAccessPanel(): super_admin / region_admin / operator 만 관리자 패널 접근 허용
+ */
 class User extends Authenticatable implements FilamentUser, HasName
 {
     use HasFactory, Notifiable;

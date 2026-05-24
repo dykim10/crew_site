@@ -14,6 +14,20 @@ use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
+/**
+ * 비밀번호 재설정 컨트롤러 (Auth/NewPasswordController.php)
+ *
+ * Laravel Breeze 자동 생성.
+ * 이메일로 발송된 재설정 링크(서명된 URL)를 통해 진입하며 새 비밀번호를 저장한다.
+ *
+ * create() GET  /reset-password/{token} → 새 비밀번호 입력 폼 (token·email 을 hidden 으로 포함)
+ * store()  POST /reset-password         → token·email·password 검증 후 Password::reset() 호출
+ *                                          성공: 비밀번호 해시 저장 + remember_token 재생성
+ *                                               + PasswordReset 이벤트 발생 → /login 리다이렉트
+ *                                          실패: back() + email 에러 메시지
+ *
+ * 토큰 유효성 검사(만료·일치 여부)는 Password 파사드 내부에서 처리한다.
+ */
 class NewPasswordController extends Controller
 {
     /**

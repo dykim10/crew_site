@@ -13,6 +13,21 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
+/**
+ * 회원가입 컨트롤러 (Auth/RegisteredUserController.php)
+ *
+ * 초대 코드 기반 클로즈 베타 회원가입을 처리한다.
+ *
+ * create() GET  /register → 회원가입 폼 표시
+ * store()  POST /register → 아래 순서로 처리
+ *   1. 입력값 검증 (이름·닉네임·이메일·비밀번호·초대 코드)
+ *   2. 초대 코드 확인 (CREW2026 / PACRUN / RUNNING 중 하나)
+ *   3. 이메일 중복 확인 — email_hash(SHA-256) 로 조회하여 평문 이메일을 DB에 저장하지 않음
+ *   4. CryptoService 를 통해 이메일·이름 AES 암호화 → CORE API POST /api/crypto/encrypt
+ *   5. User 생성 (role=member, is_beta=true)
+ *   6. Registered 이벤트 발생 → 이메일 인증 메일 자동 발송
+ *   7. 자동 로그인 후 /dashboard 리다이렉트
+ */
 class RegisteredUserController extends Controller
 {
     private const VALID_INVITE_CODES = ['CREW2026', 'PACRUN', 'RUNNING'];

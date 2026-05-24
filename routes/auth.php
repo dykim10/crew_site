@@ -1,5 +1,26 @@
 <?php
 
+/**
+ * 인증 라우트 (routes/auth.php)
+ *
+ * Laravel Breeze 가 자동 생성한 인증 관련 라우트 모음.
+ * web.php 에서 require 로 포함되어 동작한다.
+ *
+ * [비로그인 전용 - middleware: guest]
+ *   GET/POST  /register              → 회원가입 (초대 코드 기반 클로즈 베타)
+ *   GET/POST  /login                 → 로그인
+ *   GET/POST  /forgot-password       → 비밀번호 재설정 링크 요청
+ *   GET/POST  /reset-password/{token}→ 비밀번호 재설정
+ *
+ * [로그인 전용 - middleware: auth]
+ *   GET       /verify-email          → 이메일 인증 안내 페이지
+ *   GET       /verify-email/{id}/{hash} → 이메일 인증 처리 (서명 URL, 분당 6회 제한)
+ *   POST      /email/verification-notification → 인증 메일 재발송 (분당 6회 제한)
+ *   GET/POST  /confirm-password      → 민감 작업 전 비밀번호 재확인
+ *   PUT       /password              → 비밀번호 변경
+ *   POST      /logout                → 로그아웃
+ */
+
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;

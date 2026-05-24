@@ -8,6 +8,24 @@ use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * 대시보드 서비스 (app/Services/DashboardService.php)
+ *
+ * 대시보드 화면에 필요한 데이터를 수집·가공해 반환한다.
+ * 단순 조회는 Eloquent scope 를 사용하고,
+ * 복잡한 집계·JOIN 은 DB::table() raw 쿼리를 직접 사용한다.
+ *
+ * [제공 메서드]
+ *   getStats(user)           : 수치 카드 4개 데이터
+ *                              - 이번달 거리 + 목표 대비 달성률(%)
+ *                              - 누적 총 거리 + 총 횟수
+ *                              - 진행 중 이벤트 점수
+ *                              - 같은 그룹 내 이번달 거리 기준 순위
+ *   getNotices(user)         : 최근 공지사항 3건
+ *   getMileageProgress(user) : 진행 중 이벤트 마일리지 달성률 + 남은 일수
+ *   getActiveEvents(user)    : 현재 날짜 기준 진행 중 이벤트 최대 3건
+ *   getRecentLogs(user, N)   : 최근 러닝 기록 N건 (기본값 3)
+ */
 class DashboardService
 {
     // ① 수치 카드 4개 데이터

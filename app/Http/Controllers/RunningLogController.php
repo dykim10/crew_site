@@ -9,6 +9,32 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
+/**
+ * 러닝 기록 컨트롤러 (app/Http/Controllers/RunningLogController.php)
+ *
+ * crew.running_logs 테이블의 CRUD + 이미지 파싱 흐름을 담당한다.
+ * 비즈니스 로직은 RunningLogService 에 위임하고,
+ * 이 컨트롤러는 유효성 검사 → Service 호출 → 응답 반환만 수행한다.
+ *
+ * 소유자 검증: 개별 기록 접근 시 abort_if($log->user_id !== auth()->id(), 403) 적용
+ *
+ * [이미지 파싱 흐름 — 2단계]
+ *   1단계: POST /running-logs/parse-image  (parseImage)
+ *          이미지를 CORE API 로 전송 → S3 저장 + GPT-4o Vision 파싱
+ *          → is_confirmed=false 인 draft 행 INSERT → JSON 응답 (AJAX)
+ *   2단계: POST /running-logs/{id}/confirm (confirm)
+ *          사용자가 파싱 결과를 확인·수정 후 제출
+ *          → draft 행 UPDATE + is_confirmed=true → 기록 목록으로 리다이렉트
+ *
+ * [Resource 라우트 — CRUD]
+ *   index   GET    /running-logs              기록 목록 + 이번달 통계
+ *   create  GET    /running-logs/create       등록 폼
+ *   store   POST   /running-logs              직접 입력 저장 (이미지 첨부 시 파싱 병행)
+ *   show    GET    /running-logs/{id}         기록 상세
+ *   edit    GET    /running-logs/{id}/edit    수정 폼
+ *   update  PUT    /running-logs/{id}         수정
+ *   destroy DELETE /running-logs/{id}         삭제
+ */
 class RunningLogController extends Controller
 {
     public function __construct(private RunningLogService $service) {}

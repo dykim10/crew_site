@@ -5,6 +5,32 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
+/**
+ * 러닝 기록 모델 (app/Models/RunningLog.php)
+ *
+ * crew.running_logs 테이블과 매핑 (Supabase crew 스키마 사용).
+ *
+ * [상태 플래그]
+ *   is_confirmed = false : 이미지 파싱 직후 임시 저장 (draft) — 마일리지 집계 제외
+ *   is_confirmed = true  : 사용자 또는 관리자가 확정한 기록 — 마일리지 집계 대상
+ *
+ * [시간 단위 규칙] — 모든 시간 값은 초(seconds) 단위로 DB 저장
+ *   duration_seconds  : 운동 총 시간
+ *   avg_pace_seconds  : 평균 페이스 (1km 당 초)
+ *   best_pace_seconds : 최고 페이스
+ *
+ * [Accessor — 화면 표시용 포맷 변환]
+ *   avg_pace_formatted : avg_pace_seconds  → "5'30\"" 형식
+ *   duration_formatted : duration_seconds  → "1:23:45" 형식
+ *   → new-style Attribute::make() 방식 사용 (Laravel 9+)
+ *
+ * [Scope]
+ *   byUser($userId)    : 특정 사용자의 기록만 필터
+ *   byGroup($groupId)  : 특정 그룹의 기록만 필터
+ *
+ * [Static 집계 메서드]
+ *   totalKmByUser(userId, year, ?month) : 연간 또는 월간 누적 거리 합산
+ */
 class RunningLog extends Model
 {
     protected $table = 'crew.running_logs';

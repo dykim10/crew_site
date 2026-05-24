@@ -9,6 +9,19 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
+/**
+ * 비밀번호 재설정 링크 요청 컨트롤러 (Auth/PasswordResetLinkController.php)
+ *
+ * Laravel Breeze 자동 생성. 비밀번호를 잊어버린 사용자에게 재설정 이메일을 발송한다.
+ *
+ * create() GET  /forgot-password → 이메일 입력 폼 표시
+ * store()  POST /forgot-password → 이메일 검증 후 Password::sendResetLink() 호출
+ *                                   발송 성공: back() + status 플래시 메시지
+ *                                   발송 실패: back() + email 에러 메시지
+ *
+ * 실제 토큰 생성·저장·메일 발송은 Laravel 내장 Password 파사드가 처리한다.
+ * 비밀번호 재설정 후 새 비밀번호 저장은 NewPasswordController 가 담당한다.
+ */
 class PasswordResetLinkController extends Controller
 {
     /**
