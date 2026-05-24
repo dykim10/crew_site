@@ -25,7 +25,12 @@
             @if($runningLog->image_url)
                 <div>
                     <p class="font-display text-[10px] font-bold text-pac-black-400 uppercase tracking-widest mb-2">등록된 이미지</p>
-                    <img src="{{ $runningLog->image_url }}" class="h-32 rounded-xl object-cover" alt="">
+                    <div class="w-full bg-pac-black-900 rounded-xl flex items-center justify-center overflow-hidden" style="max-height:480px">
+                        <img src="{{ $runningLog->image_url }}"
+                             class="max-w-full object-contain"
+                             style="max-height:480px"
+                             alt="러닝 기록 이미지">
+                    </div>
                 </div>
             @endif
 
