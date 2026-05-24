@@ -77,9 +77,9 @@
         @forelse($logs as $log)
             @if($log->is_confirmed)
                 {{-- 확정 기록 --}}
-                <div class="flex items-center justify-between px-5 py-4 border-b border-pac-black-50 last:border-0
+                <div class="flex items-center justify-between px-5 py-4 border-b border-pac-black-100 last:border-0
                             hover:bg-pac-black-50 transition-colors duration-200">
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-4 flex-1 min-w-0">
                         <div class="shrink-0 w-12 h-12 rounded-xl bg-pac-black-900
                                     flex flex-col items-center justify-center">
                             <p class="font-display text-lg font-bold text-pac-yellow-400 leading-none">
@@ -90,16 +90,16 @@
                             </p>
                         </div>
                         @if($log->image_url)
-                            <img src="{{ $log->image_url }}" class="w-12 h-12 rounded-xl object-cover" alt="">
+                            <img src="{{ $log->image_url }}" class="shrink-0 w-12 h-12 rounded-xl object-cover" alt="">
                         @endif
-                        <div>
-                            <div class="flex items-center gap-2">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
                                 <p class="font-display text-xl font-bold text-pac-black-900 leading-none">
                                     {{ number_format($log->distance_km, 2) }}
                                     <span class="font-body text-sm font-normal text-pac-black-400">km</span>
                                 </p>
                                 <span class="font-display text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded
-                                             bg-pac-green-500/10 text-pac-green-500 border border-pac-green-500/20">
+                                             bg-green-100 text-green-700 border border-green-200">
                                     확정
                                 </span>
                             </div>
@@ -114,13 +114,15 @@
                             </p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3 shrink-0">
+                    <div class="flex items-center gap-2 shrink-0">
                         <a href="{{ route('running-logs.show', $log) }}"
-                           class="font-display text-xs font-bold uppercase tracking-widest text-pac-yellow-600 hover:text-pac-yellow-500 transition-colors">
+                           class="font-display text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg
+                                  border border-pac-yellow-400 text-pac-yellow-600 hover:bg-pac-yellow-50 transition-colors">
                             상세
                         </a>
                         <a href="{{ route('running-logs.edit', $log) }}"
-                           class="font-display text-xs font-bold uppercase tracking-widest text-pac-black-400 hover:text-pac-black-600 transition-colors">
+                           class="font-display text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg
+                                  border border-pac-black-200 text-pac-black-500 hover:bg-pac-black-50 transition-colors">
                             수정
                         </a>
                         <form method="POST" action="{{ route('running-logs.destroy', $log) }}"
@@ -128,7 +130,8 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit"
-                                    class="font-display text-xs font-bold uppercase tracking-widest text-pac-pink-500 hover:text-pac-pink-400 transition-colors">
+                                    class="font-display text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg
+                                           border border-pac-pink-300 text-pac-pink-500 hover:bg-pink-50 transition-colors">
                                 삭제
                             </button>
                         </form>
@@ -136,10 +139,10 @@
                 </div>
             @else
                 {{-- 미확정(검토 대기) 기록 --}}
-                <div class="flex items-center justify-between px-5 py-4 border-b border-pac-yellow-100 last:border-0
-                            border-l-4 border-l-pac-yellow-400 bg-pac-yellow-50 hover:bg-pac-yellow-100
+                <div class="flex items-center justify-between px-5 py-4 border-b border-yellow-100 last:border-0
+                            border-l-4 border-l-yellow-400 bg-yellow-50 hover:bg-yellow-100
                             transition-colors duration-200">
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-4 flex-1 min-w-0">
                         <div class="shrink-0 w-12 h-12 rounded-xl bg-pac-black-700
                                     flex flex-col items-center justify-center">
                             <p class="font-display text-lg font-bold text-pac-yellow-300 leading-none">
@@ -150,16 +153,16 @@
                             </p>
                         </div>
                         @if($log->image_url)
-                            <img src="{{ $log->image_url }}" class="w-12 h-12 rounded-xl object-cover opacity-70" alt="">
+                            <img src="{{ $log->image_url }}" class="shrink-0 w-12 h-12 rounded-xl object-cover opacity-70" alt="">
                         @endif
-                        <div>
+                        <div class="min-w-0">
                             <div class="flex items-center gap-2 flex-wrap">
                                 <p class="font-display text-xl font-bold text-pac-black-700 leading-none">
                                     {{ number_format($log->distance_km, 2) }}
                                     <span class="font-body text-sm font-normal text-pac-black-400">km</span>
                                 </p>
                                 <span class="font-display text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded
-                                             bg-pac-yellow-200 text-pac-yellow-700 border border-pac-yellow-300">
+                                             bg-yellow-100 text-yellow-700 border border-yellow-300">
                                     검토 대기
                                 </span>
                             </div>
@@ -172,10 +175,10 @@
                             </p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3 shrink-0">
+                    <div class="flex items-center gap-2 shrink-0">
                         <a href="{{ route('running-logs.edit', $log) }}"
-                           class="font-display text-xs font-bold uppercase tracking-widest
-                                  text-pac-yellow-700 hover:text-pac-yellow-600 transition-colors">
+                           class="font-display text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg
+                                  border border-yellow-400 text-yellow-700 bg-yellow-50 hover:bg-yellow-100 transition-colors">
                             검토·수정
                         </a>
                         <form method="POST" action="{{ route('running-logs.destroy', $log) }}"
@@ -183,7 +186,8 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit"
-                                    class="font-display text-xs font-bold uppercase tracking-widest text-pac-pink-500 hover:text-pac-pink-400 transition-colors">
+                                    class="font-display text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg
+                                           border border-pac-pink-300 text-pac-pink-500 hover:bg-pink-50 transition-colors">
                                 삭제
                             </button>
                         </form>

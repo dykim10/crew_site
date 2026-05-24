@@ -13,17 +13,16 @@
         </div>
         <div class="flex items-center gap-2">
             <a href="{{ route('running-logs.edit', $runningLog) }}"
-               class="font-display text-xs font-bold uppercase tracking-widest px-3 py-1.5
-                      border border-pac-black-300 text-pac-black-600 rounded-lg
-                      hover:bg-pac-black-50 transition-colors">
+               class="font-display text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg
+                      border border-pac-black-200 text-pac-black-500 hover:bg-pac-black-50 transition-colors">
                 수정
             </a>
             <form method="POST" action="{{ route('running-logs.destroy', $runningLog) }}"
                   onsubmit="return confirm('이 기록을 삭제하시겠습니까?')">
                 @csrf @method('DELETE')
-                <button class="font-display text-xs font-bold uppercase tracking-widest px-3 py-1.5
-                               border border-pac-pink-200 text-pac-pink-500 rounded-lg
-                               hover:bg-pac-pink-50 transition-colors">
+                <button type="submit"
+                        class="font-display text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg
+                               border border-pac-pink-300 text-pac-pink-500 hover:bg-pink-50 transition-colors">
                     삭제
                 </button>
             </form>
@@ -33,9 +32,14 @@
     {{-- 메인 카드 --}}
     <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
 
-        {{-- 이미지 --}}
+        {{-- 이미지 (object-contain: 잘림 없이 전체 표시) --}}
         @if($runningLog->image_url)
-            <img src="{{ $runningLog->image_url }}" class="w-full max-h-64 object-cover" alt="러닝 기록 이미지">
+            <div class="w-full bg-pac-black-900 flex items-center justify-center overflow-hidden" style="max-height:480px">
+                <img src="{{ $runningLog->image_url }}"
+                     class="max-w-full object-contain"
+                     style="max-height:480px"
+                     alt="러닝 기록 이미지">
+            </div>
         @endif
 
         {{-- 날짜 + 유형 헤더 --}}
