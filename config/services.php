@@ -39,4 +39,8 @@ return [
         'url' => env('CORE_API_URL', 'http://localhost:8000'),
     ],
 
+    'sms' => [
+        'sender' => env('SMS_SENDER_PHONE', ''),
+    ],
+
 ];
