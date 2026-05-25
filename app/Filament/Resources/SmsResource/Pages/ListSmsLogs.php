@@ -33,6 +33,7 @@ class ListSmsLogs extends ListRecords
                         ->options([
                             'all'        => '전체 (승인된 전체 신청자)',
                             'generation' => '기수별',
+                            'manual'     => '수동 입력',
                         ])
                         ->default('all')
                         ->required()
@@ -54,6 +55,14 @@ class ListSmsLogs extends ListRecords
                         ->visible(fn ($get) => $get('target_type') === 'generation')
                         ->requiredIf('target_type', 'generation'),
 
+                    Textarea::make('manual_phones')
+                        ->label('전화번호 직접 입력')
+                        ->rows(3)
+                        ->placeholder('010-1234-5678, 01012345678, 010-9999-0000')
+                        ->helperText('쉼표(,)로 구분하여 여러 번호를 입력하세요. 하이픈 자동 제거됩니다.')
+                        ->visible(fn ($get) => $get('target_type') === 'manual')
+                        ->requiredIf('target_type', 'manual'),
+
                     Textarea::make('message')
                         ->label('메시지 내용')
                         ->required()
@@ -69,9 +78,11 @@ class ListSmsLogs extends ListRecords
                     $message      = $data['message'];
 
                     try {
-                        $phones = $targetType === 'generation'
-                            ? $service->getPhonesByGeneration($generationId)
-                            : $service->getAllApprovedPhones();
+                        $phones = match ($targetType) {
+                            'generation' => $service->getPhonesByGeneration($generationId),
+                            'manual'     => $service->parseManualPhones($data['manual_phones'] ?? ''),
+                            default      => $service->getAllApprovedPhones(),
+                        };
 
                         if (empty($phones)) {
                             Notification::make()

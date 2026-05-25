@@ -40,6 +40,18 @@ class SmsService
         return $this->decryptPhones($encPhones->all());
     }
 
+    public function parseManualPhones(string $input): array
+    {
+        $phones = [];
+        foreach (explode(',', $input) as $raw) {
+            $phone = preg_replace('/[^0-9]/', '', trim($raw));
+            if (strlen($phone) >= 10) {
+                $phones[] = $phone;
+            }
+        }
+        return array_values(array_unique($phones));
+    }
+
     private function decryptPhones(array $encPhones): array
     {
         $phones = [];
