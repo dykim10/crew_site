@@ -50,16 +50,21 @@ class SmsResource extends Resource
                     ->label('발송자')
                     ->default('-'),
 
-                TextColumn::make('target_type')
+                TextColumn::make('filter_type')
                     ->label('대상')
                     ->formatStateUsing(fn ($state) => match ($state) {
                         'generation' => '기수별',
+                        'manual'     => '수동입력',
                         default      => '전체',
                     })
                     ->badge()
-                    ->color(fn ($state) => $state === 'generation' ? 'info' : 'gray'),
+                    ->color(fn ($state) => match ($state) {
+                        'generation' => 'info',
+                        'manual'     => 'warning',
+                        default      => 'gray',
+                    }),
 
-                TextColumn::make('recipient_count')
+                TextColumn::make('recipient_cnt')
                     ->label('발송 수')
                     ->alignCenter(),
 
@@ -68,13 +73,13 @@ class SmsResource extends Resource
                     ->limit(40)
                     ->tooltip(fn ($record) => $record->message),
 
-                TextColumn::make('result.success_count')
+                TextColumn::make('result_data.success_count')
                     ->label('성공')
                     ->alignCenter()
                     ->color('success')
                     ->default(0),
 
-                TextColumn::make('result.fail_count')
+                TextColumn::make('result_data.fail_count')
                     ->label('실패')
                     ->alignCenter()
                     ->color('danger')

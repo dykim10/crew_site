@@ -9,31 +9,34 @@ class SmsLog extends Model
 {
     protected $table = 'crew.sms_logs';
 
+    const UPDATED_AT = null;
+
     protected $fillable = [
-        'sender_id',
-        'target_type',
-        'target_id',
-        'recipient_count',
+        'sent_by',
+        'filter_type',
+        'filter_value',
+        'recipient_cnt',
         'message',
-        'result',
+        'status',
+        'result_data',
     ];
 
     protected $casts = [
-        'result' => 'array',
+        'result_data' => 'array',
     ];
 
     public function sender(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'sender_id');
+        return $this->belongsTo(User::class, 'sent_by');
     }
 
     public function getSuccessCountAttribute(): int
     {
-        return $this->result['success_count'] ?? 0;
+        return $this->result_data['success_count'] ?? 0;
     }
 
     public function getFailCountAttribute(): int
     {
-        return $this->result['fail_count'] ?? 0;
+        return $this->result_data['fail_count'] ?? 0;
     }
 }
