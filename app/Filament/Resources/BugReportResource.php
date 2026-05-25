@@ -76,15 +76,7 @@ class BugReportResource extends Resource
                 ->schema([
                     \Filament\Forms\Components\TextInput::make('attachment_url')
                         ->label('파일 URL')
-                        ->disabled()
-                        ->url()
-                        ->suffixAction(
-                            \Filament\Forms\Components\Actions\Action::make('open')
-                                ->label('열기')
-                                ->icon('heroicon-o-arrow-top-right-on-square')
-                                ->url(fn ($record) => $record?->attachment_url)
-                                ->openUrlInNewTab()
-                        ),
+                        ->disabled(),
                 ])
                 ->visible(fn ($record) => filled($record?->attachment_url))
                 ->collapsed(),
