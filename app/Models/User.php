@@ -114,4 +114,22 @@ class User extends Authenticatable implements FilamentUser, HasName
     {
         return in_array($this->role, ['super_admin', 'region_admin', 'operator']);
     }
+
+    // 참여한 모든 기수 이력
+    public function userGenerations()
+    {
+        return $this->hasMany(UserGeneration::class);
+    }
+
+    // 현재 소속 기수 (is_current = true)
+    public function currentGeneration()
+    {
+        return $this->hasOne(UserGeneration::class)->where('is_current', true)->with('generation');
+    }
+
+    // 특정 generation_id 포함 여부 확인
+    public function hasGeneration(int $generationId): bool
+    {
+        return $this->userGenerations()->where('generation_id', $generationId)->exists();
+    }
 }

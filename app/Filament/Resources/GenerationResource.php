@@ -119,9 +119,16 @@ class GenerationResource extends Resource
                 ->columns(3),
 
             Section::make('운영 기간')
+                ->description('다른 기수와 운영 기간이 겹치지 않아야 합니다.')
                 ->schema([
-                    DatePicker::make('start_date')->label('운영 시작일'),
-                    DatePicker::make('end_date')->label('운영 종료일'),
+                    DatePicker::make('start_date')
+                        ->label('운영 시작일')
+                        ->live(),
+
+                    DatePicker::make('end_date')
+                        ->label('운영 종료일')
+                        ->live()
+                        ->helperText('종료일은 시작일보다 이후여야 합니다.'),
                 ])
                 ->columns(2),
 

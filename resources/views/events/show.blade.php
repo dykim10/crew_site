@@ -65,14 +65,27 @@
             </div>
         </div>
 
+    {{-- 기수 자격 미충족 --}}
+    @elseif(!$eligible)
+        <div class="bg-white rounded-2xl shadow-sm p-6 text-center py-10">
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-pac-black-100 mb-3">
+                <svg class="w-6 h-6 text-pac-black-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 15v2m0 0v2m0-2h2m-2 0H10m2-6V7m0 0V5m0 2h2m-2 0H10"/>
+                </svg>
+            </div>
+            <p class="font-display text-base font-bold text-pac-black-700 uppercase tracking-widest">참여 대상 아님</p>
+            <p class="font-body text-sm text-pac-black-400 mt-1">이 이벤트는 특정 기수 대상으로 운영됩니다.</p>
+        </div>
+
     {{-- 신청 마감 --}}
-    @elseif(!$event->is_registration_open || !$event->isActive() && $event->status !== 'upcoming')
+    @elseif(!$event->is_registration_open || ($event->status === 'ended'))
         <div class="bg-white rounded-2xl shadow-sm p-6 text-center py-10">
             <p class="font-display text-lg font-bold text-pac-black-400 uppercase tracking-widest">신청 마감</p>
             <p class="font-body text-sm text-pac-black-400 mt-1">참가 신청이 종료되었습니다.</p>
         </div>
 
-    {{-- 신청 폼 --}}
+    {{-- 신청 폼 (진행 중 + 예정 모두 허용) --}}
     @else
         <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
             <div class="px-5 py-3.5 bg-pac-black-900">

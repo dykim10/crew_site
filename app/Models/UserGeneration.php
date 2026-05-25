@@ -4,32 +4,32 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UsersDetail extends Model
+class UserGeneration extends Model
 {
-    protected $table = 'crew.users_detail';
+    protected $table = 'crew.user_generations';
 
     protected $fillable = [
         'user_id',
         'generation_id',
-        'region_id',
-        'group_id',
-        'grade',
-        'training_group',
-        'join_date',
-        'memo',
-        'gender',
-        'shirt_size',
+        'joined_at',
+        'is_current',
     ];
 
     protected function casts(): array
     {
         return [
-            'join_date' => 'date',
+            'joined_at'  => 'date',
+            'is_current' => 'boolean',
         ];
     }
 
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function generation()
+    {
+        return $this->belongsTo(Generation::class);
     }
 }

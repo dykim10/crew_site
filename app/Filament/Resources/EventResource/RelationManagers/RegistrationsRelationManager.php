@@ -5,7 +5,7 @@ namespace App\Filament\Resources\EventResource\RelationManagers;
 use App\Models\EventRegistration;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
-use Filament\Tables\Actions\Action;
+use Filament\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -21,7 +21,14 @@ class RegistrationsRelationManager extends RelationManager
 
     public function table(Table $table): Table
     {
+        $isTypeA = $this->getOwnerRecord()->event_type === 'A';
+
         return $table
+            ->emptyStateHeading($isTypeA ? 'A타입 이벤트' : '신청자 없음')
+            ->emptyStateDescription($isTypeA
+                ? 'A타입(기수경쟁) 이벤트는 별도 신청이 없습니다. 이벤트 점수 탭에서 마일리지 달성 현황을 확인하세요.'
+                : '아직 참가 신청자가 없습니다.')
+            ->emptyStateIcon($isTypeA ? 'heroicon-o-chart-bar' : 'heroicon-o-users')
             ->columns([
                 TextColumn::make('user.nickname')
                     ->label('닉네임')
