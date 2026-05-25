@@ -87,7 +87,7 @@ class SmsResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->striped()
-            ->paginate(20);
+            ->paginationPageOptions([20, 50, 100]);
     }
 
     public static function getRelations(): array { return []; }
