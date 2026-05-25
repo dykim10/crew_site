@@ -21,8 +21,9 @@
                       {{ request()->routeIs('running-logs*') ? 'text-pac-yellow-400 font-semibold' : 'text-pac-black-300 hover:text-pac-yellow-400' }}">
                 기록
             </a>
-            <a href="#"
-               class="font-body text-sm text-pac-black-300 hover:text-pac-yellow-400 transition-colors duration-200">
+            <a href="{{ route('events.index') }}"
+               class="font-body text-sm transition-colors duration-200
+                      {{ request()->routeIs('events*') ? 'text-pac-yellow-400 font-semibold' : 'text-pac-black-300 hover:text-pac-yellow-400' }}">
                 이벤트
             </a>
             <a href="{{ route('photos.index') }}"
@@ -30,8 +31,9 @@
                       {{ request()->routeIs('photos*') ? 'text-pac-yellow-400 font-semibold' : 'text-pac-black-300 hover:text-pac-yellow-400' }}">
                 포토
             </a>
-            <a href="#"
-               class="font-body text-sm text-pac-black-300 hover:text-pac-yellow-400 transition-colors duration-200">
+            <a href="{{ route('ranking.index') }}"
+               class="font-body text-sm transition-colors duration-200
+                      {{ request()->routeIs('ranking*') ? 'text-pac-yellow-400 font-semibold' : 'text-pac-black-300 hover:text-pac-yellow-400' }}">
                 순위
             </a>
             <a href="{{ route('bug-reports.index') }}"
@@ -156,8 +158,9 @@
                 기록
             </a>
 
-            <a href="#"
-               class="flex items-center gap-3 px-3 py-3 rounded-xl font-body text-sm text-pac-black-300 hover:bg-white/5 hover:text-white transition-colors duration-200">
+            <a href="{{ route('events.index') }}"
+               class="flex items-center gap-3 px-3 py-3 rounded-xl font-body text-sm transition-colors duration-200
+                      {{ request()->routeIs('events*') ? 'bg-pac-yellow-500/15 text-pac-yellow-400 font-semibold' : 'text-pac-black-300 hover:bg-white/5 hover:text-white' }}">
                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
@@ -174,8 +177,9 @@
                 포토
             </a>
 
-            <a href="#"
-               class="flex items-center gap-3 px-3 py-3 rounded-xl font-body text-sm text-pac-black-300 hover:bg-white/5 hover:text-white transition-colors duration-200">
+            <a href="{{ route('ranking.index') }}"
+               class="flex items-center gap-3 px-3 py-3 rounded-xl font-body text-sm transition-colors duration-200
+                      {{ request()->routeIs('ranking*') ? 'bg-pac-yellow-500/15 text-pac-yellow-400 font-semibold' : 'text-pac-black-300 hover:bg-white/5 hover:text-white' }}">
                 <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>

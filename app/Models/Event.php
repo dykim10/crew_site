@@ -32,7 +32,8 @@ class Event extends Model
     protected $fillable = [
         'crew_id', 'name', 'description', 'start_date', 'end_date',
         'target_km', 'status',
-        'event_type', 'parent_event_id', 'target_scope', 'generation',
+        'event_type', 'score_type', 'score_config',
+        'parent_event_id', 'target_scope', 'generation',
         'form_schema', 'score_rules', 'max_participants', 'is_registration_open',
     ];
 
@@ -43,8 +44,14 @@ class Event extends Model
             'end_date'             => 'date',
             'form_schema'          => 'array',
             'score_rules'          => 'array',
+            'score_config'         => 'array',
             'is_registration_open' => 'boolean',
         ];
+    }
+
+    public function scores()
+    {
+        return $this->hasMany(EventScore::class);
     }
 
     public function registrations()

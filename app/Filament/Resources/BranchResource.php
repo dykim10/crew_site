@@ -1,0 +1,161 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\BranchResource\Pages;
+use App\Models\Branch;
+use App\Models\User;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
+
+class BranchResource extends Resource
+{
+    protected static ?string $model = Branch::class;
+
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-map-pin';
+    protected static ?string $navigationLabel = '지부 관리';
+    protected static ?string $modelLabel = '지부';
+    protected static ?string $pluralModelLabel = '지부 목록';
+    protected static ?int $navigationSort = 2;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return '크루 관리';
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()->role === 'super_admin';
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return in_array(auth()->user()->role, ['super_admin', 'region_admin']);
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()->role === 'super_admin';
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        $adminOptions = User::whereIn('role', ['super_admin', 'region_admin'])
+            ->orderBy('nickname')
+            ->pluck('nickname', 'id')
+            ->toArray();
+
+        $operatorOptions = User::whereIn('role', ['super_admin', 'region_admin', 'operator'])
+            ->orderBy('nickname')
+            ->pluck('nickname', 'id')
+            ->toArray();
+
+        return $schema->columns(1)->components([
+            Section::make('기본 정보')
+                ->schema([
+                    TextInput::make('name')
+                        ->label('지부/지역명')
+                        ->required()
+                        ->maxLength(50)
+                        ->placeholder('예: 반포, 연대, 인천, 군포'),
+
+                    Select::make('status')
+                        ->label('상태')
+                        ->options(['active' => '활성', 'inactive' => '비활성'])
+                        ->default('active')
+                        ->required(),
+                ])
+                ->columns(2),
+
+            Section::make('담당자')
+                ->schema([
+                    Select::make('admin_id')
+                        ->label('지부 관리자')
+                        ->options($adminOptions)
+                        ->searchable()
+                        ->placeholder('회원 선택')
+                        ->helperText('지역관리자(region_admin) 이상 회원만 표시됩니다.'),
+
+                    Select::make('operator_id')
+                        ->label('지부 운영자')
+                        ->options($operatorOptions)
+                        ->searchable()
+                        ->placeholder('회원 선택'),
+                ])
+                ->columns(2),
+        ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('name')
+                    ->label('지부명')
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('admin.nickname')
+                    ->label('관리자')
+                    ->default('—'),
+
+                TextColumn::make('operator.nickname')
+                    ->label('운영자')
+                    ->default('—'),
+
+                TextColumn::make('status')
+                    ->label('상태')
+                    ->badge()
+                    ->color(fn (string $state): string => $state === 'active' ? 'success' : 'gray')
+                    ->formatStateUsing(fn (string $state): string => $state === 'active' ? '활성' : '비활성'),
+
+                TextColumn::make('created_at')
+                    ->label('생성일')
+                    ->date('Y.m.d')
+                    ->sortable(),
+            ])
+            ->filters([
+                SelectFilter::make('status')
+                    ->label('상태')
+                    ->options(['active' => '활성', 'inactive' => '비활성']),
+            ])
+            ->actions([
+                EditAction::make()->label('수정'),
+                DeleteAction::make()->label('삭제'),
+            ])
+            ->bulkActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->visible(fn () => auth()->user()->role === 'super_admin'),
+                ]),
+            ])
+            ->defaultSort('name')
+            ->striped();
+    }
+
+    public static function getRelations(): array
+    {
+        return [];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index'  => Pages\ListBranches::route('/'),
+            'create' => Pages\CreateBranch::route('/create'),
+            'edit'   => Pages\EditBranch::route('/{record}/edit'),
+        ];
+    }
+}

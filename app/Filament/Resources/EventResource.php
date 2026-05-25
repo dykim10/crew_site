@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\EventResource\Pages;
 use App\Filament\Resources\EventResource\RelationManagers\RegistrationsRelationManager;
+use App\Filament\Resources\EventResource\RelationManagers\ScoresRelationManager;
 use App\Models\Event;
+use App\Models\Generation;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -104,9 +106,20 @@ class EventResource extends Resource
                         ->default('all')
                         ->live(),
 
-                    TextInput::make('generation')
-                        ->label('기수')
-                        ->numeric()
+                    Select::make('generation')
+                        ->label('기수 선택')
+                        ->options(
+                            Generation::orderByDesc('number')
+                                ->get()
+                                ->mapWithKeys(fn ($g) => [
+                                    $g->number => $g->alias
+                                        ? "{$g->number}기 — {$g->alias}"
+                                        : "{$g->number}기",
+                                ])
+                                ->toArray()
+                        )
+                        ->searchable()
+                        ->placeholder('기수를 선택하세요')
                         ->visible(fn ($get) => $get('target_scope') === 'generation'),
 
                     TextInput::make('max_participants')
@@ -120,6 +133,49 @@ class EventResource extends Resource
                         ->inline(false),
                 ])
                 ->columns(2),
+
+            // ── A타입 전용: 점수 설정 ────────────────────────────
+            Section::make('점수 설정')
+                ->description('A타입 이벤트의 점수 방식과 등급별 목표를 설정합니다.')
+                ->schema([
+                    Select::make('score_type')
+                        ->label('점수 방식')
+                        ->options([
+                            'mileage_grade' => '마일리지 등급 (등급별 목표 달성 시 자동 부여)',
+                            'fixed'         => '고정 점수 (관리자 직접 입력)',
+                        ])
+                        ->live()
+                        ->helperText('마일리지 등급: 확정 기록 합산이 등급 목표를 넘으면 자동 부여됩니다.'),
+
+                    Repeater::make('score_config')
+                        ->label('등급별 목표 거리')
+                        ->helperText('등급명과 해당 등급이 이벤트 기간 내 달성해야 할 km를 입력하세요.')
+                        ->schema([
+                            TextInput::make('grade')
+                                ->label('등급명')
+                                ->required()
+                                ->placeholder('예: A, B, S, 골드 …')
+                                ->maxLength(20),
+                            TextInput::make('target_km')
+                                ->label('목표 km')
+                                ->numeric()
+                                ->required()
+                                ->minValue(0)
+                                ->suffix('km'),
+                        ])
+                        ->columns(2)
+                        ->defaultItems(3)
+                        ->default([
+                            ['grade' => 'A', 'target_km' => 120],
+                            ['grade' => 'B', 'target_km' => 100],
+                            ['grade' => 'C', 'target_km' => 80],
+                        ])
+                        ->addActionLabel('등급 추가')
+                        ->reorderable()
+                        ->visible(fn ($get) => $get('score_type') === 'mileage_grade'),
+                ])
+                ->visible(fn ($get) => $get('event_type') === 'A')
+                ->columns(1),
 
             // ── B타입 전용: 참가 신청 폼 빌더 ──────────────────
             Section::make('참가 신청 폼 설계')
@@ -262,6 +318,7 @@ class EventResource extends Resource
     {
         return [
             RegistrationsRelationManager::class,
+            ScoresRelationManager::class,
         ];
     }
 

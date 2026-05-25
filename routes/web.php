@@ -30,8 +30,10 @@ use App\Http\Controllers\ApplyController;
 use App\Http\Controllers\BugReportController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\PhotoGalleryController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RankingController;
 use App\Http\Controllers\RunningLogController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,9 +64,16 @@ Route::middleware(['auth'])->group(function () {
     // 버그 제보
     Route::resource('bug-reports', BugReportController::class)->only(['index', 'create', 'store', 'show']);
 
-    // 이벤트 참가 신청 (B타입)
+    // 이벤트
+    Route::get('/events', [EventController::class, 'index'])->name('events.index');
     Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
     Route::post('/events/{event}/register', [EventController::class, 'register'])->name('events.register');
+
+    // 공지사항
+    Route::get('/notices', [NoticeController::class, 'index'])->name('notices.index');
+
+    // 순위
+    Route::get('/ranking', [RankingController::class, 'index'])->name('ranking.index');
 
     // 포토 갤러리
     Route::get('/photos', [PhotoGalleryController::class, 'index'])->name('photos.index');

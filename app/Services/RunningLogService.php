@@ -2,9 +2,12 @@
 
 namespace App\Services;
 
+use App\Models\Event;
+use App\Models\EventScore;
 use App\Models\RunningLog;
 use App\Models\User;
 use App\Models\UserGoal;
+use App\Models\UsersDetail;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -204,7 +207,7 @@ class RunningLogService
         $this->recalculateGoals($log->user_id, $log->run_date);
     }
 
-    // confirmed 기록 기준으로 user_goals.achieved_km 재집계
+    // confirmed 기록 기준으로 user_goals.achieved_km 재집계 + A타입 이벤트 자동 점수 부여
     // add/subtract 대신 전체 재합산 — 중복 반영 방지
     private function recalculateGoals(int $userId, $runDate): void
     {
@@ -236,6 +239,49 @@ class RunningLogService
                 'is_achieved' => $monthlyKm >= $goal->target_km,
             ]);
         });
+
+        $this->awardMileageGradeEventScores($userId, $runDate);
+    }
+
+    // A타입(mileage_grade) 이벤트 — 기간 내 달성 km가 등급 목표 이상이면 event_scores upsert
+    private function awardMileageGradeEventScores(int $userId, $runDate): void
+    {
+        $dateStr = Carbon::parse($runDate)->toDateString();
+
+        $events = Event::where('event_type', 'A')
+            ->where('score_type', 'mileage_grade')
+            ->where('status', 'active')
+            ->whereDate('start_date', '<=', $dateStr)
+            ->whereDate('end_date', '>=', $dateStr)
+            ->whereNotNull('score_config')
+            ->get();
+
+        if ($events->isEmpty()) return;
+
+        $detail = UsersDetail::where('user_id', $userId)->first();
+        $grade  = $detail?->grade; // A, B, C
+
+        if (!$grade) return;
+
+        foreach ($events as $event) {
+            // score_config는 [["grade"=>"A","target_km"=>120], ...] 배열 구조
+            $gradeRow = collect($event->score_config ?? [])
+                ->firstWhere('grade', $grade);
+            $targetKm = (float) ($gradeRow['target_km'] ?? 0);
+            if ($targetKm <= 0) continue;
+
+            $achievedKm = (float) RunningLog::where('user_id', $userId)
+                ->where('is_confirmed', true)
+                ->whereDate('run_date', '>=', $event->start_date->toDateString())
+                ->whereDate('run_date', '<=', $event->end_date->toDateString())
+                ->sum('distance_km');
+
+            // 기존 auto 점수 행이 있으면 갱신, 없으면 삽입 — source='auto'만 덮어씀
+            EventScore::updateOrCreate(
+                ['event_id' => $event->id, 'user_id' => $userId, 'source' => 'auto'],
+                ['score' => $achievedKm]
+            );
+        }
     }
 
     // 파싱된 날짜의 연도 교정 — GPT 환각(2020, 2023 등) 방어용 2차 안전망

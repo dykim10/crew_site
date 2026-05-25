@@ -124,7 +124,7 @@
     <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
         <div class="flex items-center justify-between px-5 py-3.5 bg-pac-black-900">
             <h3 class="font-display text-sm font-bold text-white uppercase tracking-widest">공지사항</h3>
-            <a href="#" class="font-display text-xs font-bold text-pac-yellow-400 hover:text-pac-yellow-300 uppercase tracking-widest transition-colors duration-200">
+            <a href="{{ route('notices.index') }}" class="font-display text-xs font-bold text-pac-yellow-400 hover:text-pac-yellow-300 uppercase tracking-widest transition-colors duration-200">
                 전체보기 →
             </a>
         </div>

@@ -10,6 +10,30 @@ class EventController extends Controller
 {
     public function __construct(private EventRegistrationService $service) {}
 
+    public function index()
+    {
+        $now = now()->toDateString();
+
+        $active = Event::where('status', 'active')
+            ->whereDate('end_date', '>=', $now)
+            ->orderByDesc('start_date')
+            ->get();
+
+        $upcoming = Event::where('status', 'upcoming')
+            ->orderBy('start_date')
+            ->get();
+
+        $ended = Event::where('status', 'ended')
+            ->orWhere(function ($q) use ($now) {
+                $q->where('status', 'active')->whereDate('end_date', '<', $now);
+            })
+            ->orderByDesc('end_date')
+            ->limit(10)
+            ->get();
+
+        return view('events.index', compact('active', 'upcoming', 'ended'));
+    }
+
     public function show(Event $event)
     {
         abort_if(!$event->isTypeB(), 404);
