@@ -69,6 +69,26 @@ class RunningLog extends Model
         return $this->belongsTo(User::class);
     }
 
+    // S3 직접 URL → CloudFront CDN URL 변환 (AWS_URL 설정 시 자동 적용)
+    protected function imageUrl(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value) {
+                if (!$value) return null;
+                $cdnBase = rtrim(config('filesystems.disks.s3.url', ''), '/');
+                if (!$cdnBase) return $value;
+
+                $bucket = config('filesystems.disks.s3.bucket', '');
+                // "https://bucket.s3.region.amazonaws.com/key" 또는
+                // "https://s3.region.amazonaws.com/bucket/key" 패턴 처리
+                if (preg_match('#amazonaws\.com(?:/' . preg_quote($bucket, '#') . ')?/(.+)$#', $value, $m)) {
+                    return $cdnBase . '/' . $m[1];
+                }
+                return $value;
+            }
+        );
+    }
+
     // avg_pace_seconds → "5'30\"" 형식으로 변환
     protected function avgPaceFormatted(): Attribute
     {

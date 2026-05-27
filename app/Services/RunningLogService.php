@@ -50,8 +50,13 @@ class RunningLogService
     public function parseImage(UploadedFile $file): array
     {
         try {
+            $webp = $this->convertToWebp($file);
+            [$fileContent, $fileName] = $webp
+                ? [$webp, pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '.webp']
+                : [file_get_contents($file->getRealPath()), $file->getClientOriginalName()];
+
             $response = Http::timeout(60)
-                ->attach('file', file_get_contents($file->getRealPath()), $file->getClientOriginalName())
+                ->attach('file', $fileContent, $fileName)
                 ->post(config('services.core_api.url') . '/api/parse-image');
 
             if ($response->successful()) {
@@ -282,6 +287,19 @@ class RunningLogService
                 ['score' => $achievedKm]
             );
         }
+    }
+
+    private function convertToWebp(UploadedFile $file): ?string
+    {
+        $image = @imagecreatefromstring(file_get_contents($file->getRealPath()));
+        if (!$image) return null;
+
+        ob_start();
+        imagewebp($image, null, 82);
+        $content = ob_get_clean();
+        imagedestroy($image);
+
+        return $content ?: null;
     }
 
     // 파싱된 날짜의 연도 교정 — GPT 환각(2020, 2023 등) 방어용 2차 안전망
