@@ -41,6 +41,11 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+// 프로젝트 가이드 (공개)
+Route::get('/preview', function () {
+    return response(file_get_contents(public_path('preview.html')))->header('Content-Type', 'text/html; charset=utf-8');
+})->name('preview');
+
 // 기수 신청서 (공개 — 인증 불필요)
 Route::get('/apply', [ApplyController::class, 'index'])->name('apply');
 Route::post('/apply', [ApplyController::class, 'store'])->name('apply.store');
