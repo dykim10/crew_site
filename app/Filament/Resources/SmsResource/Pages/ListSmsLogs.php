@@ -28,6 +28,24 @@ class ListSmsLogs extends ListRecords
                 ->modalDescription('수신자 전화번호는 해당 기수 신청서(승인된 신청자)에서 가져옵니다.')
                 ->modalSubmitActionLabel('발송')
                 ->form([
+                    Select::make('sender')
+                        ->label('발신자 번호')
+                        ->required()
+                        ->options(function () {
+                            try {
+                                $response = \Illuminate\Support\Facades\Http::timeout(10)
+                                    ->get(config('services.core_api.url') . '/api/sms/senders');
+                                $senders = $response->json()['senders'] ?? [];
+                                return collect($senders)->mapWithKeys(fn ($s) => [$s => $s])->toArray();
+                            } catch (\Throwable) {
+                                return [];
+                            }
+                        })
+                        ->default(config('services.sms.sender', ''))
+                        ->placeholder('발신번호를 선택하세요')
+                        ->helperText('솔라피에 등록·승인된 발신번호만 표시됩니다.')
+                        ->native(false),
+
                     Select::make('target_type')
                         ->label('발송 대상')
                         ->options([
@@ -96,6 +114,7 @@ class ListSmsLogs extends ListRecords
                         $log = $service->send(
                             phones:     $phones,
                             message:    $message,
+                            sender:     preg_replace('/[^0-9]/', '', $data['sender']),
                             senderId:   auth()->id(),
                             targetType: $targetType,
                             targetId:   $generationId,

@@ -67,13 +67,13 @@ class SmsService
         return array_values(array_unique($phones));
     }
 
-    public function send(array $phones, string $message, int $senderId, string $targetType, ?int $targetId): SmsLog
+    public function send(array $phones, string $message, string $sender, int $senderId, string $targetType, ?int $targetId): SmsLog
     {
         if (empty($phones)) {
             throw new \RuntimeException('발송 대상 전화번호가 없습니다.');
         }
 
-        $result = $this->callCoreApi($phones, $message);
+        $result = $this->callCoreApi($phones, $message, $sender);
 
         return SmsLog::create([
             'group_id'     => $result['group_id'] ?? null,
@@ -89,7 +89,7 @@ class SmsService
         ]);
     }
 
-    private function callCoreApi(array $phones, string $message): array
+    private function callCoreApi(array $phones, string $message, string $sender): array
     {
         try {
             $response = Http::timeout(60)->post(
@@ -97,7 +97,7 @@ class SmsService
                 [
                     'phones'   => $phones,
                     'message'  => $message,
-                    'sender'   => config('services.sms.sender', ''),
+                    'sender'   => $sender,
                 ]
             );
 
