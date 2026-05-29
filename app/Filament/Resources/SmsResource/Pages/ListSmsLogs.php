@@ -36,14 +36,19 @@ class ListSmsLogs extends ListRecords
                                 $response = \Illuminate\Support\Facades\Http::timeout(10)
                                     ->get(config('services.core_api.url') . '/api/sms/senders');
                                 $senders = $response->json()['senders'] ?? [];
-                                return collect($senders)->mapWithKeys(fn ($s) => [$s => $s])->toArray();
                             } catch (\Throwable) {
-                                return [];
+                                $senders = [];
                             }
+                            // API 실패 시 config 기본값 폴백
+                            if (empty($senders)) {
+                                $default = preg_replace('/[^0-9]/', '', config('services.sms.sender', ''));
+                                $senders = $default ? [$default] : [];
+                            }
+                            return collect($senders)->mapWithKeys(fn ($s) => [$s => $s])->toArray();
                         })
-                        ->default(config('services.sms.sender', ''))
+                        ->default(fn () => preg_replace('/[^0-9]/', '', config('services.sms.sender', '')))
                         ->placeholder('발신번호를 선택하세요')
-                        ->helperText('솔라피에 등록·승인된 발신번호만 표시됩니다.')
+                        ->helperText('솔라피에 ACTIVE 상태로 등록된 발신번호가 표시됩니다.')
                         ->native(false),
 
                     Select::make('target_type')
