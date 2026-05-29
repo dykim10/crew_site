@@ -35,6 +35,7 @@ use App\Http\Controllers\PhotoGalleryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\RunningLogController;
+use App\Http\Controllers\SmsWebhookController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -85,5 +86,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/photos/{photoGallery}', [PhotoGalleryController::class, 'show'])->name('photos.show');
 });
 
+
+// Solapi 수신 결과 웹훅 (CSRF 제외는 bootstrap/app.php에서 처리)
+Route::post('/webhooks/sms', [SmsWebhookController::class, 'handle'])->name('webhooks.sms');
 
 require __DIR__ . '/auth.php';

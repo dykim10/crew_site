@@ -101,12 +101,12 @@ class ListSmsLogs extends ListRecords
                             targetId:   $generationId,
                         );
 
-                        $success = $log->result['success_count'] ?? 0;
-                        $fail    = $log->result['fail_count'] ?? 0;
+                        $success = $log->result_data['success_count'] ?? 0;
+                        $fail    = $log->result_data['fail_count'] ?? 0;
 
                         Notification::make()
                             ->title('문자 발송 완료')
-                            ->body("{$log->recipient_count}명 대상 발송 — 성공 {$success}건 / 실패 {$fail}건")
+                            ->body("{$log->recipient_cnt}명 대상 발송 — 성공 {$success}건 / 실패 {$fail}건")
                             ->success()
                             ->send();
 

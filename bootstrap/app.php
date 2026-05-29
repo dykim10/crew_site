@@ -14,6 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
+
+        // Solapi 웹훅은 외부 서버에서 POST 하므로 CSRF 검증 제외
+        $middleware->validateCsrfTokens(except: [
+            'webhooks/sms',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

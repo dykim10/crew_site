@@ -40,7 +40,8 @@ return [
     ],
 
     'sms' => [
-        'sender' => env('SMS_SENDER', env('SMS_SENDER_PHONE', '')),
+        'sender'         => env('SMS_SENDER', env('SMS_SENDER_PHONE', '')),
+        'webhook_secret' => env('SMS_WEBHOOK_SECRET'),
     ],
 
 ];

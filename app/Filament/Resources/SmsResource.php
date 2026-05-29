@@ -3,17 +3,14 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\SmsResource\Pages;
-use App\Models\Generation;
 use App\Models\SmsLog;
-use App\Services\SmsService;
-use Filament\Actions\Action;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Http;
 
 class SmsResource extends Resource
 {
@@ -73,13 +70,29 @@ class SmsResource extends Resource
                     ->limit(40)
                     ->tooltip(fn ($record) => $record->message),
 
-                TextColumn::make('result_data.success_count')
-                    ->label('성공')
+                TextColumn::make('status')
+                    ->label('상태')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        'delivered' => '수신 완료',
+                        'partial'   => '일부 수신',
+                        'failed'    => '수신 실패',
+                        default     => '발송됨',
+                    })
+                    ->color(fn ($state) => match ($state) {
+                        'delivered' => 'success',
+                        'partial'   => 'warning',
+                        'failed'    => 'danger',
+                        default     => 'gray',
+                    }),
+
+                TextColumn::make('delivered_cnt')
+                    ->label('수신')
                     ->alignCenter()
                     ->color('success')
                     ->default(0),
 
-                TextColumn::make('result_data.fail_count')
+                TextColumn::make('failed_cnt')
                     ->label('실패')
                     ->alignCenter()
                     ->color('danger')
@@ -89,6 +102,56 @@ class SmsResource extends Resource
                     ->label('발송일시')
                     ->dateTime('Y.m.d H:i')
                     ->sortable(),
+            ])
+            ->actions([
+                Action::make('refresh_status')
+                    ->label('상태 갱신')
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('gray')
+                    ->tooltip('CORE API를 통해 Solapi 최신 수신 결과를 가져옵니다.')
+                    ->visible(fn ($record) => $record->group_id !== null
+                        && in_array($record->status, [SmsLog::STATUS_SENT, SmsLog::STATUS_PARTIAL])
+                    )
+                    ->action(function ($record) {
+                        $response = Http::timeout(10)->get(
+                            config('services.core_api.url') . '/api/sms/status/' . $record->group_id
+                        );
+
+                        if (!$response->successful() || isset($response->json()['error'])) {
+                            Notification::make()
+                                ->title('상태 조회 실패')
+                                ->body($response->json()['error'] ?? '알 수 없는 오류')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
+                        $data    = $response->json();
+                        $success = $data['success'] ?? 0;
+                        $error   = $data['error']   ?? 0;
+                        $waiting = $data['waiting']  ?? 0;
+
+                        $status = $waiting > 0
+                            ? SmsLog::STATUS_SENT
+                            : match (true) {
+                                $error === 0    => SmsLog::STATUS_DELIVERED,
+                                $success === 0  => SmsLog::STATUS_FAILED,
+                                default         => SmsLog::STATUS_PARTIAL,
+                            };
+
+                        $record->update([
+                            'delivered_cnt' => $success,
+                            'failed_cnt'    => $error,
+                            'status'        => $status,
+                        ]);
+
+                        $waitMsg = $waiting > 0 ? " / 대기 {$waiting}" : '';
+                        Notification::make()
+                            ->title('상태 갱신 완료')
+                            ->body("수신 {$success} / 실패 {$error}{$waitMsg}")
+                            ->success()
+                            ->send();
+                    }),
             ])
             ->defaultSort('created_at', 'desc')
             ->striped()

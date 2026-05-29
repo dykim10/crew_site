@@ -76,12 +76,15 @@ class SmsService
         $result = $this->callCoreApi($phones, $message);
 
         return SmsLog::create([
+            'group_id'     => $result['group_id'] ?? null,
             'sent_by'      => $senderId,
             'filter_type'  => $targetType,
             'filter_value' => $targetId !== null ? (string) $targetId : null,
             'recipient_cnt' => count($phones),
             'message'      => $message,
-            'status'       => 'sent',
+            'status'       => SmsLog::STATUS_SENT,
+            'delivered_cnt' => 0,
+            'failed_cnt'   => 0,
             'result_data'  => $result,
         ]);
     }
