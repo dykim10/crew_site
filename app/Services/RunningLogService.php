@@ -167,7 +167,21 @@ class RunningLogService
 
     public function delete(RunningLog $log): void
     {
-        $log->delete();
+        $log->delete(); // S3 삭제는 RunningLog::booted() deleting 이벤트에서 자동 처리
+    }
+
+    // CORE API를 통해 S3 이미지 삭제 — 실패 시 로그만 기록하고 DB 삭제는 차단하지 않음
+    public function deleteS3Image(string $imageUrl): void
+    {
+        try {
+            $endpoint = config('services.core_api.url') . '/api/s3/image?' . http_build_query(['url' => $imageUrl]);
+            Http::timeout(10)->delete($endpoint);
+        } catch (\Throwable $e) {
+            Log::warning('S3 이미지 삭제 실패', [
+                'url'   => $imageUrl,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function getByUser(User $user, int $perPage = 20)

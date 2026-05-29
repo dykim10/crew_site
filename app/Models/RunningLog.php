@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\RunningLogService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
@@ -62,6 +63,17 @@ class RunningLog extends Model
             'is_confirmed' => 'boolean',
             'parsed_data'  => 'array',
         ];
+    }
+
+    // 삭제 시 S3 이미지 자동 정리 — Controller/Filament 단건/일괄 모든 경로 커버
+    protected static function booted(): void
+    {
+        static::deleting(function (RunningLog $log) {
+            $rawUrl = $log->getRawOriginal('image_url');
+            if ($rawUrl) {
+                app(RunningLogService::class)->deleteS3Image($rawUrl);
+            }
+        });
     }
 
     public function user()
