@@ -117,16 +117,18 @@ class SmsResource extends Resource
                             config('services.core_api.url') . '/api/sms/status/' . $record->group_id
                         );
 
-                        if (!$response->successful() || isset($response->json()['error'])) {
+                        $data = $response->json();
+
+                        // 'error' 키가 문자열일 때만 오류 (숫자 0은 실패 건수이므로 정상)
+                        if (!$response->successful() || is_string($data['error'] ?? null)) {
                             Notification::make()
                                 ->title('상태 조회 실패')
-                                ->body($response->json()['error'] ?? '알 수 없는 오류')
+                                ->body(is_string($data['error'] ?? null) ? $data['error'] : '알 수 없는 오류')
                                 ->danger()
                                 ->send();
                             return;
                         }
 
-                        $data    = $response->json();
                         $success = $data['success'] ?? 0;
                         $error   = $data['error']   ?? 0;
                         $waiting = $data['waiting']  ?? 0;
