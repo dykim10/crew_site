@@ -2,1243 +2,970 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PAC-RUN 프로젝트 가이드 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>PAC-RUN — Project Portfolio 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Barlow:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-  :root {
-    --pac-yellow: #E5AD16;
-    --pac-black: #1A1212;
-    --pac-pink: #E80043;
-    --pac-gray: #F5F5F0;
-    --pac-dark: #2A2020;
-    --text-main: #1A1A1A;
-    --text-muted: #666;
-    --border: #E0E0E0;
-    --code-bg: #F0EEE8;
-    --shadow: 0 2px 12px rgba(0,0,0,0.08);
-  }
+:root{
+  --y:#E5AD16; --b:#1A1212; --p:#E80043;
+  --dark:#0D0808; --surf:#1E1414; --surf2:#281C1C;
+  --br:rgba(255,255,255,0.08); --bry:rgba(229,173,22,0.25);
+  --tw:rgba(250,250,248,1); --tm:rgba(250,250,248,0.55);
+  --td:rgba(250,250,248,0.28);
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+html,body{width:100%;height:100%;overflow:hidden;background:var(--dark)}
+body{font-family:'Noto Sans KR',sans-serif;color:var(--tw);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
 
-  body {
-    font-family: 'Noto Sans KR', sans-serif;
-    color: var(--text-main);
-    background: #FAFAF8;
-    font-size: 14px;
-    line-height: 1.7;
-  }
+/* ── PRINT ── */
+@media print{
+  html,body{overflow:auto;height:auto;background:#fff;color:#111}
+  .prs{position:static}.sc{position:static;height:auto}
+  .slide{position:static;transform:none!important;opacity:1!important;min-height:100vh;page-break-after:always;background:#fff;color:#111}
+  .slide-content{overflow:visible;max-height:none;padding-bottom:20px}
+  .nav-ui,.prog-wrap,.corner,.kb-hint,.bg-num,.overview{display:none!important}
+  :root{--tw:#111;--tm:#444;--td:#888;--surf:#f5f5f5;--surf2:#eee;--dark:#fff;--br:#ddd;--bry:#ccc}
+  .arch-box{background:#f8f8f8;color:#222;border-color:#ccc}
+  .arch-box .hl{color:#8a6d00}.arch-box .pk{color:#c0002a}.arch-box .gn{color:#1a6b3a}.arch-box .mt{color:#999}
+  .tbl th{background:#222;color:#E5AD16}
+  code{background:#f0eee8;color:#333}
+  @page{size:A4;margin:0}
+}
 
-  /* ── COVER ── */
-  .cover {
-    background: var(--pac-black);
-    color: white;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 80px 100px;
-    page-break-after: always;
-    position: relative;
-    overflow: hidden;
-  }
-  .cover::before {
-    content: '';
-    position: absolute;
-    top: -100px; right: -100px;
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(229,173,22,0.15) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-  .cover::after {
-    content: '';
-    position: absolute;
-    bottom: -80px; left: -80px;
-    width: 400px; height: 400px;
-    background: radial-gradient(circle, rgba(232,0,67,0.12) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-  .cover-badge {
-    display: inline-block;
-    background: var(--pac-yellow);
-    color: var(--pac-black);
-    font-family: 'Barlow', sans-serif;
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    padding: 6px 16px;
-    border-radius: 2px;
-    margin-bottom: 32px;
-  }
-  .cover h1 {
-    font-family: 'Barlow', sans-serif;
-    font-weight: 900;
-    font-size: 72px;
-    letter-spacing: -2px;
-    line-height: 1;
-    margin-bottom: 8px;
-    color: white;
-  }
-  .cover h1 span { color: var(--pac-yellow); }
-  .cover .subtitle {
-    font-size: 20px;
-    color: rgba(255,255,255,0.6);
-    font-weight: 300;
-    margin-bottom: 60px;
-    letter-spacing: 0.5px;
-  }
-  .cover-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-bottom: 60px;
-    position: relative;
-    z-index: 1;
-  }
-  .cover-card {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 8px;
-    padding: 24px;
-  }
-  .cover-card .label {
-    font-family: 'Barlow', sans-serif;
-    font-weight: 600;
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--pac-yellow);
-    margin-bottom: 8px;
-  }
-  .cover-card .name {
-    font-family: 'Barlow', sans-serif;
-    font-weight: 700;
-    font-size: 22px;
-    color: white;
-    margin-bottom: 4px;
-  }
-  .cover-card .desc {
-    font-size: 12px;
-    color: rgba(255,255,255,0.5);
-  }
-  .cover-meta {
-    font-size: 12px;
-    color: rgba(255,255,255,0.35);
-    position: relative; z-index: 1;
-  }
-  .cover-meta span { color: rgba(255,255,255,0.6); }
+/* ── PRESENTATION ── */
+.prs{position:fixed;inset:0;overflow:hidden}
 
-  /* ── LAYOUT ── */
-  .page {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 60px 60px 40px;
-    page-break-after: always;
-  }
-  .page:last-child { page-break-after: auto; }
+.prog-wrap{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.06);z-index:100}
+.prog-bar{height:100%;background:var(--y);transition:width .5s ease;box-shadow:0 0 10px rgba(229,173,22,.5)}
 
-  /* ── SECTION HEADER ── */
-  .section-label {
-    font-family: 'Barlow', sans-serif;
-    font-weight: 700;
-    font-size: 10px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--pac-yellow);
-    margin-bottom: 8px;
-  }
-  h2 {
-    font-family: 'Barlow', sans-serif;
-    font-weight: 800;
-    font-size: 36px;
-    color: var(--pac-black);
-    margin-bottom: 32px;
-    line-height: 1.1;
-  }
-  h3 {
-    font-family: 'Barlow', sans-serif;
-    font-weight: 700;
-    font-size: 20px;
-    color: var(--pac-black);
-    margin-bottom: 16px;
-    margin-top: 32px;
-    padding-bottom: 8px;
-    border-bottom: 2px solid var(--pac-yellow);
-    display: inline-block;
-  }
-  h4 {
-    font-family: 'Barlow', sans-serif;
-    font-weight: 600;
-    font-size: 15px;
-    color: var(--pac-dark);
-    margin-bottom: 10px;
-    margin-top: 24px;
-  }
-  p { margin-bottom: 14px; color: var(--text-main); }
+/* ── SLIDES ── */
+.sc{position:relative;width:100%;height:100%}
 
-  /* ── DIVIDER ── */
-  .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 32px 0;
-  }
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .6s cubic-bezier(.86,0,.07,1);
+  background:var(--dark);overflow:hidden
+}
+.slide.active{transform:translateX(0)}
+.slide.prev{transform:translateX(-100%)}
 
-  /* ── ARCH BOX ── */
-  .arch-box {
-    background: var(--pac-black);
-    color: #E8E8E0;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    line-height: 1.8;
-    padding: 28px 32px;
-    border-radius: 8px;
-    margin: 20px 0;
-    overflow-x: auto;
-  }
-  .arch-box .highlight { color: var(--pac-yellow); font-weight: 600; }
-  .arch-box .pink { color: #FF6B8A; }
-  .arch-box .green { color: #7EC8A0; }
-  .arch-box .muted { color: rgba(255,255,255,0.35); }
+/* ── SLIDE LAYOUT ── */
+.sh{
+  flex-shrink:0;padding:18px 48px 0;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;z-index:2
+}
+@media(max-width:768px){.sh{padding:14px 20px 0}}
 
-  /* ── CODE ── */
-  pre {
-    background: var(--code-bg);
-    border-left: 3px solid var(--pac-yellow);
-    padding: 16px 20px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    line-height: 1.7;
-    overflow-x: auto;
-    margin: 16px 0;
-    border-radius: 0 4px 4px 0;
-  }
-  code {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    background: var(--code-bg);
-    padding: 2px 6px;
-    border-radius: 3px;
-    color: var(--pac-dark);
-  }
+.s-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--y);opacity:.75}
+.s-num{font-family:'Barlow Condensed',sans-serif;font-weight:400;font-size:11px;letter-spacing:2px;color:var(--td)}
 
-  /* ── TABLE ── */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 16px 0 24px;
-    font-size: 13px;
-  }
-  th {
-    background: var(--pac-black);
-    color: var(--pac-yellow);
-    font-family: 'Barlow', sans-serif;
-    font-weight: 600;
-    font-size: 11px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 10px 16px;
-    text-align: left;
-  }
-  td {
-    padding: 9px 16px;
-    border-bottom: 1px solid var(--border);
-    vertical-align: top;
-  }
-  tr:nth-child(even) td { background: var(--pac-gray); }
-  tr:hover td { background: #F0EDE0; }
+.slide-content{
+  flex:1;overflow-y:auto;
+  padding:20px 48px 80px;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;scrollbar-color:rgba(229,173,22,.25) transparent
+}
+.slide-content::-webkit-scrollbar{width:3px}
+.slide-content::-webkit-scrollbar-thumb{background:rgba(229,173,22,.25);border-radius:2px}
+@media(max-width:768px){.slide-content{padding:14px 20px 80px}}
 
-  /* ── BADGE ── */
-  .badge {
-    display: inline-block;
-    padding: 2px 10px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    font-family: 'Barlow', sans-serif;
-    letter-spacing: 0.5px;
-  }
-  .badge-done { background: #D4EDDA; color: #155724; }
-  .badge-wip  { background: #FFF3CD; color: #856404; }
-  .badge-plan { background: #D1ECF1; color: #0C5460; }
-  .badge-review { background: #E5AD16; color: var(--pac-black); }
-  .badge-crew   { background: var(--pac-pink); color: white; }
-  .badge-core   { background: #2A2020; color: white; }
+/* ── TYPOGRAPHY ── */
+.stitle{
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;
+  font-size:clamp(28px,4.5vw,48px);line-height:1;
+  color:var(--tw);margin-bottom:5px;letter-spacing:-1px
+}
+.stitle .acc{color:var(--y)}
+.stitle .dim{color:var(--tm);font-weight:300;font-size:.52em;letter-spacing:0;vertical-align:middle}
+.ssub{font-size:13px;color:var(--tm);font-weight:300;margin-bottom:22px;letter-spacing:.2px}
 
-  /* ── CARDS ── */
-  .card-row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    margin: 20px 0;
-  }
-  .card-row-2 {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    margin: 20px 0;
-  }
-  .card {
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: var(--shadow);
-  }
-  .card.yellow { border-top: 3px solid var(--pac-yellow); }
-  .card.pink   { border-top: 3px solid var(--pac-pink); }
-  .card.dark   { border-top: 3px solid var(--pac-black); }
-  .card .card-title {
-    font-family: 'Barlow', sans-serif;
-    font-weight: 700;
-    font-size: 14px;
-    margin-bottom: 8px;
-    color: var(--pac-black);
-  }
-  .card p { font-size: 13px; color: var(--text-muted); margin-bottom: 0; }
+h3.st{
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;
+  font-size:13px;letter-spacing:3px;text-transform:uppercase;
+  color:var(--y);margin:22px 0 10px;padding-bottom:6px;
+  border-bottom:1px solid var(--bry)
+}
+h4.su{font-family:'Barlow',sans-serif;font-weight:600;font-size:12px;color:var(--tw);margin:14px 0 8px;letter-spacing:.4px}
+p{font-size:12px;color:var(--tm);line-height:1.65;margin-bottom:10px}
 
-  /* ── FLOW ── */
-  .flow {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    margin: 16px 0;
-  }
-  .flow-step {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    padding: 14px 0;
-    border-bottom: 1px dashed var(--border);
-  }
-  .flow-step:last-child { border-bottom: none; }
-  .flow-num {
-    flex-shrink: 0;
-    width: 28px; height: 28px;
-    background: var(--pac-yellow);
-    color: var(--pac-black);
-    border-radius: 50%;
-    font-family: 'Barlow', sans-serif;
-    font-weight: 700;
-    font-size: 13px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .flow-content { flex: 1; }
-  .flow-content strong { font-size: 13px; display: block; margin-bottom: 2px; }
-  .flow-content span { font-size: 12px; color: var(--text-muted); }
+/* ── GRIDS ── */
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+@media(max-width:768px){.g3,.g2,.g21{grid-template-columns:1fr}}
 
-  /* ── LIST ── */
-  ul.check { list-style: none; padding: 0; }
-  ul.check li {
-    padding: 5px 0 5px 24px;
-    position: relative;
-    font-size: 13px;
-  }
-  ul.check li::before {
-    content: '✓';
-    position: absolute; left: 0;
-    color: #2A9D5C;
-    font-weight: 700;
-  }
-  ul.check li.pending::before { content: '○'; color: var(--text-muted); }
-  ul.check li.wip::before { content: '⟳'; color: #E5AD16; }
+/* ── CARDS ── */
+.card{background:var(--surf);border:1px solid var(--br);border-radius:6px;padding:16px}
+.card.cy{border-top:2px solid var(--y)}
+.card.cp{border-top:2px solid var(--p)}
+.card.cd{border-top:2px solid rgba(255,255,255,.15)}
+.ctitle{font-family:'Barlow',sans-serif;font-weight:700;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--y);margin-bottom:8px}
+.card p{font-size:11.5px;margin-bottom:0}
 
-  /* ── CALLOUT ── */
-  .callout {
-    background: #FFFBEE;
-    border-left: 4px solid var(--pac-yellow);
-    padding: 14px 18px;
-    margin: 16px 0;
-    border-radius: 0 6px 6px 0;
-    font-size: 13px;
-  }
-  .callout.warning {
-    background: #FFF3F5;
-    border-left-color: var(--pac-pink);
-  }
-  .callout strong { display: block; margin-bottom: 4px; font-size: 13px; }
+/* ── ARCH BOX ── */
+.ab{
+  background:#080404;border:1px solid var(--br);border-left:3px solid var(--y);
+  font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.85;
+  padding:18px 22px;border-radius:0 6px 6px 0;margin:10px 0;
+  overflow-x:auto;white-space:pre
+}
+.ab .hl{color:var(--y);font-weight:600}
+.ab .pk{color:#FF6B8A}
+.ab .gn{color:#7EC8A0}
+.ab .mt{color:rgba(255,255,255,.28)}
+.ab .cy{color:#7ECFFF}
 
-  /* ── PRINT ── */
-  @media print {
-    body { background: white; font-size: 12px; }
-    .cover { min-height: auto; padding: 60px; }
-    .page { padding: 40px 50px 30px; }
-    .cover h1 { font-size: 56px; }
-    pre { font-size: 11px; }
-    .arch-box { font-size: 11px; }
-    @page {
-      size: A4;
-      margin: 0;
-    }
-    .page { page-break-after: always; }
-  }
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse;font-size:11.5px;margin:10px 0}
+.tbl th{background:var(--surf2);color:var(--y);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:8px 12px;text-align:left;border-bottom:1px solid var(--bry)}
+.tbl td{padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--tm);vertical-align:top}
+.tbl tr:hover td{background:rgba(229,173,22,.04);color:var(--tw)}
+
+/* ── BADGE ── */
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-family:'Barlow',sans-serif;font-weight:700;font-size:10px;letter-spacing:.4px}
+.bd{background:rgba(46,160,67,.18);color:#3FB950;border:1px solid rgba(46,160,67,.3)}
+.bw{background:rgba(229,173,22,.15);color:var(--y);border:1px solid var(--bry)}
+.bp{background:rgba(88,166,255,.1);color:#79BAFF;border:1px solid rgba(88,166,255,.2)}
+.bpk{background:rgba(232,0,67,.15);color:#FF6B8A;border:1px solid rgba(232,0,67,.3)}
+
+/* ── CHECKLIST ── */
+.cl{list-style:none}
+.cl li{font-size:11.5px;color:var(--tm);padding:3px 0 3px 18px;position:relative;line-height:1.5}
+.cl li::before{content:'✓';position:absolute;left:0;color:#3FB950;font-size:10px;font-weight:700;top:4px}
+.cl li.pend::before{content:'○';color:var(--td)}
+.cl li.wip::before{content:'⟳';color:var(--y)}
+
+/* ── FLOW ── */
+.flow{display:flex;flex-direction:column}
+.fs{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(255,255,255,.06)}
+.fs:last-child{border-bottom:none}
+.fn{flex-shrink:0;width:24px;height:24px;background:var(--y);color:var(--b);border-radius:50%;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center}
+.fc strong{font-size:11.5px;display:block;margin-bottom:2px;color:var(--tw)}
+.fc span{font-size:10.5px;color:var(--tm)}
+
+/* ── CALLOUT ── */
+.co{background:rgba(229,173,22,.06);border-left:3px solid var(--y);padding:10px 14px;border-radius:0 5px 5px 0;margin:10px 0;font-size:11.5px;color:var(--tm)}
+.co strong{color:var(--y);display:block;margin-bottom:3px}
+.co.warn{background:rgba(232,0,67,.06);border-left-color:var(--p)}
+.co.warn strong{color:#FF6B8A}
+
+code{font-family:'JetBrains Mono',monospace;font-size:10.5px;background:rgba(229,173,22,.1);color:var(--y);padding:1px 5px;border-radius:3px}
+
+/* ── BG NUMBER ── */
+.bg-num{position:absolute;right:40px;top:50%;transform:translateY(-50%);font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(100px,15vw,180px);color:rgba(229,173,22,.035);line-height:1;pointer-events:none;user-select:none;letter-spacing:-4px;z-index:0}
+
+/* ── COVER ── */
+.cover-slide{background:var(--b);position:relative;overflow:hidden}
+.cover-slide::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(229,173,22,.12) 0%,transparent 70%);pointer-events:none}
+.cover-slide::after{content:'';position:absolute;bottom:-150px;left:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(232,0,67,.08) 0%,transparent 70%);pointer-events:none}
+.ci{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:center;padding:50px 80px}
+@media(max-width:768px){.ci{padding:30px 24px}}
+.cbadge{display:inline-block;background:var(--y);color:var(--b);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:10px;letter-spacing:3px;text-transform:uppercase;padding:4px 12px;border-radius:2px;margin-bottom:24px;align-self:flex-start}
+.ctitle{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(60px,9vw,96px);line-height:.95;letter-spacing:-3px;color:var(--tw);margin-bottom:12px}
+.ctitle .acc{color:var(--y)}
+.ctagline{font-size:14px;color:var(--tm);font-weight:300;margin-bottom:40px;letter-spacing:.4px}
+.csvc{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:40px}
+@media(max-width:768px){.csvc{grid-template-columns:1fr;gap:8px}}
+.svc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:18px;position:relative;overflow:hidden}
+.svc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.svc.s1::before{background:var(--y)}.svc.s2::before{background:var(--p)}.svc.s3::before{background:rgba(255,255,255,.25)}
+.svc .sl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:9px;letter-spacing:3px;color:var(--y);margin-bottom:5px}
+.svc .sn{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:var(--tw);margin-bottom:3px}
+.svc .sd{font-size:10.5px;color:rgba(255,255,255,.38);line-height:1.45}
+.cmeta{font-size:10.5px;color:rgba(255,255,255,.28);display:flex;gap:16px;flex-wrap:wrap}
+.cmeta span{color:rgba(255,255,255,.55)}
+
+/* ── STAT BOX ── */
+.stat{text-align:center;padding:14px 10px;background:var(--surf);border:1px solid var(--br);border-radius:6px}
+.stat-n{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:40px;color:var(--y);line-height:1}
+.stat-l{font-size:10px;color:var(--td);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
+
+/* ── STATUS BAR ── */
+.sbar{width:100%;height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;margin:8px 0}
+.sbar .fill{height:100%;border-radius:2px;background:var(--y)}
+
+/* ── NAVIGATION ── */
+.nav-ui{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:6px;
+  background:rgba(8,4,4,.85);backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,.09);border-radius:40px;
+  padding:7px 14px;z-index:200
+}
+.nbtn{width:32px;height:32px;border:1px solid rgba(255,255,255,.1);background:transparent;border-radius:50%;color:var(--tm);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .18s}
+.nbtn:hover{background:rgba(229,173,22,.12);border-color:var(--y);color:var(--y)}
+.nbtn:disabled{opacity:.25;cursor:default}
+.dots{display:flex;gap:4px;align-items:center;padding:0 4px}
+.dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:all .22s;border:none;flex-shrink:0}
+.dot.active{background:var(--y);width:18px;border-radius:3px;box-shadow:0 0 5px rgba(229,173,22,.5)}
+.dot:hover:not(.active){background:rgba(255,255,255,.45)}
+
+/* ── CORNER CONTROLS ── */
+.corner{position:fixed;top:14px;right:18px;display:flex;gap:6px;z-index:200}
+.cbtn{width:30px;height:30px;background:rgba(8,4,4,.75);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.09);border-radius:5px;color:var(--td);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .18s}
+.cbtn:hover{color:var(--y);border-color:rgba(229,173,22,.3)}
+
+/* ── KB HINT ── */
+.kb-hint{position:fixed;bottom:60px;right:18px;font-size:9px;color:var(--td);letter-spacing:.8px;z-index:100;display:flex;gap:6px}
+.key{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:1px 5px;font-family:'JetBrains Mono',monospace;font-size:8px}
+@media(max-width:768px){.kb-hint{display:none}}
+
+/* ── OVERVIEW ── */
+.overview{position:fixed;inset:0;background:rgba(8,4,4,.96);backdrop-filter:blur(20px);z-index:500;display:none;flex-direction:column;align-items:center;padding:32px 20px;overflow-y:auto}
+.overview.vis{display:flex}
+.ov-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:4px;color:var(--y);text-transform:uppercase;margin-bottom:24px}
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;width:100%;max-width:960px}
+.ov-item{background:var(--surf);border:1px solid var(--br);border-radius:7px;padding:14px;cursor:pointer;transition:all .18s}
+.ov-item:hover,.ov-item.cur{border-color:var(--y);background:var(--surf2)}
+.ov-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;color:rgba(229,173,22,.25);line-height:1;margin-bottom:5px}
+.ov-lbl{font-size:10px;color:var(--td);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.ov-name{font-family:'Barlow',sans-serif;font-weight:700;font-size:12px;color:var(--tw)}
+
+/* ── ENTRANCE ANIMATIONS ── */
+.slide.active .stitle{animation:sup .45s ease .05s both}
+.slide.active .ssub{animation:sup .45s ease .12s both}
+.slide.active .ctitle{animation:sup .5s ease .1s both}
+.slide.active .ctagline{animation:sup .5s ease .2s both}
+.slide.active .cbadge{animation:sup .5s ease .05s both}
+.slide.active .csvc{animation:sup .5s ease .3s both}
+.slide.active .cmeta{animation:sup .5s ease .42s both}
+@keyframes sup{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ── MOBILE SWIPE HINT ── */
+.swipe-hint{display:none;position:fixed;bottom:60px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--td);letter-spacing:1px;text-transform:uppercase;animation:fadeio 4s ease 1.5s forwards;pointer-events:none;opacity:0}
+@media(max-width:768px){.swipe-hint{display:block}}
+@keyframes fadeio{0%{opacity:0}15%{opacity:1}75%{opacity:1}100%{opacity:0}}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════════ COVER -->
-<div class="cover">
-  <div class="cover-badge">Project Documentation v2.1 · 2026-05-29</div>
-  <h1><span>PAC</span>-RUN</h1>
-  <div class="subtitle">러닝 커뮤니티 통합 플랫폼 · 프로젝트 기술 가이드</div>
-  <div class="cover-grid">
-    <div class="cover-card">
-      <div class="label">Service 1</div>
-      <div class="name">REVIEW</div>
-      <div class="desc">마라톤/러닝 대회 리뷰 · AI 분석 플랫폼<br>review.pac-run.com</div>
-    </div>
-    <div class="cover-card">
-      <div class="label">Service 2</div>
-      <div class="name">CREW</div>
-      <div class="desc">러닝 크루 기록·이벤트 관리 플랫폼<br>crew.pac-run.com</div>
-    </div>
-    <div class="cover-card">
-      <div class="label">Service 3</div>
-      <div class="name">CORE API</div>
-      <div class="desc">AI 분석 · 크롤링 전담 API 서버<br>api.pac-run.com</div>
-    </div>
-  </div>
-  <div class="cover-meta">
-    작성일: <span>2026-05-29</span> &nbsp;·&nbsp;
-    담당자: <span>김대윤</span> &nbsp;·&nbsp;
-    문의: <span>dykim10iufc@gmail.com</span>
-  </div>
+<div class="prs" id="prs">
+
+<div class="prog-wrap"><div class="prog-bar" id="pb"></div></div>
+
+<div class="corner">
+  <button class="cbtn" onclick="toggleOv()" title="목록 (G)">⊞</button>
+  <button class="cbtn" onclick="toggleFS()" title="전체화면 (F)">⛶</button>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════ PAGE 1: OVERVIEW -->
-<div class="page">
-  <div class="section-label">Chapter 01</div>
-  <h2>프로젝트 전체 구조</h2>
+<div class="kb-hint">
+  <span><span class="key">←</span><span class="key">→</span></span>
+  <span><span class="key">G</span> 목록</span>
+  <span><span class="key">F</span> 전체화면</span>
+</div>
 
-  <p>PAC-RUN은 러닝 커뮤니티를 위한 <strong>세 가지 독립 웹 서비스</strong>로 구성됩니다. 각 서비스는 분리된 도메인으로 운영되지만 하나의 Supabase PostgreSQL DB를 스키마(namespace)로 나누어 공유합니다.</p>
+<div class="swipe-hint">← 스와이프로 이동 →</div>
 
-  <div class="arch-box">
-<span class="muted">┌─────────────────── 사용자 브라우저 ───────────────────┐</span>
-         │ HTTPS
-         ▼
-<span class="highlight">     AWS Route 53</span> (도메인 라우팅)
-         │
-         ▼
-<span class="highlight">  Nginx  (EC2 · Ubuntu 24.04 · t2.micro · 13.125.109.144)</span>
-  ├── review.pac-run.com  ──▶  <span class="green">REVIEW</span>  (PHP Laravel, port 8200)
-  ├── crew.pac-run.com    ──▶  <span class="pink">CREW</span>    (PHP Laravel, port 8300)
-  └── api.pac-run.com    ──▶  <span class="highlight">CORE</span>    (Python FastAPI, port 8100)
+<div class="sc" id="sc">
 
-<span class="muted">── 내부 통신 (같은 EC2, 외부 인터넷 불필요) ──────────────</span>
-  REVIEW ──▶ http://localhost:8100/api/...
-  CREW   ──▶ http://localhost:8100/api/...
-
-         ▼
-<span class="highlight">  Supabase PostgreSQL</span>  (스키마 분리)
-  ├── public   : users, crews, branches, groups
-  ├── review   : races, reviews, race_weather, hashtags
-  └── crew     : running_logs, events, notices, applications ...
-
-         ▼
-<span class="highlight">  AWS S3 + CloudFront</span>  (이미지 저장 / CDN)
-  └── bucket: amzn-review-crew-api-755251750064-ap-northeast-2-an
+<!-- ═══ SLIDE 01 COVER ═══ -->
+<div class="slide cover-slide active" data-i="0">
+  <div class="sh" style="padding:18px 80px 0">
+    <div class="s-label">PAC-RUN Portfolio · 2026</div>
+    <div class="s-num" id="snum">01 / 10</div>
   </div>
-
-  <h3>서버 인프라 요약</h3>
-  <table>
-    <tr><th>항목</th><th>내용</th></tr>
-    <tr><td>클라우드</td><td>AWS EC2 · t2.micro · Ubuntu 24.04</td></tr>
-    <tr><td>IP / 도메인</td><td>13.125.109.144 / pac-run.com</td></tr>
-    <tr><td>웹서버</td><td>Nginx (Virtual Host, 도메인별 분기)</td></tr>
-    <tr><td>SSL/TLS</td><td>Let's Encrypt (Certbot) + AWS ACM</td></tr>
-    <tr><td>DB</td><td>Supabase PostgreSQL (외부 호스트)</td></tr>
-    <tr><td>이미지 저장</td><td>AWS S3 + CloudFront (CDN)</td></tr>
-    <tr><td>이메일</td><td>AWS SES (월 3,000건 무료)</td></tr>
-    <tr><td>배포 방식</td><td>GitHub → EC2 git pull (수동, v1)</td></tr>
-  </table>
-
-  <h3>로컬 개발 환경</h3>
-  <div class="callout">
-    <strong>중요: REVIEW/CREW가 CORE를 내부 호출하므로 CORE를 반드시 먼저 실행해야 합니다.</strong>
+  <div class="ci">
+    <div class="cbadge">Project Documentation v2.1 · 2026-05-30</div>
+    <div class="ctitle"><span class="acc">PAC</span>-RUN</div>
+    <div class="ctagline">러닝 커뮤니티 통합 플랫폼 · 기술 아키텍처 포트폴리오</div>
+    <div class="csvc">
+      <div class="svc s1">
+        <div class="sl">Service 01</div>
+        <div class="sn">REVIEW</div>
+        <div class="sd">마라톤/러닝 대회 리뷰 · AI 분석<br>review.pac-run.com</div>
+      </div>
+      <div class="svc s2">
+        <div class="sl">Service 02</div>
+        <div class="sn">CREW</div>
+        <div class="sd">러닝 크루 기록 · 이벤트 관리<br>crew.pac-run.com</div>
+      </div>
+      <div class="svc s3">
+        <div class="sl">Service 03</div>
+        <div class="sn">CORE API</div>
+        <div class="sd">AI 분석 · 크롤링 전담 API<br>api.pac-run.com</div>
+      </div>
+    </div>
+    <div class="cmeta">
+      작성일: <span>2026-05-30</span> &nbsp;·&nbsp; 담당자: <span>김대윤</span> &nbsp;·&nbsp; 문의: <span>dykim10iufc@gmail.com</span>
+    </div>
   </div>
-  <pre>
-# 터미널 1 — CORE API (포트 8100)
+  <div class="bg-num">01</div>
+</div>
+
+<!-- ═══ SLIDE 02 ARCHITECTURE ═══ -->
+<div class="slide" data-i="1">
+  <div class="sh"><div class="s-label">Chapter 01 — Architecture</div><div class="s-num">02 / 10</div></div>
+  <div class="slide-content">
+    <div class="stitle">시스템 <span class="acc">아키텍처</span></div>
+    <div class="ssub">3개 독립 서비스 + 공유 Supabase DB 구조</div>
+
+    <div class="ab"><span class="mt">┌────────────────── 사용자 브라우저 ──────────────────┐</span>
+                │ HTTPS
+                ▼
+<span class="hl">     AWS Route 53</span>  →  DNS 라우팅
+                │
+                ▼
+<span class="hl">  Nginx  (EC2 · Ubuntu 24.04 · t2.micro · 13.125.109.144)</span>
+  ├── review.pac-run.com ──▶ <span class="gn">REVIEW</span>  Laravel  :8200
+  ├── crew.pac-run.com   ──▶ <span class="pk">CREW</span>    Laravel  :8300
+  └── api.pac-run.com    ──▶ <span class="hl">CORE</span>    FastAPI  :8100
+<span class="mt">──── 내부 통신 (같은 EC2, 외부 인터넷 불필요) ──────────</span>
+  REVIEW / CREW ──▶ http://localhost:8100/api/...
+                ▼
+<span class="hl">  Supabase PostgreSQL</span>  (스키마 분리)
+  ├── public : users, crews, generations, regions, branches
+  ├── review : races, reviews, hashtags, race_weather
+  └── crew   : running_logs, events, notices, sms_logs ...
+                ▼
+<span class="hl">  AWS S3 + CloudFront</span>  (이미지 CDN)</div>
+
+    <div class="g3" style="margin-top:14px">
+      <div class="card cy">
+        <div class="ctitle">EC2 인스턴스</div>
+        <p>t2.micro · Ubuntu 24.04<br>IP: 13.125.109.144<br>SSL: Let's Encrypt + ACM</p>
+      </div>
+      <div class="card cy">
+        <div class="ctitle">데이터베이스</div>
+        <p>Supabase PostgreSQL<br>3개 스키마 분리 운영<br>TIMESTAMPTZ(6) 통일</p>
+      </div>
+      <div class="card cy">
+        <div class="ctitle">외부 서비스</div>
+        <p>AWS S3 + CloudFront (CDN)<br>AWS SES (이메일, 월 3k 무료)<br>솔라피 (SMS · HMAC 인증)</p>
+      </div>
+    </div>
+  </div>
+  <div class="bg-num">02</div>
+</div>
+
+<!-- ═══ SLIDE 03 TECH STACK ═══ -->
+<div class="slide" data-i="2">
+  <div class="sh"><div class="s-label">Chapter 02 — Tech Stack</div><div class="s-num">03 / 10</div></div>
+  <div class="slide-content">
+    <div class="stitle">기술 <span class="acc">스택</span></div>
+    <div class="ssub">공통 인프라 & 서비스별 기술 구성</div>
+
+    <div class="g2">
+      <div>
+        <h3 class="st">공통 인프라</h3>
+        <table class="tbl">
+          <tr><th>구분</th><th>기술</th><th>비고</th></tr>
+          <tr><td>서버</td><td>AWS EC2 t2.micro</td><td>Ubuntu 24.04</td></tr>
+          <tr><td>웹서버</td><td>Nginx</td><td>Virtual Host</td></tr>
+          <tr><td>DB</td><td>Supabase PostgreSQL</td><td>스키마 분리</td></tr>
+          <tr><td>파일</td><td>AWS S3 + CloudFront</td><td>이미지 CDN</td></tr>
+          <tr><td>이메일</td><td>AWS SES</td><td>월 3,000건 무료</td></tr>
+          <tr><td>SMS</td><td>솔라피</td><td>HMAC 인증</td></tr>
+          <tr><td>배포</td><td>GitHub → git pull</td><td>수동 (v1)</td></tr>
+        </table>
+
+        <h3 class="st">로컬 실행 순서</h3>
+        <div class="ab" style="font-size:10.5px"><span class="mt"># 터미널 1  —  반드시 먼저 실행</span>
 cd C:\src\projects\core-api
-python -m uvicorn main:app --reload --port 8100
+python -m uvicorn main:app --reload --port=<span class="hl">8100</span>
 
-# 터미널 2 — REVIEW (포트 8200)
-cd C:\src\projects\review
-php artisan serve --port=8200
+<span class="mt"># 터미널 2</span>
+cd C:\src\projects\review &amp;&amp; php artisan serve --port=<span class="hl">8200</span>
 
-# 터미널 3 — CREW (포트 8300)
-cd C:\src\projects\crew
-php artisan serve --port=8300</pre>
+<span class="mt"># 터미널 3</span>
+cd C:\src\projects\crew &amp;&amp; php artisan serve --port=<span class="hl">8300</span></div>
+      </div>
+      <div>
+        <h3 class="st">서비스별 스택</h3>
+        <div class="card cy" style="margin-bottom:10px">
+          <div class="ctitle">REVIEW / CREW — Laravel</div>
+          <p>PHP 8.3 / Laravel 13<br>Blade + Tailwind CSS + Alpine.js<br>Guzzle HTTP (CORE API 호출)<br>Filament v4 (CREW 어드민 패널)<br>maatwebsite/excel · google/apiclient</p>
+        </div>
+        <div class="card cd">
+          <div class="ctitle">CORE API — FastAPI</div>
+          <p>Python 3.14 / FastAPI<br>Claude Vision (이미지 파싱)<br>Claude API (요약 · 감성분석)<br>boto3 (S3) · BeautifulSoup4 (크롤링)<br>Swagger /docs · ReDoc /redoc</p>
+        </div>
 
-  <div class="card-row">
-    <div class="card yellow">
-      <div class="card-title">GitHub 저장소</div>
-      <p style="font-size:12px;font-family:'JetBrains Mono',monospace;line-height:2">
-        review_site.git<br>crew_site.git<br>python_core_api_site.git
-      </p>
-    </div>
-    <div class="card yellow">
-      <div class="card-title">브랜치 규칙</div>
-      <p><code>dev</code> → 로컬 개발 (평소 push/pull)<br><code>main</code> → EC2 운영 서버 (배포 시 pull)</p>
-    </div>
-    <div class="card yellow">
-      <div class="card-title">EC2 디렉터리</div>
-      <p style="font-size:12px;font-family:'JetBrains Mono',monospace;line-height:2">
-        /var/www/review-site/<br>/var/www/crew-site/<br>/var/www/fastapi/
-      </p>
+        <h3 class="st" style="margin-top:18px">GitHub 저장소</h3>
+        <div class="ab" style="font-size:10px; white-space:pre-wrap"><span class="hl">review_site</span>           → REVIEW (dev/main)
+<span class="pk">crew_site</span>             → CREW   (dev/main)
+<span class="gn">python_core_api_site</span>  → CORE   (dev/main)</div>
+      </div>
     </div>
   </div>
+  <div class="bg-num">03</div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════ PAGE 2: REVIEW -->
-<div class="page">
-  <div class="section-label">Chapter 02</div>
-  <h2>REVIEW 프로젝트 <span style="font-size:18px;color:#999;font-weight:400">· review.pac-run.com</span></h2>
+<!-- ═══ SLIDE 04 REVIEW ═══ -->
+<div class="slide" data-i="3">
+  <div class="sh"><div class="s-label">Chapter 03 — REVIEW</div><div class="s-num">04 / 10</div></div>
+  <div class="slide-content">
+    <div class="stitle">REVIEW <span class="dim">· review.pac-run.com</span></div>
+    <div class="ssub">마라톤/러닝 대회 리뷰 + AI 자동 분석 플랫폼 &nbsp;<span class="badge bd">v1 운영 중</span></div>
 
-  <p>마라톤/러닝 대회에 참가한 사람들이 후기를 남기고, AI가 이를 <strong>자동 요약·감성분석</strong>하는 리뷰 플랫폼입니다.</p>
+    <div class="g2">
+      <div>
+        <h3 class="st">v1 완료 기능</h3>
+        <ul class="cl">
+          <li>Laravel 13 + Supabase 연결</li>
+          <li>이메일 인증 회원가입 / 로그인</li>
+          <li>관리자 권한 미들웨어 (AdminMiddleware)</li>
+          <li>대회 목록/상세 조회 (공개 + 페이지네이션)</li>
+          <li>대회 CRUD (관리자 전용)</li>
+          <li>크롤링 연동 — marathongo / roadrun</li>
+          <li>리뷰 CRUD + 이미지 첨부 (AWS S3)</li>
+          <li>해시태그 Tag-input UI</li>
+          <li>AI 개별 리뷰 요약 + 감성분석</li>
+          <li>AI 대회 종합 분석 (자동 재생성)</li>
+          <li>races.ai_race_summary JSONB 자동 갱신</li>
+        </ul>
 
-  <div class="card-row">
-    <div class="card yellow">
-      <div class="card-title">언어 / 프레임워크</div>
-      <p>PHP 8.3 / Laravel 13<br>Blade + Tailwind CSS + Alpine.js</p>
-    </div>
-    <div class="card yellow">
-      <div class="card-title">로컬 경로 / 포트</div>
-      <p><code>C:\src\projects\review\</code><br>포트 8200</p>
-    </div>
-    <div class="card yellow">
-      <div class="card-title">v1 완료 상태</div>
-      <p><span class="badge badge-done">완료</span> 운영 중<br>review.pac-run.com</p>
-    </div>
-  </div>
+        <h3 class="st">v2 예정</h3>
+        <ul class="cl">
+          <li class="pend">날씨 데이터 연동 (race_weather)</li>
+          <li class="pend">완주 인증 (기록 사진 AI 파싱)</li>
+          <li class="pend">SNS 후기 수집 (블로그/유튜브)</li>
+          <li class="pend">대회 알림 기능</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="st">주요 라우트</h3>
+        <table class="tbl">
+          <tr><th>Method</th><th>경로</th><th>권한</th></tr>
+          <tr><td><code>GET</code></td><td>/races</td><td>공개</td></tr>
+          <tr><td><code>GET</code></td><td>/races/{id}</td><td>공개</td></tr>
+          <tr><td><code>POST</code></td><td>/races/{id}/reviews</td><td>auth</td></tr>
+          <tr><td><code>PUT</code></td><td>/reviews/{id}</td><td>auth</td></tr>
+          <tr><td><code>DELETE</code></td><td>/reviews/{id}</td><td>auth</td></tr>
+          <tr><td><code>*</code></td><td>/admin/races</td><td>admin</td></tr>
+        </table>
 
-  <h3>v1 완료 기능</h3>
-  <ul class="check">
-    <li>Laravel 설치 + Supabase 연결</li>
-    <li>이메일 인증 회원가입 / 로그인</li>
-    <li>관리자 권한 미들웨어 (AdminMiddleware)</li>
-    <li>대회 목록 · 상세 조회 (공개 접근, 페이지네이션)</li>
-    <li>대회 CRUD 관리자 전용 (Admin/RaceController)</li>
-    <li>크롤링 연동 — marathongo / roadrun 자동 수집</li>
-    <li>리뷰 작성 · 수정 · 삭제 (1인 1리뷰 원칙)</li>
-    <li>리뷰 이미지 첨부 (AWS S3 업로드)</li>
-    <li>해시태그 입력 (Tag-input UI, review.hashtags 테이블)</li>
-    <li>AI 개별 리뷰 요약 + 감성분석 (positive/negative/neutral)</li>
-    <li>AI 대회 종합 분석 (요약 / 긍정 / 아쉬운점 / 키워드)</li>
-    <li>races.ai_race_summary (JSONB) — 리뷰 등록·수정·삭제 시 자동 재생성</li>
-  </ul>
-
-  <h3>코드 구조 (파일 트리)</h3>
-  <div class="card-row-2">
-    <div>
-      <h4>Controllers</h4>
-      <pre style="margin-top:0">
-app/Http/Controllers/
-├── RaceController.php       ← 공개 대회 목록/상세
-├── ReviewController.php     ← 리뷰 CRUD
-├── ProfileController.php
-├── Admin/
-│   └── RaceController.php   ← 관리자 대회 CRUD
+        <h3 class="st">코드 구조</h3>
+        <div class="ab" style="font-size:10px; white-space:pre-wrap">app/Http/Controllers/
+├── RaceController.php
+├── ReviewController.php
+├── Admin/RaceController.php
 └── Auth/
-    ├── RegisteredUserController.php
-    ├── AuthenticatedSessionController.php
-    └── EmailVerificationPromptController.php</pre>
-      <h4>Services</h4>
-      <pre style="margin-top:0">
+
 app/Services/
-├── RaceService.php      ← 대회 목록·페이지네이션
-├── ReviewService.php    ← 리뷰 CRUD + S3 이미지
-├── SummaryService.php   ← CORE API 호출 (AI 요약)
-├── HashtagService.php   ← 해시태그 파싱·동기화
-├── CryptoService.php    ← AES 암호화
-└── UserService.php      ← 회원 처리</pre>
-    </div>
-    <div>
-      <h4>Models</h4>
-      <pre style="margin-top:0">
+├── RaceService.php
+├── ReviewService.php
+├── SummaryService.php   ← CORE 호출
+├── HashtagService.php
+└── UserService.php
+
 app/Models/
-├── Race.php      ← review.races
-├── Review.php    ← review.reviews (image_urls JSONB)
-├── Hashtag.php   ← review.hashtags
-└── User.php      ← public.users</pre>
-      <h4>Views (Blade)</h4>
-      <pre style="margin-top:0">
-resources/views/
-├── races/
-│   ├── index.blade.php    ← 대회 목록 (공개)
-│   └── show.blade.php     ← 대회 상세 + AI 분석
-├── reviews/
-│   ├── create.blade.php   ← 리뷰 작성 (이미지+태그)
-│   └── edit.blade.php     ← 리뷰 수정
-├── admin/races/
-│   ├── index.blade.php
-│   ├── create.blade.php
-│   └── edit.blade.php
-└── auth/                  ← 인증 화면</pre>
+├── Race.php  ← review.races
+├── Review.php ← image_urls JSONB
+└── Hashtag.php</div>
+      </div>
     </div>
   </div>
-
-  <h3>주요 라우트</h3>
-  <table>
-    <tr><th>메서드</th><th>경로</th><th>설명</th><th>미들웨어</th></tr>
-    <tr><td><code>GET</code></td><td>/races</td><td>대회 목록 (공개)</td><td>없음</td></tr>
-    <tr><td><code>GET</code></td><td>/races/{race}</td><td>대회 상세 (공개)</td><td>없음</td></tr>
-    <tr><td><code>GET</code></td><td>/races/{race}/reviews/create</td><td>리뷰 작성 폼</td><td>auth, verified</td></tr>
-    <tr><td><code>POST</code></td><td>/races/{race}/reviews</td><td>리뷰 저장</td><td>auth, verified</td></tr>
-    <tr><td><code>PUT</code></td><td>/reviews/{review}</td><td>리뷰 수정</td><td>auth, verified</td></tr>
-    <tr><td><code>DELETE</code></td><td>/reviews/{review}</td><td>리뷰 삭제</td><td>auth, verified</td></tr>
-    <tr><td><code>*</code></td><td>/admin/races</td><td>대회 관리 CRUD</td><td>auth, verified, admin</td></tr>
-  </table>
-
-  <h3>v2 예정 기능</h3>
-  <ul class="check">
-    <li class="pending">날씨 데이터 연동 (대회 당일 날씨 표시)</li>
-    <li class="pending">완주 인증 (기록 사진 AI 파싱)</li>
-    <li class="pending">SNS 후기 수집 (네이버 블로그 / 유튜브)</li>
-    <li class="pending">대회 알림 기능</li>
-  </ul>
+  <div class="bg-num">04</div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════ PAGE 3: CREW -->
-<div class="page">
-  <div class="section-label">Chapter 03</div>
-  <h2>CREW 프로젝트 <span style="font-size:18px;color:#999;font-weight:400">· crew.pac-run.com</span></h2>
+<!-- ═══ SLIDE 05 CREW ═══ -->
+<div class="slide" data-i="4">
+  <div class="sh"><div class="s-label">Chapter 04 — CREW</div><div class="s-num">05 / 10</div></div>
+  <div class="slide-content">
+    <div class="stitle">CREW <span class="dim">· crew.pac-run.com</span></div>
+    <div class="ssub">러닝 크루 기록 · 이벤트 · 관리 통합 플랫폼 &nbsp;<span class="badge bw">개발 중</span></div>
 
-  <p>러닝 크루 구성원들의 <strong>운동 기록 관리</strong>, <strong>이벤트 점수 집계</strong>, <strong>기수 신청서</strong> 등을 통합 관리하는 플랫폼입니다. Filament v4 기반 관리자 패널을 함께 제공합니다.</p>
+    <div class="g2">
+      <div>
+        <h3 class="st">조직 계층</h3>
+        <div class="ab" style="font-size:10.5px; white-space:pre-wrap">1차 <span class="hl">기수 (generation)</span>  → 1기, 2기, 3기...
+2차 <span class="hl">지역 (region)</span>      → 반포·연대·인천·군포
+3차 <span class="hl">조 (group)</span>         → A조/B조... (5~15명)
+4차 <span class="hl">등급 (grade)</span>       → A/B/C 자동 매칭
+5차 <span class="hl">훈련그룹</span>           → S/1~7조 (선택)
 
-  <div class="card-row">
-    <div class="card pink">
-      <div class="card-title">언어 / 프레임워크</div>
-      <p>PHP 8.3 / Laravel 13<br>Blade + Tailwind CSS + Alpine.js</p>
-    </div>
-    <div class="card pink">
-      <div class="card-title">관리자 패널</div>
-      <p>Filament v4<br>/admin 경로</p>
-    </div>
-    <div class="card pink">
-      <div class="card-title">v1 상태</div>
-      <p><span class="badge badge-wip">개발 중</span><br>배포 완료 · 기능 추가 중</p>
-    </div>
-  </div>
+<span class="mt">A조→120km  B조→100km  C조→80km</span></div>
 
-  <h3>조직 계층 구조</h3>
-  <div class="arch-box" style="font-size:12px">
-1차: <span class="highlight">기수 (generation)</span>   → 1기, 2기, 3기... (필수)
-2차: <span class="highlight">지역 (region)</span>      → 반포, 연대, 인천, 군포 (필수)
-3차: <span class="highlight">조 (group)</span>         → A조, B조... 5~15명 (이벤트/점수용)
-4차: <span class="highlight">등급 (grade)</span>       → A/B/C (조 배정 시 자동 매칭)
-5차: <span class="highlight">훈련그룹 (training_group)</span> → S/1~7조 (사용자 선택)
-
-<span class="muted">자동 매칭: A조 → grade:A → 120km 목표 / B조 → grade:B → 100km / C조 → grade:C → 80km</span>
-  </div>
-
-  <h3>핵심 흐름 — 러닝 이미지 파싱 (2단계)</h3>
-  <div class="flow">
-    <div class="flow-step">
-      <div class="flow-num">1</div>
-      <div class="flow-content">
-        <strong>이미지 업로드</strong>
-        <span>AJAX POST /running-logs/parse-image → CORE API로 전달</span>
+        <h3 class="st">러닝 이미지 파싱 플로우</h3>
+        <div class="flow">
+          <div class="fs"><div class="fn">1</div><div class="fc"><strong>이미지 업로드</strong><span>AJAX POST /running-logs/parse-image</span></div></div>
+          <div class="fs"><div class="fn">2</div><div class="fc"><strong>AI 파싱</strong><span>CORE → S3 업로드 → Claude Vision → JSON 리턴</span></div></div>
+          <div class="fs"><div class="fn">3</div><div class="fc"><strong>Draft 저장</strong><span>createDraft() → is_confirmed=false</span></div></div>
+          <div class="fs"><div class="fn">4</div><div class="fc"><strong>사용자 확정</strong><span>결과 확인·수정 → POST /running-logs/{id}/confirm</span></div></div>
+          <div class="fs"><div class="fn">5</div><div class="fc"><strong>관리자 검수</strong><span>Filament /admin → is_confirmed=true → 마일리지 반영</span></div></div>
+        </div>
       </div>
-    </div>
-    <div class="flow-step">
-      <div class="flow-num">2</div>
-      <div class="flow-content">
-        <strong>AI 파싱</strong>
-        <span>CORE API → S3 업로드 → Claude Vision 파싱 → {거리/페이스/시간/run_date} JSON 리턴</span>
-      </div>
-    </div>
-    <div class="flow-step">
-      <div class="flow-num">3</div>
-      <div class="flow-content">
-        <strong>Draft 저장</strong>
-        <span>createDraft() → is_confirmed=false 행 INSERT (검수 대기 상태)</span>
-      </div>
-    </div>
-    <div class="flow-step">
-      <div class="flow-num">4</div>
-      <div class="flow-content">
-        <strong>사용자 확정</strong>
-        <span>파싱 결과 확인·수정 후 제출 → POST /running-logs/{id}/confirm</span>
-      </div>
-    </div>
-    <div class="flow-step">
-      <div class="flow-num">5</div>
-      <div class="flow-content">
-        <strong>관리자 검수</strong>
-        <span>Filament /admin → adminConfirm() → is_confirmed=true → 마일리지 자동 반영</span>
+      <div>
+        <h3 class="st">완료 기능</h3>
+        <ul class="cl" style="font-size:11px">
+          <li>초대 코드 기반 가입 (클로즈 베타)</li>
+          <li>crew 스키마 전체 마이그레이션</li>
+          <li>러닝 이미지 2단계 파싱 플로우</li>
+          <li>다중 이미지 일괄 업로드 + batchConfirm</li>
+          <li>기록 삭제 시 S3 자동 삭제</li>
+          <li>EC2 배포 + Nginx HTTPS</li>
+          <li>Filament v4 완전 어드민 (15+ 리소스)</li>
+          <li>기수 신청서 (동적 폼 빌더)</li>
+          <li>Google Forms 연동</li>
+          <li>포토갤러리 / 공지사항 / 회의록</li>
+          <li>버그 제보 시스템</li>
+          <li>이벤트 CRUD + A타입/B타입</li>
+          <li>단체 문자 (솔라피 + 웹훅 상태 추적)</li>
+        </ul>
+
+        <h3 class="st">다음 작업 (우선순위)</h3>
+        <ul class="cl">
+          <li class="pend">이벤트 목록 페이지 (/events)</li>
+          <li class="pend">개인 / 조별 기록 조회 뷰</li>
+          <li class="pend">관리자 엑셀 업로드 (UserImport)</li>
+          <li class="pend">그룹 편성 UI (드래그앤드롭)</li>
+          <li class="pend">Instagram 연동 (Graph API)</li>
+        </ul>
       </div>
     </div>
   </div>
-
-  <h3>화면 구성 (Views)</h3>
-  <table>
-    <tr><th>경로</th><th>설명</th><th>접근</th></tr>
-    <tr><td>/</td><td>소개 페이지</td><td>공개</td></tr>
-    <tr><td>/apply</td><td>기수 신청서 (동적 폼)</td><td>공개</td></tr>
-    <tr><td>/dashboard</td><td>대시보드 (5섹션)</td><td>회원</td></tr>
-    <tr><td>/running-logs</td><td>러닝 기록 목록/등록/수정</td><td>회원</td></tr>
-    <tr><td>/events</td><td>이벤트 목록 · 상세</td><td>회원</td></tr>
-    <tr><td>/notices</td><td>공지사항 목록</td><td>회원</td></tr>
-    <tr><td>/photos</td><td>포토 갤러리</td><td>회원</td></tr>
-    <tr><td>/ranking</td><td>마일리지 랭킹</td><td>회원</td></tr>
-    <tr><td>/bug-reports</td><td>버그 제보</td><td>회원</td></tr>
-    <tr><td>/admin</td><td>Filament 관리자 패널</td><td>관리자</td></tr>
-  </table>
-
-  <h3>완료된 기능</h3>
-  <ul class="check">
-    <li>Laravel 13 + Breeze (초대 코드 기반 가입: CREW2026/PACRUN/RUNNING)</li>
-    <li>crew 스키마 전체 마이그레이션</li>
-    <li>러닝 이미지 업로드 → CORE API 파싱 → 2단계 확정 플로우</li>
-    <li>다중 이미지 일괄 업로드 + batchConfirm</li>
-    <li>EC2 배포 + Nginx HTTPS</li>
-    <li>Filament v4 완전 어드민 패널 (15+ 리소스)</li>
-    <li>기수 신청서 (동적 폼 빌더 + 공개 /apply)</li>
-    <li>Google Forms 연동 (google_forms, GoogleFormService)</li>
-    <li>포토 갤러리, 공지사항, 회의록 게시판</li>
-    <li>버그 제보 시스템</li>
-    <li>이벤트 CRUD + B타입 동적 폼 빌더</li>
-  </ul>
-
-  <h3>미완 / 예정</h3>
-  <ul class="check">
-    <li>이미지 파싱 수정 완료 (AWS 키 교체, is_indoor null 버그, 포트 변경)</li>
-    <li>S3 이미지 자동 삭제 (기록 삭제 시 S3 파일 연동 삭제)</li>
-    <li>이벤트 A타입 (기수 경쟁형) — Controller · View 구현 완료</li>
-    <li>단체 문자 발송 — 솔라피 연동 완료 (발신번호 드롭다운, 웹훅 수신 상태 추적)</li>
-    <li class="pending">개인 / 조별 기록 조회 뷰</li>
-    <li class="pending">그룹 편성 UI (드래그앤드롭)</li>
-    <li class="pending">Instagram 연동</li>
-  </ul>
+  <div class="bg-num">05</div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════ PAGE 4: CORE API -->
-<div class="page">
-  <div class="section-label">Chapter 04</div>
-  <h2>CORE API 프로젝트 <span style="font-size:18px;color:#999;font-weight:400">· api.pac-run.com</span></h2>
+<!-- ═══ SLIDE 06 CORE API ═══ -->
+<div class="slide" data-i="5">
+  <div class="sh"><div class="s-label">Chapter 05 — CORE API</div><div class="s-num">06 / 10</div></div>
+  <div class="slide-content">
+    <div class="stitle">CORE <span class="acc">API</span> <span class="dim">· api.pac-run.com</span></div>
+    <div class="ssub">AI 분석 · 이미지 파싱 · 크롤링 전담 Python FastAPI 서버</div>
 
-  <p>REVIEW와 CREW가 직접 하지 않는 <strong>AI 호출, 이미지 처리, 크롤링</strong>을 전담합니다. 같은 EC2 서버에서 내부 통신으로 연결되므로 외부 인터넷을 거치지 않아 빠르고 안전합니다.</p>
+    <div class="g3" style="margin-bottom:14px">
+      <div class="card cd">
+        <div class="ctitle">AI 엔진</div>
+        <p>Claude Vision (이미지 파싱)<br>Claude API (요약/감성분석)<br>positive / negative / neutral</p>
+      </div>
+      <div class="card cd">
+        <div class="ctitle">파싱 항목</div>
+        <p>거리·평균페이스·최고페이스<br>운동시간·칼로리·심박수<br>고도·실내외·run_date</p>
+      </div>
+      <div class="card cd">
+        <div class="ctitle">크롤링 대상</div>
+        <p>marathongo.co.kr<br>roadrun.co.kr/schedule<br>2025~2026 월별 수집</p>
+      </div>
+    </div>
 
-  <div class="card-row">
-    <div class="card dark">
-      <div class="card-title">언어 / 프레임워크</div>
-      <p>Python 3.14 / FastAPI</p>
-    </div>
-    <div class="card dark">
-      <div class="card-title">AI 엔진</div>
-      <p>Claude Vision (이미지 파싱)<br>Claude API (요약·분석)</p>
-    </div>
-    <div class="card dark">
-      <div class="card-title">API 문서</div>
-      <p><code>/docs</code> Swagger UI<br><code>/redoc</code> ReDoc</p>
-    </div>
-  </div>
+    <h3 class="st">엔드포인트 전체</h3>
+    <table class="tbl">
+      <tr><th>Method</th><th>경로</th><th>설명</th><th>호출자</th><th>상태</th></tr>
+      <tr><td><code>POST</code></td><td>/api/parse-image</td><td>러닝 이미지 파싱 (Claude Vision)</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>POST</code></td><td>/api/summarize</td><td>리뷰 AI 요약 + 감성분석</td><td>REVIEW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>POST</code></td><td>/api/races/summarize</td><td>대회별 AI 종합 분석</td><td>REVIEW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>GET</code></td><td>/api/race-info</td><td>대회 정보 크롤링</td><td>REVIEW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>POST</code></td><td>/api/sms/send</td><td>솔라피 단체 문자 발송</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>GET</code></td><td>/api/sms/senders</td><td>발신번호 목록 (ACTIVE)</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>GET</code></td><td>/api/sms/status/{id}</td><td>SMS 수신 결과 집계</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>DELETE</code></td><td>/api/s3/image</td><td>S3 이미지 삭제</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>GET</code></td><td>/api/weather</td><td>날씨 데이터</td><td>REVIEW</td><td><span class="badge bp">미구현</span></td></tr>
+      <tr><td><code>GET</code></td><td>/api/instagram/posts</td><td>인스타그램 캐시 반환</td><td>CREW</td><td><span class="badge bp">예정</span></td></tr>
+      <tr><td><code>POST</code></td><td>/api/instagram/fetch</td><td>인스타그램 수동 수집</td><td>CREW</td><td><span class="badge bp">예정</span></td></tr>
+    </table>
 
-  <div class="callout">
-    <strong>왜 별도 서버로 분리했나요?</strong>
-    AI API 호출이나 크롤링은 느리고 비용이 발생합니다. 별도 서버로 분리하면 Laravel 쪽 코드가 단순해지고, 나중에 AI 모델을 교체할 때도 CORE만 수정하면 됩니다.
-  </div>
-
-  <h3>엔드포인트 전체 목록</h3>
-  <table>
-    <tr><th>메서드</th><th>경로</th><th>설명</th><th>호출자</th><th>상태</th></tr>
-    <tr>
-      <td><code>POST</code></td>
-      <td>/api/parse-image</td>
-      <td>러닝 이미지 파싱 (Claude Vision)<br><small>거리/페이스/시간/칼로리/심박수/run_date</small></td>
-      <td>CREW</td>
-      <td><span class="badge badge-done">구현</span></td>
-    </tr>
-    <tr>
-      <td><code>POST</code></td>
-      <td>/api/summarize</td>
-      <td>리뷰 AI 요약 + 감성분석 (개별)</td>
-      <td>REVIEW</td>
-      <td><span class="badge badge-done">구현</span></td>
-    </tr>
-    <tr>
-      <td><code>POST</code></td>
-      <td>/api/races/summarize</td>
-      <td>대회별 AI 종합 분석<br><small>전체 요약/긍정/아쉬운점/키워드</small></td>
-      <td>REVIEW</td>
-      <td><span class="badge badge-done">구현</span></td>
-    </tr>
-    <tr>
-      <td><code>GET</code></td>
-      <td>/api/race-info</td>
-      <td>대회 정보 크롤링 (marathongo / roadrun)</td>
-      <td>REVIEW</td>
-      <td><span class="badge badge-done">구현</span></td>
-    </tr>
-    <tr>
-      <td><code>GET</code></td>
-      <td>/api/races</td>
-      <td>대회 목록 조회</td>
-      <td>REVIEW</td>
-      <td><span class="badge badge-done">구현</span></td>
-    </tr>
-    <tr>
-      <td><code>GET</code></td>
-      <td>/api/running-logs/user/{user_id}</td>
-      <td>사용자 러닝기록 목록</td>
-      <td>내부</td>
-      <td><span class="badge badge-done">구현</span></td>
-    </tr>
-    <tr>
-      <td><code>POST</code></td>
-      <td>/api/running-logs/</td>
-      <td>러닝기록 생성</td>
-      <td>내부</td>
-      <td><span class="badge badge-done">구현</span></td>
-    </tr>
-    <tr>
-      <td><code>DELETE</code></td>
-      <td>/api/running-logs/{log_id}</td>
-      <td>러닝기록 삭제</td>
-      <td>내부</td>
-      <td><span class="badge badge-done">구현</span></td>
-    </tr>
-    <tr>
-      <td><code>POST</code></td>
-      <td>/api/sms/send</td>
-      <td>단체 문자 발송 (솔라피 HMAC 인증)</td>
-      <td>CREW</td>
-      <td><span class="badge badge-done">구현</span></td>
-    </tr>
-    <tr>
-      <td><code>GET</code></td>
-      <td>/api/sms/senders</td>
-      <td>솔라피 등록 발신번호 목록 조회 (ACTIVE)</td>
-      <td>CREW</td>
-      <td><span class="badge badge-done">구현</span></td>
-    </tr>
-    <tr>
-      <td><code>GET</code></td>
-      <td>/api/sms/status/{group_id}</td>
-      <td>SMS 발송 그룹 수신 결과 조회 (수동 갱신)</td>
-      <td>CREW</td>
-      <td><span class="badge badge-done">구현</span></td>
-    </tr>
-    <tr>
-      <td><code>DELETE</code></td>
-      <td>/api/s3/image?url=...</td>
-      <td>S3 이미지 삭제 (기록 삭제 시 자동 호출)</td>
-      <td>CREW</td>
-      <td><span class="badge badge-done">구현</span></td>
-    </tr>
-    <tr>
-      <td><code>GET</code></td>
-      <td>/api/weather</td>
-      <td>날씨 데이터 (기상청/OpenWeatherMap)</td>
-      <td>REVIEW</td>
-      <td><span class="badge badge-plan">미구현</span></td>
-    </tr>
-    <tr>
-      <td><code>POST</code></td>
-      <td>/api/sentiment</td>
-      <td>감정분석 (독립 호출)</td>
-      <td>REVIEW</td>
-      <td><span class="badge badge-plan">미구현</span></td>
-    </tr>
-  </table>
-
-  <h3>이미지 파싱 항목</h3>
-  <div class="card-row">
-    <div class="card dark">
-      <div class="card-title">파싱 수치</div>
-      <p style="font-size:12px;line-height:2">
-        거리 (km) · 평균 페이스 · 최고 페이스<br>
-        운동 시간 · 칼로리 · 평균 심박수<br>
-        고도 · 실내/외 · 날씨 상태
-      </p>
-    </div>
-    <div class="card dark">
-      <div class="card-title">run_date 처리</div>
-      <p style="font-size:12px;line-height:2">
-        Claude Vision 파싱 후 연도 환각 보정<br>
-        2년 이상 과거 → 올해 연도로 교정<br>
-        미래 날짜 → 전년도로 교정
-      </p>
-    </div>
-    <div class="card dark">
-      <div class="card-title">크롤링 대상</div>
-      <p style="font-size:12px;line-height:2">
-        marathongo.co.kr<br>
-        roadrun.co.kr/schedule<br>
-        (2025~2026 연도별 월별 수집)
-      </p>
+    <div class="co">
+      <strong>run_date 연도 환각 보정</strong>
+      Claude Vision 파싱 후 2년 이상 과거 날짜 → 올해 연도로 교정 / 미래 날짜 → 전년도로 교정
     </div>
   </div>
-
-  <h3>v2 예정</h3>
-  <ul class="check">
-    <li class="pending">날씨 API (기상청 / OpenWeatherMap)</li>
-    <li class="pending">SNS 크롤링 (네이버 블로그 / 유튜브 / Apify)</li>
-    <li class="pending">APScheduler 정기 크롤링</li>
-    <li class="pending">통계 API (pandas / numpy)</li>
-    <li class="pending">Instagram Graph API (APScheduler 1일 1회)</li>
-  </ul>
+  <div class="bg-num">06</div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════ PAGE 5: DB SCHEMA -->
-<div class="page">
-  <div class="section-label">Chapter 05</div>
-  <h2>DB 스키마 전체 구조</h2>
+<!-- ═══ SLIDE 07 DB SCHEMA ═══ -->
+<div class="slide" data-i="6">
+  <div class="sh"><div class="s-label">Chapter 06 — Database</div><div class="s-num">07 / 10</div></div>
+  <div class="slide-content">
+    <div class="stitle">DB <span class="acc">스키마</span></div>
+    <div class="ssub">Supabase PostgreSQL · 3개 스키마 분리 운영</div>
 
-  <p>Supabase PostgreSQL을 사용하며 <strong>3개 스키마(namespace)</strong>로 테이블을 분리합니다. 세 서비스가 같은 DB를 쓰지만 테이블이 뒤섞이지 않습니다.</p>
+    <div class="g3">
+      <div>
+        <h3 class="st">public 스키마</h3>
+        <p style="font-size:10.5px;color:var(--td);margin-bottom:8px">3개 서비스 공통</p>
+        <div class="ab" style="font-size:10px; white-space:pre-wrap"><span class="hl">users</span>
+  role, email_verified_at
+  crew_id, branch_id
+  is_beta, invite_code
 
-  <h3>public 스키마 — 3개 서비스 공통</h3>
-  <table>
-    <tr><th>테이블</th><th>주요 컬럼</th><th>비고</th></tr>
-    <tr>
-      <td><code>users</code></td>
-      <td>id, name, email, role, crew_id, branch_id, group_id, is_beta, invite_code, email_verified_at</td>
-      <td>통합 회원 (공유)</td>
-    </tr>
-    <tr>
-      <td><code>crews</code></td>
-      <td>id, name, description</td>
-      <td>크루 정보</td>
-    </tr>
-    <tr>
-      <td><code>generations</code></td>
-      <td>id, crew_id, name, recruit_start_at, recruit_end_at, is_recruiting, goal_km_grades JSONB, max_members</td>
-      <td>기수 정보 (CREW 신규)</td>
-    </tr>
-    <tr>
-      <td><code>regions</code></td>
-      <td>id, name, crew_id</td>
-      <td>지역 (반포/연대/인천/군포)</td>
-    </tr>
-    <tr>
-      <td><code>branches</code></td>
-      <td>id, name</td>
-      <td>지부</td>
-    </tr>
-  </table>
+<span class="hl">crews</span>          크루
+<span class="hl">generations</span>    기수
+  goal_km_grades JSONB
+  recruit_start/end_at
+  is_recruiting
 
-  <h3>review 스키마 — REVIEW 전용</h3>
-  <table>
-    <tr><th>테이블</th><th>주요 컬럼</th></tr>
-    <tr>
-      <td><code>races</code></td>
-      <td>id, name, date, location, distances text[], entry_fee, ai_race_summary JSONB, created_at TIMESTAMPTZ(6)</td>
-    </tr>
-    <tr>
-      <td><code>reviews</code></td>
-      <td>id, race_id, user_id, distance_km, rating, content, ai_summary, sentiment, image_urls JSONB, created_at</td>
-    </tr>
-    <tr>
-      <td><code>hashtags</code></td>
-      <td>id, name (unique)</td>
-    </tr>
-    <tr>
-      <td><code>review_hashtags</code></td>
-      <td>review_id, hashtag_id (pivot)</td>
-    </tr>
-    <tr>
-      <td><code>race_weather</code></td>
-      <td>race_id, temperature, humidity, wind_speed, weather_condition</td>
-    </tr>
-  </table>
+<span class="hl">regions</span>        지역 (4곳)
+<span class="hl">branches</span>       지부
+<span class="hl">groups</span>         그룹</div>
+      </div>
+      <div>
+        <h3 class="st">review 스키마</h3>
+        <p style="font-size:10.5px;color:var(--td);margin-bottom:8px">REVIEW 전용</p>
+        <div class="ab" style="font-size:10px; white-space:pre-wrap"><span class="hl">races</span>
+  name, date, location
+  distances text[]
+  ai_race_summary JSONB
 
-  <h3>crew 스키마 — CREW 전용 (전체 18개+ 테이블)</h3>
-  <table>
-    <tr><th>테이블</th><th>주요 컬럼 / 설명</th></tr>
-    <tr><td><code>running_logs</code></td><td>user_id, distance_km, duration_seconds, avg_pace_seconds, best_pace_seconds, is_indoor, calories, avg_heart_rate, elevation_m, image_url, parsed_data JSONB, is_confirmed</td></tr>
-    <tr><td><code>events</code></td><td>name, type (main/sub/standalone), status, start_date, end_date, parent_event_id, score_type (mileage_grade/fixed/NULL), score_config JSONB, form_schema JSONB</td></tr>
-    <tr><td><code>event_scores</code></td><td>event_id, user_id, group_id, score, source, awarded_by</td></tr>
-    <tr><td><code>user_goals</code></td><td>user_id, goal_type (yearly/monthly), year, month, target_km, achieved_km, is_achieved</td></tr>
-    <tr><td><code>users_detail</code></td><td>user_id, generation_id, region_id, grade (A/B/C), training_group, badges JSONB, admin_memo</td></tr>
-    <tr><td><code>notices</code></td><td>title, content, author_id, is_pinned, target_type (all/generation/region), target_ids JSONB</td></tr>
-    <tr><td><code>notice_reads</code></td><td>notice_id, user_id (UNIQUE 복합키)</td></tr>
-    <tr><td><code>bug_reports</code></td><td>user_id, title, description, status, priority, attachment_url, admin_note, resolved_by</td></tr>
-    <tr><td><code>photo_galleries</code></td><td>user_id, session_number, title, cover_image_url, album_url, photo_urls JSONB</td></tr>
-    <tr><td><code>application_forms</code></td><td>title, cohort, form_fields JSONB (동적 폼 빌더), open_from, open_until, is_active</td></tr>
-    <tr><td><code>applications</code></td><td>form_id, name_enc, email_hash, email_enc, phone_enc, field_values JSONB, status, agree_privacy</td></tr>
-    <tr><td><code>google_forms</code></td><td>title, sheet_id, description, is_active, created_by</td></tr>
-    <tr><td><code>meeting_minutes</code></td><td>user_id, title, content TEXT, meeting_date, views, is_pinned</td></tr>
-    <tr><td><code>sms_logs</code></td><td>group_id (솔라피 그룹ID), sent_by, filter_type, recipient_cnt, message, status (sent/delivered/partial/failed), delivered_cnt, failed_cnt, result_data JSONB, created_at, updated_at</td></tr>
-  </table>
+<span class="hl">reviews</span>
+  distance_km, rating
+  ai_summary, sentiment
+  image_urls JSONB
 
-  <div class="callout">
-    <strong>DB 작업 시 주의사항</strong>
-    모든 타임스탬프 컬럼은 <code>TIMESTAMPTZ(6)</code>으로 통일합니다. 배열 데이터는 <code>JSONB</code>로 저장합니다. <code>public.users</code> 등 기존 Supabase 테이블은 <code>Schema::table</code>로만 수정하고, DROP/CREATE는 절대 금지입니다.
+<span class="hl">hashtags</span>
+<span class="hl">review_hashtags</span>  (pivot)
+<span class="hl">race_weather</span>
+  temp, humidity
+  wind_speed</div>
+      </div>
+      <div>
+        <h3 class="st">crew 스키마</h3>
+        <p style="font-size:10.5px;color:var(--td);margin-bottom:8px">CREW 전용 (18개+)</p>
+        <div class="ab" style="font-size:10px; white-space:pre-wrap"><span class="hl">running_logs</span>  is_confirmed
+<span class="hl">events</span>         form_schema JSONB
+<span class="hl">event_scores</span>
+<span class="hl">user_goals</span>
+<span class="hl">users_detail</span>   badges JSONB
+<span class="hl">notices</span> / <span class="hl">notice_reads</span>
+<span class="hl">bug_reports</span>
+<span class="hl">photo_galleries</span>
+<span class="hl">application_forms</span> (동적 폼)
+<span class="hl">applications</span>  (암호화)
+<span class="hl">google_forms</span>
+<span class="hl">meeting_minutes</span>
+<span class="hl">sms_logs</span>       group_id idx
+<span class="mt">── 예정 ───────────────────</span>
+<span class="mt">event_groups / event_group_members</span>
+<span class="mt">boards  (자유/기수/지역/이벤트)</span>
+<span class="mt">instagram_cache</span></div>
+      </div>
+    </div>
+
+    <div class="co warn" style="margin-top:12px">
+      <strong>DB 작업 주의</strong>
+      TIMESTAMPTZ(6) 통일 · 배열은 JSONB · public.users는 Schema::table만 (DROP/CREATE 금지) · hasColumn으로 멱등성 보장
+    </div>
   </div>
+  <div class="bg-num">07</div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════ PAGE 6: ARCH & SECURITY -->
-<div class="page">
-  <div class="section-label">Chapter 06</div>
-  <h2>아키텍처 패턴 & 보안 규칙</h2>
+<!-- ═══ SLIDE 08 ARCH & SECURITY ═══ -->
+<div class="slide" data-i="7">
+  <div class="sh"><div class="s-label">Chapter 07 — Architecture & Security</div><div class="s-num">08 / 10</div></div>
+  <div class="slide-content">
+    <div class="stitle">아키텍처 패턴 &amp; <span class="acc">보안</span></div>
+    <div class="ssub">Controller → Service → Model 3계층 + 필수 보안 체크리스트</div>
 
-  <h3>Controller → Service → Model 3계층 아키텍처</h3>
-  <p>REVIEW, CREW 두 Laravel 프로젝트 모두 동일한 3계층 구조를 따릅니다. 역할이 명확히 분리되어 유지보수와 재사용이 쉽습니다.</p>
-
-  <div class="arch-box">
-<span class="highlight">Controller</span>  (app/Http/Controllers/)
-  역할: 요청 수신 → $request->validate() → Service 호출 → 응답 반환
-  <span class="pink">비즈니스 로직 작성 금지</span>
-
-      │ (validate 후 Service 호출)
-      ▼
-
-<span class="highlight">Service</span>  (app/Services/)
-  역할: 비즈니스 로직 전담, 데이터 정제
-  예시: distances 파싱, 상태 자동 계산, CORE API 호출, S3 업로드
-  <span class="green">여러 Controller에서 재사용 가능하도록 작성</span>
-
-      │ (정제된 데이터 전달)
-      ▼
-
-<span class="highlight">Model</span>  (app/Models/)
-  역할: DB insert / update / delete / select
+    <div class="g2">
+      <div>
+        <h3 class="st">3계층 아키텍처</h3>
+        <div class="ab" style="font-size:10.5px; white-space:pre-wrap"><span class="hl">Controller</span>  app/Http/Controllers/
+  요청 수신 → validate() → Service 호출
+  <span class="pk">비즈니스 로직 작성 금지</span>
+       ↓
+<span class="hl">Service</span>     app/Services/
+  비즈니스 로직 전담 · 데이터 정제
+  <span class="gn">여러 Controller에서 재사용 가능</span>
+       ↓
+<span class="hl">Model</span>       app/Models/
   단순 CRUD → Eloquent ORM
-  복잡한 JOIN / 집계 → DB::select() raw 쿼리
-  <span class="green">재사용 쿼리 → scope 또는 static 메서드로 정의</span>
-  </div>
+  복잡 JOIN/집계 → DB::select() raw
+  <span class="gn">재사용 쿼리 → scope / static 메서드</span></div>
 
-  <h3>기능 추가 표준 절차</h3>
-  <div class="flow">
-    <div class="flow-step"><div class="flow-num">1</div><div class="flow-content"><strong>Model</strong><span>테이블 매핑, fillable, casts, scope 정의</span></div></div>
-    <div class="flow-step"><div class="flow-num">2</div><div class="flow-content"><strong>Migration</strong><span>기존 테이블: Schema::table / 신규: Schema::create + hasColumn 멱등성 보장</span></div></div>
-    <div class="flow-step"><div class="flow-num">3</div><div class="flow-content"><strong>Service</strong><span>비즈니스 로직 작성, Model 호출</span></div></div>
-    <div class="flow-step"><div class="flow-num">4</div><div class="flow-content"><strong>Controller</strong><span>validate → Service 호출 → 응답</span></div></div>
-    <div class="flow-step"><div class="flow-num">5</div><div class="flow-content"><strong>Route</strong><span>web.php 공개 라우트 / admin 그룹 등록</span></div></div>
-    <div class="flow-step"><div class="flow-num">6</div><div class="flow-content"><strong>View</strong><span>Blade + Tailwind CSS (resources/views/ 하위)</span></div></div>
-    <div class="flow-step"><div class="flow-num">7</div><div class="flow-content"><strong>브라우저 확인</strong><span>실제 동작 테스트 후 완료 보고</span></div></div>
-  </div>
-
-  <h3>보안 규칙</h3>
-  <div class="callout warning">
-    <strong>필수 보안 체크리스트</strong>
-  </div>
-  <table>
-    <tr><th>항목</th><th>규칙</th></tr>
-    <tr><td>API 키 / DB 비밀번호</td><td><code>.env</code> 파일에만 저장. Git 커밋 금지. 로그·뷰·응답에 절대 노출 금지</td></tr>
-    <tr><td>운영 환경</td><td><code>APP_DEBUG=false</code> 필수 / Swagger UI(<code>/docs</code>) 비활성화 필수</td></tr>
-    <tr><td>CSRF 보호</td><td>모든 POST/PUT/DELETE 폼에 <code>@csrf</code> 필수</td></tr>
-    <tr><td>관리자 라우트</td><td><code>/admin/*</code> 경로에 반드시 <code>['auth', 'verified']</code> 미들웨어 적용</td></tr>
-    <tr><td>입력 검증</td><td>모든 사용자 입력은 <code>$request->validate()</code> 검증 후 사용</td></tr>
-    <tr><td>개인정보</td><td>이름·이메일·전화번호 평문 저장 금지. <code>_enc</code> 컬럼에 AES 암호화 저장</td></tr>
-  </table>
-
-  <h3>개인정보 암호화 설계</h3>
-  <table>
-    <tr><th>데이터</th><th>저장 방식</th><th>용도</th></tr>
-    <tr><td>이메일 (검색용)</td><td>SHA-256 해시 (단방향, <code>email_hash</code>)</td><td>로그인 시 검색</td></tr>
-    <tr><td>이메일 (표시용)</td><td>AES-128 암호화 (양방향, <code>email_enc</code>)</td><td>화면 표시, 메일 발송</td></tr>
-    <tr><td>전화번호</td><td>AES-128 암호화 (양방향, <code>phone_enc</code>)</td><td>문자 발송</td></tr>
-  </table>
-
-  <h3>코드 스타일 규칙</h3>
-  <ul class="check">
-    <li>에러 메시지 / 사용자 안내 문구: <strong>한국어</strong> 작성</li>
-    <li>뷰 스타일: <strong>Tailwind CSS</strong>만 사용 (인라인 style 금지)</li>
-    <li>주석: WHY가 명확할 때만 작성 (코드 설명용 주석 금지)</li>
-    <li>디자인 시스템: pac-yellow(#E5AD16) / pac-black(#1A1212) / pac-pink(#E80043)</li>
-    <li>폰트: Barlow (영문 제목) + Noto Sans KR (한국어 본문)</li>
-  </ul>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════ PAGE 7: MEMBERS & ADMIN -->
-<div class="page">
-  <div class="section-label">Chapter 07</div>
-  <h2>회원 · 권한 체계 & 관리자 패널</h2>
-
-  <h3>통합 회원 정책 (public.users 공유)</h3>
-  <p>세 서비스 모두 <code>public.users</code> 테이블 하나로 통합 회원을 관리합니다. 한 계정으로 REVIEW와 CREW 모두 접근합니다.</p>
-
-  <h4>권한(role) 4단계</h4>
-  <table>
-    <tr><th>Role 코드</th><th>명칭</th><th>범위</th><th>설명</th></tr>
-    <tr><td><code>super_admin</code></td><td>슈퍼관리자</td><td>전체 시스템</td><td>PAC 최고 관리자</td></tr>
-    <tr><td><code>region_admin</code></td><td>지역관리자</td><td>담당 지역</td><td>반포/연대/인천/군포 각 1명</td></tr>
-    <tr><td><code>operator</code></td><td>운영자</td><td>기능별 부분 권한</td><td>지역관리자가 지정</td></tr>
-    <tr><td><code>member</code></td><td>일반멤버</td><td>기본값</td><td>자신의 기록만 접근 가능</td></tr>
-  </table>
-
-  <h4>명예직 뱃지 (crew.users_detail.badges JSONB — 시스템 권한 없음)</h4>
-  <table>
-    <tr><th>뱃지</th><th>코드</th><th>설명</th></tr>
-    <tr><td>페이서</td><td><code>pacer</code></td><td>선두 러너</td></tr>
-    <tr><td>멤버대장</td><td><code>group_leader</code></td><td>이벤트 그룹 팀장</td></tr>
-  </table>
-  <pre>예시: {"pacer": true, "group_leader": true}</pre>
-
-  <h4>베타 운영 단계</h4>
-  <table>
-    <tr><th>단계</th><th>가입 방법</th><th>상태</th></tr>
-    <tr><td>1단계 (현재)</td><td>초대 코드 입력 (CREW2026 / PACRUN / RUNNING)</td><td><span class="badge badge-done">운영 중</span></td></tr>
-    <tr><td>2단계 (예정)</td><td>이메일 인증 후 누구나 가입</td><td><span class="badge badge-plan">예정</span></td></tr>
-    <tr><td>3단계 (예정)</td><td>완주 인증 등 추가 기능</td><td><span class="badge badge-plan">예정</span></td></tr>
-  </table>
-
-  <h3>Filament v4 관리자 패널 (/admin — CREW)</h3>
-  <p>CREW 프로젝트에는 Filament v4 기반의 완전한 관리자 패널이 구축되어 있습니다.</p>
-
-  <div class="card-row-2">
-    <div>
-      <h4>완료된 리소스 (15개)</h4>
-      <ul class="check" style="font-size:12px">
-        <li>UserResource — 구성원 목록/수정, 이메일 복호화, 비밀번호 초기화</li>
-        <li>RunningLogResource — 검수 확인/취소, 마일리지 자동 반영</li>
-        <li>EventResource — 이벤트 CRUD + B타입 동적 폼 빌더</li>
-        <li>BugReportResource — 버그 제보 목록/응답</li>
-        <li>NoticeResource — 공지사항 CRUD</li>
-        <li>MeetingMinuteResource — 회의록 게시판</li>
-        <li>PhotoGalleryResource — 포토 갤러리</li>
-        <li>ApplicationFormResource — 기수 신청서 폼 빌더</li>
-        <li>ApplicationResource — 신청 기록 관리</li>
-        <li>GoogleFormResource — Google Forms 연동</li>
-        <li>GenerationResource — 기수 관리</li>
-        <li>BranchResource — 지부 관리</li>
-        <li>SmsResource — 단체 문자 발송 (솔라피 연동, 발신번호 드롭다운, 수신 상태 추적)</li>
-        <li>StatsOverview 위젯 — 수치 카드</li>
-        <li>엑셀 다운로드/업로드 (maatwebsite/excel)</li>
-      </ul>
-    </div>
-    <div>
-      <h4>미완 리소스</h4>
-      <ul class="check" style="font-size:12px">
-        <li class="pending">그룹 편성 UI (드래그앤드롭)</li>
-        <li class="pending">게시판 관리 (자유/기수/지역/이벤트)</li>
-        <li class="pending">관리자 로그</li>
-      </ul>
-
-      <h4>설치된 패키지</h4>
-      <pre style="margin-top:0;font-size:11px">
-filament/filament: ^4.10
-maatwebsite/excel: ^3.1
-google/apiclient: ^2.x</pre>
-
-      <h4>PAC-RUN 디자인 컬러</h4>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <div style="width:40px;height:40px;background:#E5AD16;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#1A1212">YLW</div>
-        <div style="width:40px;height:40px;background:#1A1212;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white">BLK</div>
-        <div style="width:40px;height:40px;background:#E80043;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:white">PNK</div>
+        <h3 class="st">기능 추가 표준 절차</h3>
+        <div class="flow">
+          <div class="fs"><div class="fn" style="font-size:10px;width:20px;height:20px">1</div><div class="fc"><strong>Model</strong><span>fillable, casts, scope 정의</span></div></div>
+          <div class="fs"><div class="fn" style="font-size:10px;width:20px;height:20px">2</div><div class="fc"><strong>Migration</strong><span>기존: Schema::table / 신규: Schema::create</span></div></div>
+          <div class="fs"><div class="fn" style="font-size:10px;width:20px;height:20px">3</div><div class="fc"><strong>Service</strong><span>비즈니스 로직, Model 호출</span></div></div>
+          <div class="fs"><div class="fn" style="font-size:10px;width:20px;height:20px">4</div><div class="fc"><strong>Controller</strong><span>validate → Service → 응답</span></div></div>
+          <div class="fs"><div class="fn" style="font-size:10px;width:20px;height:20px">5</div><div class="fc"><strong>View</strong><span>Blade + Tailwind CSS</span></div></div>
+        </div>
       </div>
-      <p style="font-size:11px;margin-top:6px;color:#999">#E5AD16 / #1A1212 / #E80043</p>
+      <div>
+        <h3 class="st">보안 체크리스트</h3>
+        <table class="tbl">
+          <tr><th>항목</th><th>규칙</th></tr>
+          <tr><td>API 키</td><td>.env 관리 · Git 금지 · 로그 노출 금지</td></tr>
+          <tr><td>운영 환경</td><td>APP_DEBUG=false · Swagger 비활성화</td></tr>
+          <tr><td>CSRF</td><td>모든 POST/PUT/DELETE에 @csrf 필수</td></tr>
+          <tr><td>관리자</td><td>/admin/* → auth, verified 미들웨어</td></tr>
+          <tr><td>입력</td><td>$request->validate() 필수</td></tr>
+          <tr><td>개인정보</td><td>이름/이메일/전화 → AES-128 암호화</td></tr>
+        </table>
+
+        <h3 class="st">개인정보 암호화 설계</h3>
+        <table class="tbl">
+          <tr><th>데이터</th><th>방식</th><th>컬럼</th></tr>
+          <tr><td>이메일 (검색)</td><td>SHA-256 단방향</td><td>email_hash</td></tr>
+          <tr><td>이메일 (표시)</td><td>AES-128 양방향</td><td>email_enc</td></tr>
+          <tr><td>전화번호</td><td>AES-128 양방향</td><td>phone_enc</td></tr>
+          <tr><td>이름</td><td>AES-128 양방향</td><td>name_enc</td></tr>
+        </table>
+
+        <h3 class="st">코드 스타일 규칙</h3>
+        <ul class="cl" style="font-size:11px">
+          <li>에러 메시지 / 안내 문구: 한국어 작성</li>
+          <li>뷰 스타일: Tailwind CSS만 (인라인 style 금지)</li>
+          <li>주석: WHY가 명확할 때만 작성</li>
+          <li>디자인: pac-yellow · pac-black · pac-pink</li>
+          <li>폰트: Barlow (영문 제목) + Noto Sans KR</li>
+        </ul>
+      </div>
     </div>
   </div>
+  <div class="bg-num">08</div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════ PAGE 8: STATUS & ROADMAP -->
-<div class="page">
-  <div class="section-label">Chapter 08</div>
-  <h2>현재 개발 현황 & 로드맵</h2>
+<!-- ═══ SLIDE 09 MEMBER & ADMIN ═══ -->
+<div class="slide" data-i="8">
+  <div class="sh"><div class="s-label">Chapter 08 — Member & Admin</div><div class="s-num">09 / 10</div></div>
+  <div class="slide-content">
+    <div class="stitle">회원 · 권한 &amp; <span class="acc">관리자</span> 패널</div>
+    <div class="ssub">public.users 통합 회원 + Filament v4 어드민 패널</div>
 
-  <h3>REVIEW 현황 (2026-05-29 기준)</h3>
-  <div class="card-row-2">
-    <div class="card yellow">
-      <div class="card-title">✅ v1 완료</div>
-      <ul class="check" style="font-size:12px;margin-top:8px">
-        <li>Laravel + Supabase 연결</li>
-        <li>이메일 인증 회원가입/로그인</li>
-        <li>대회 CRUD (관리자) + 크롤링 연동</li>
-        <li>리뷰 작성·수정·삭제 (1인 1리뷰)</li>
-        <li>리뷰 이미지 S3 업로드</li>
-        <li>해시태그 태그 입력 UI</li>
-        <li>AI 개별 리뷰 요약 + 감성분석</li>
-        <li>AI 대회 종합 분석 (자동 재생성)</li>
-      </ul>
-    </div>
-    <div class="card yellow">
-      <div class="card-title">🔲 v2 예정</div>
-      <ul class="check" style="font-size:12px;margin-top:8px">
-        <li class="pending">날씨 데이터 연동</li>
-        <li class="pending">완주 인증</li>
-        <li class="pending">SNS 후기 수집</li>
-        <li class="pending">대회 알림 기능</li>
-      </ul>
-    </div>
-  </div>
+    <div class="g2">
+      <div>
+        <h3 class="st">권한 4단계</h3>
+        <table class="tbl">
+          <tr><th>Role</th><th>명칭</th><th>범위</th></tr>
+          <tr><td><code>super_admin</code></td><td>슈퍼관리자</td><td>전체 시스템</td></tr>
+          <tr><td><code>region_admin</code></td><td>지역관리자</td><td>담당 지역</td></tr>
+          <tr><td><code>operator</code></td><td>운영자</td><td>기능별 부분</td></tr>
+          <tr><td><code>member</code></td><td>일반멤버</td><td>자신 기록만</td></tr>
+        </table>
 
-  <h3>CREW 현황 (2026-05-29 기준)</h3>
-  <div class="card-row-2">
-    <div class="card pink">
-      <div class="card-title">✅ 완료</div>
-      <ul class="check" style="font-size:12px;margin-top:8px">
-        <li>Laravel 13 + Breeze + 초대 코드 가입</li>
-        <li>crew 스키마 전체 마이그레이션</li>
-        <li>러닝 이미지 2단계 파싱 플로우 (실테스트 완료)</li>
-        <li>이미지 파싱 버그 수정 (is_indoor null, AWS 키)</li>
-        <li>S3 이미지 자동 삭제 (기록 삭제 연동)</li>
-        <li>다중 이미지 일괄 업로드</li>
-        <li>EC2 배포 + Nginx HTTPS</li>
-        <li>PAC-RUN 디자인 시스템</li>
-        <li>대시보드 (5섹션)</li>
-        <li>Filament v4 완전 관리자 패널</li>
-        <li>기수 신청서 (동적 폼 빌더)</li>
-        <li>Google Forms 연동</li>
-        <li>포토 갤러리 / 공지사항 / 회의록</li>
-        <li>버그 제보 시스템</li>
-        <li>단체 문자 발송 (솔라피 완전 연동 — 웹훅·상태 추적)</li>
-        <li>SMS 수신 결과 웹훅 자동 업데이트</li>
-      </ul>
-    </div>
-    <div class="card pink">
-      <div class="card-title">🔲 다음 작업 (우선순위 순)</div>
-      <ul class="check" style="font-size:12px;margin-top:8px">
-        <li>이벤트 A타입 (기수 경쟁형) — Controller · View 구현 완료</li>
-        <li class="pending">이벤트 목록 페이지 (/events)</li>
-        <li class="pending">개인 / 조별 기록 조회 뷰</li>
-        <li class="pending">관리자 엑셀 업로드</li>
-        <li class="pending">Instagram 연동</li>
-        <li class="pending">그룹 편성 UI (드래그앤드롭)</li>
-      </ul>
+        <h3 class="st">베타 운영 단계</h3>
+        <table class="tbl">
+          <tr><th>단계</th><th>가입 방법</th><th>상태</th></tr>
+          <tr><td>1단계</td><td>초대 코드 입력</td><td><span class="badge bd">운영 중</span></td></tr>
+          <tr><td>2단계</td><td>이메일 인증 자유 가입</td><td><span class="badge bp">예정</span></td></tr>
+          <tr><td>3단계</td><td>완주 인증 등 추가 기능</td><td><span class="badge bp">예정</span></td></tr>
+        </table>
+        <p style="margin-top:6px;font-size:11px">초대 코드: <code>CREW2026</code> <code>PACRUN</code> <code>RUNNING</code></p>
+
+        <h3 class="st">명예 뱃지 (시스템 권한 없음)</h3>
+        <table class="tbl">
+          <tr><th>뱃지</th><th>코드</th><th>설명</th></tr>
+          <tr><td>페이서</td><td><code>pacer</code></td><td>선두 러너</td></tr>
+          <tr><td>멤버대장</td><td><code>group_leader</code></td><td>이벤트 팀장</td></tr>
+        </table>
+        <p style="font-size:10.5px">예시: <code>{"pacer": true, "group_leader": true}</code></p>
+      </div>
+      <div>
+        <h3 class="st">Filament v4 어드민 패널</h3>
+        <p style="font-size:10.5px;color:var(--td);margin-bottom:8px">CREW /admin · 15+ 리소스</p>
+        <ul class="cl" style="font-size:11px">
+          <li>UserResource — 이메일 복호화, 비밀번호 초기화</li>
+          <li>RunningLogResource — 검수 확인/취소</li>
+          <li>EventResource — A/B타입 동적 폼 빌더</li>
+          <li>BugReportResource — 제보/응답</li>
+          <li>NoticeResource — 공지사항 CRUD</li>
+          <li>MeetingMinuteResource — 회의록</li>
+          <li>PhotoGalleryResource — 포토갤러리</li>
+          <li>ApplicationFormResource — 신청서 빌더</li>
+          <li>ApplicationResource — 신청 기록 관리</li>
+          <li>GoogleFormResource — Google Forms 연동</li>
+          <li>GenerationResource — 기수 관리</li>
+          <li>BranchResource — 지부 관리</li>
+          <li>SmsResource — 단체 문자 + 웹훅 상태 추적</li>
+          <li>StatsOverview 위젯 (수치 카드)</li>
+          <li>엑셀 다운로드 (maatwebsite/excel)</li>
+          <li class="pend">그룹 편성 UI (드래그앤드롭)</li>
+          <li class="pend">게시판 관리 (자유/기수/지역/이벤트)</li>
+          <li class="pend">관리자 로그</li>
+        </ul>
+      </div>
     </div>
   </div>
-
-  <h3>CORE API 현황 (2026-05-29 기준)</h3>
-  <div class="card-row-2">
-    <div class="card dark">
-      <div class="card-title">✅ 완료</div>
-      <ul class="check" style="font-size:12px;margin-top:8px">
-        <li>FastAPI 기본 구조 + Supabase 연결</li>
-        <li>이미지 파싱 (Claude Vision, run_date 포함, 포트 8100)</li>
-        <li>대회 크롤링 (marathongo / roadrun)</li>
-        <li>리뷰 AI 개별 요약 + 감성분석</li>
-        <li>대회 AI 종합 분석</li>
-        <li>러닝기록 내부 CRUD API</li>
-        <li>SMS 발송 (솔라피 HMAC 인증)</li>
-        <li>SMS 발신번호 목록 조회 (senderid/v1/numbers)</li>
-        <li>SMS 발송 상태 조회 (그룹별 수신 집계)</li>
-        <li>S3 이미지 삭제 (DELETE /api/s3/image)</li>
-      </ul>
-    </div>
-    <div class="card dark">
-      <div class="card-title">🔲 예정</div>
-      <ul class="check" style="font-size:12px;margin-top:8px">
-        <li class="pending">날씨 데이터 API</li>
-        <li class="pending">SNS 크롤링 (Apify)</li>
-        <li class="pending">APScheduler 정기 크롤링</li>
-        <li class="pending">통계 API (pandas/numpy)</li>
-        <li class="pending">Instagram Graph API</li>
-      </ul>
-    </div>
-  </div>
-
-  <h3>미정 / 추후 논의 항목</h3>
-  <table>
-    <tr><th>항목</th><th>내용</th></tr>
-    <tr><td>CI/CD</td><td>GitHub Actions 자동 배포 (현재: 수동 git pull)</td></tr>
-    <tr><td>SES</td><td>샌드박스 → 프로덕션 전환 시점</td></tr>
-    <tr><td>REVIEW ↔ CREW 연계</td><td>완주 인증 연결 방식</td></tr>
-    <tr><td>2단계 인증</td><td>Google OTP TOTP</td></tr>
-    <tr><td>Apify 비용</td><td>SNS 크롤링 비용 범위 확정</td></tr>
-    <tr><td>리뷰 신뢰도</td><td>완주자 확인 방법</td></tr>
-  </table>
-
-  <hr class="divider">
-
-  <div style="text-align:center;color:#999;font-size:12px;margin-top:20px">
-    <strong style="color:var(--pac-black)">PAC-RUN</strong> Project Documentation v2.0<br>
-    최종 수정: 2026-05-29 &nbsp;·&nbsp; 담당: 김대윤 &nbsp;·&nbsp; dykim10iufc@gmail.com<br>
-    <span style="font-size:11px">이 문서는 실제 코드 구조를 기반으로 자동 생성되었습니다.</span>
-  </div>
+  <div class="bg-num">09</div>
 </div>
 
+<!-- ═══ SLIDE 10 ROADMAP ═══ -->
+<div class="slide" data-i="9">
+  <div class="sh"><div class="s-label">Chapter 09 — Status & Roadmap</div><div class="s-num">10 / 10</div></div>
+  <div class="slide-content">
+    <div class="stitle">개발 현황 &amp; <span class="acc">로드맵</span></div>
+    <div class="ssub">2026-05-30 기준</div>
+
+    <div class="g3" style="margin-bottom:16px">
+      <div class="card cy">
+        <div class="ctitle">REVIEW</div>
+        <div style="display:flex;align-items:center;gap:8px;margin:8px 0">
+          <div class="sbar" style="flex:1"><div class="fill" style="width:95%"></div></div>
+          <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:900;color:var(--y)">95%</span>
+        </div>
+        <p style="font-size:11px"><span class="badge bd">v1 운영 중</span><br>v2 기획 단계</p>
+      </div>
+      <div class="card cp">
+        <div class="ctitle">CREW</div>
+        <div style="display:flex;align-items:center;gap:8px;margin:8px 0">
+          <div class="sbar" style="flex:1"><div class="fill" style="width:75%;background:var(--p)"></div></div>
+          <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:900;color:var(--p)">75%</span>
+        </div>
+        <p style="font-size:11px"><span class="badge bw">배포 완료</span><br>기능 추가 중</p>
+      </div>
+      <div class="card cd">
+        <div class="ctitle">CORE API</div>
+        <div style="display:flex;align-items:center;gap:8px;margin:8px 0">
+          <div class="sbar" style="flex:1"><div class="fill" style="width:80%"></div></div>
+          <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:900;color:var(--y)">80%</span>
+        </div>
+        <p style="font-size:11px"><span class="badge bd">v1 운영 중</span><br>날씨/SNS/IG 예정</p>
+      </div>
+    </div>
+
+    <div class="g2">
+      <div>
+        <h3 class="st">CREW 다음 작업 (우선순위)</h3>
+        <div class="flow">
+          <div class="fs"><div class="fn" style="background:var(--p);font-size:10px;width:20px;height:20px">1</div><div class="fc"><strong>이벤트 목록 페이지 (/events)</strong><span>내비게이션 라우트 연결</span></div></div>
+          <div class="fs"><div class="fn" style="background:var(--p);font-size:10px;width:20px;height:20px">2</div><div class="fc"><strong>개인 / 조별 기록 조회 뷰</strong><span>달성 현황 + 마일리지 그래프</span></div></div>
+          <div class="fs"><div class="fn" style="background:var(--p);font-size:10px;width:20px;height:20px">3</div><div class="fc"><strong>관리자 엑셀 업로드</strong><span>UserImport (maatwebsite)</span></div></div>
+          <div class="fs"><div class="fn" style="background:var(--p);font-size:10px;width:20px;height:20px">4</div><div class="fc"><strong>Instagram 연동</strong><span>Graph API + 대시보드 노출</span></div></div>
+          <div class="fs"><div class="fn" style="background:var(--p);font-size:10px;width:20px;height:20px">5</div><div class="fc"><strong>그룹 편성 UI</strong><span>드래그앤드롭 인터페이스</span></div></div>
+        </div>
+      </div>
+      <div>
+        <h3 class="st">미정 / 추후 논의</h3>
+        <table class="tbl">
+          <tr><th>항목</th><th>내용</th></tr>
+          <tr><td>CI/CD</td><td>GitHub Actions 자동 배포</td></tr>
+          <tr><td>SES</td><td>샌드박스 → 프로덕션 전환</td></tr>
+          <tr><td>서비스 연계</td><td>REVIEW ↔ CREW 완주 인증</td></tr>
+          <tr><td>2FA</td><td>Google OTP TOTP</td></tr>
+          <tr><td>Apify</td><td>SNS 크롤링 비용 범위</td></tr>
+          <tr><td>리뷰 신뢰도</td><td>완주자 확인 방법</td></tr>
+        </table>
+
+        <div style="margin-top:18px;text-align:center;padding:18px;background:var(--surf);border-radius:8px;border:1px solid var(--br)">
+          <div style="font-family:'Barlow Condensed';font-weight:900;font-size:30px;color:var(--y);letter-spacing:-1px">PAC-RUN</div>
+          <div style="font-size:10.5px;color:var(--td);margin-top:5px;line-height:1.8">
+            Project Documentation v2.1<br>
+            김대윤 · dykim10iufc@gmail.com<br>
+            2026-05-30
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bg-num">10</div>
+</div>
+
+</div><!-- /sc -->
+
+<!-- Navigation -->
+<nav class="nav-ui">
+  <button class="nbtn" id="pb2" onclick="prev()" title="이전 (←)">&#8592;</button>
+  <div class="dots" id="dots"></div>
+  <button class="nbtn" id="nb2" onclick="next()" title="다음 (→)">&#8594;</button>
+</nav>
+
+<!-- Overview modal -->
+<div class="overview" id="ov" onclick="if(event.target===this)closeOv()">
+  <div class="ov-title">슬라이드 목록 &nbsp;<span style="opacity:.5;font-size:10px">ESC 닫기</span></div>
+  <div class="ov-grid" id="ovg"></div>
+</div>
+
+</div><!-- /prs -->
+
+<script>
+const META=[
+  {lbl:'Cover',name:'PAC-RUN 포트폴리오'},
+  {lbl:'Architecture',name:'시스템 아키텍처'},
+  {lbl:'Tech Stack',name:'기술 스택'},
+  {lbl:'REVIEW',name:'REVIEW 서비스'},
+  {lbl:'CREW',name:'CREW 서비스'},
+  {lbl:'CORE API',name:'CORE API'},
+  {lbl:'Database',name:'DB 스키마'},
+  {lbl:'Architecture',name:'아키텍처 패턴 & 보안'},
+  {lbl:'Member & Admin',name:'회원 · 권한 & 관리자'},
+  {lbl:'Roadmap',name:'개발 현황 & 로드맵'},
+];
+
+let cur=0;
+const N=META.length;
+const slides=document.querySelectorAll('.slide');
+const pb=document.getElementById('pb');
+const prevBtn=document.getElementById('pb2');
+const nextBtn=document.getElementById('nb2');
+const dotsEl=document.getElementById('dots');
+const ovEl=document.getElementById('ov');
+const ovg=document.getElementById('ovg');
+
+function init(){
+  // Build dots
+  META.forEach((_,i)=>{
+    const d=document.createElement('button');
+    d.className='dot'+(i===0?' active':'');
+    d.title=META[i].name;
+    d.onclick=()=>go(i);
+    dotsEl.appendChild(d);
+  });
+  // Build overview
+  META.forEach((m,i)=>{
+    const el=document.createElement('div');
+    el.className='ov-item'+(i===0?' cur':'');
+    el.innerHTML=`<div class="ov-num">0${i+1}</div><div class="ov-lbl">${m.lbl}</div><div class="ov-name">${m.name}</div>`;
+    el.onclick=()=>{go(i);closeOv()};
+    ovg.appendChild(el);
+  });
+  updateUI();
+}
+
+function go(n){
+  if(n<0||n>=N||n===cur)return;
+  slides.forEach((s,i)=>{
+    s.classList.remove('active','prev');
+    if(i<n)s.classList.add('prev');
+    else if(i===n)s.classList.add('active');
+  });
+  cur=n;
+  updateUI();
+}
+
+function next(){go(cur+1)}
+function prev(){go(cur-1)}
+
+function updateUI(){
+  pb.style.width=((cur+1)/N*100)+'%';
+  prevBtn.disabled=cur===0;
+  nextBtn.disabled=cur===N-1;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+  document.querySelectorAll('.ov-item').forEach((el,i)=>el.classList.toggle('cur',i===cur));
+  // Update all slide num displays
+  document.querySelectorAll('.s-num').forEach(el=>{
+    el.textContent=`${String(cur+1).padStart(2,'0')} / ${String(N).padStart(2,'0')}`;
+  });
+}
+
+// Overview
+function toggleOv(){ovEl.classList.toggle('vis')}
+function closeOv(){ovEl.classList.remove('vis')}
+
+// Keyboard
+document.addEventListener('keydown',e=>{
+  if(ovEl.classList.contains('vis')){if(e.key==='Escape')closeOv();return}
+  switch(e.key){
+    case'ArrowRight':case'ArrowDown':case' ':e.preventDefault();next();break;
+    case'ArrowLeft':case'ArrowUp':e.preventDefault();prev();break;
+    case'g':case'G':toggleOv();break;
+    case'f':case'F':toggleFS();break;
+    case'Escape':closeOv();break;
+  }
+});
+
+// Touch / Swipe
+let tx=0,ty=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=tx-e.changedTouches[0].clientX;
+  const dy=ty-e.changedTouches[0].clientY;
+  if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>44){dx>0?next():prev()}
+},{passive:true});
+
+// Fullscreen
+function toggleFS(){
+  if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});
+  else document.exitFullscreen().catch(()=>{});
+}
+
+init();
+</script>
 </body>
 </html>
