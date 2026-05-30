@@ -25,46 +25,50 @@ class SmsWebhookController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // STATUS 타입만 처리 (RECEIVE 등 다른 이벤트 무시)
-        if ($request->input('type') !== 'STATUS') {
+        // 실제 Solapi 페이로드: {"data": [{groupId, statusCode, type, ...}]}
+        // data가 배열로 전달됨 (단건도 배열, 복수도 배열)
+        $items = $request->input('data', []);
+
+        if (empty($items) || !is_array($items)) {
             return response()->json(['ok' => true]);
         }
 
-        $data       = $request->input('data', []);
-        $groupId    = $data['groupId']    ?? null;
-        $statusCode = $data['statusCode'] ?? null;
+        foreach ($items as $item) {
+            $groupId    = $item['groupId']    ?? null;
+            $statusCode = (string) ($item['statusCode'] ?? '');
 
-        if (!$groupId || !$statusCode) {
-            return response()->json(['ok' => true]);
-        }
-
-        $log = SmsLog::where('group_id', $groupId)->first();
-        if (!$log) {
-            // 다른 채널 발송 건이거나 group_id 미저장 건 — 무시
-            return response()->json(['ok' => true]);
-        }
-
-        DB::transaction(function () use ($log, $statusCode) {
-            // 2000 = 정상 수신, 그 외 = 실패
-            if ($statusCode === '2000') {
-                $log->increment('delivered_cnt');
-            } else {
-                $log->increment('failed_cnt');
+            if (!$groupId || !$statusCode) {
+                continue;
             }
 
-            $log->refresh();
-            $total = $log->delivered_cnt + $log->failed_cnt;
-
-            // 모든 메시지 결과 수신 완료 시 최종 상태 확정
-            if ($total >= $log->recipient_cnt && $log->status === SmsLog::STATUS_SENT) {
-                $status = match (true) {
-                    $log->failed_cnt === 0    => SmsLog::STATUS_DELIVERED,
-                    $log->delivered_cnt === 0 => SmsLog::STATUS_FAILED,
-                    default                   => SmsLog::STATUS_PARTIAL,
-                };
-                $log->update(['status' => $status]);
+            $log = SmsLog::where('group_id', $groupId)->first();
+            if (!$log) {
+                // 다른 채널 발송 건이거나 group_id 미저장 건 — 무시
+                continue;
             }
-        });
+
+            DB::transaction(function () use ($log, $statusCode) {
+                // 4000 = 수신 완료, 그 외 = 실패 (Solapi 공식 상태코드)
+                if ($statusCode === '4000') {
+                    $log->increment('delivered_cnt');
+                } else {
+                    $log->increment('failed_cnt');
+                }
+
+                $log->refresh();
+                $total = $log->delivered_cnt + $log->failed_cnt;
+
+                // 모든 메시지 결과 수신 완료 시 최종 상태 확정
+                if ($total >= $log->recipient_cnt && $log->status === SmsLog::STATUS_SENT) {
+                    $status = match (true) {
+                        $log->failed_cnt === 0    => SmsLog::STATUS_DELIVERED,
+                        $log->delivered_cnt === 0 => SmsLog::STATUS_FAILED,
+                        default                   => SmsLog::STATUS_PARTIAL,
+                    };
+                    $log->update(['status' => $status]);
+                }
+            });
+        }
 
         return response()->json(['ok' => true]);
     }
