@@ -22,7 +22,7 @@ class SmsWebhookController extends Controller
         $secret = config('services.sms.webhook_secret');
 
         // [DEBUG] 토큰 불일치 원인 확인용 임시 로그 — 확인 후 제거
-        Log::info('SMS 웹훅 토큰 디버그', [
+        Log::warning('SMS 웹훅 토큰 디버그', [
             'received'  => $request->query('token'),
             'config'    => $secret,
             'match'     => $request->query('token') === $secret,
