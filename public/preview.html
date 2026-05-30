@@ -13,12 +13,12 @@
   --y:#E5AD16; --b:#1A1212; --p:#E80043;
   --dark:#0D0808; --surf:#1E1414; --surf2:#281C1C;
   --br:rgba(255,255,255,0.08); --bry:rgba(229,173,22,0.25);
-  --tw:rgba(250,250,248,1); --tm:rgba(250,250,248,0.55);
-  --td:rgba(250,250,248,0.28);
+  --tw:rgba(250,250,248,1); --tm:rgba(250,250,248,0.72);
+  --td:rgba(250,250,248,0.38);
 }
 
 html,body{width:100%;height:100%;overflow:hidden;background:var(--dark)}
-body{font-family:'Noto Sans KR',sans-serif;color:var(--tw);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body{font-family:'Noto Sans KR',sans-serif;color:var(--tw);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
 
 /* ── PRINT ── */
 @media print{
@@ -62,57 +62,57 @@ body{font-family:'Noto Sans KR',sans-serif;color:var(--tw);font-size:14px;line-h
 }
 @media(max-width:768px){.sh{padding:14px 20px 0}}
 
-.s-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--y);opacity:.75}
-.s-num{font-family:'Barlow Condensed',sans-serif;font-weight:400;font-size:11px;letter-spacing:2px;color:var(--td)}
+.s-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--y);opacity:.75}
+.s-num{font-family:'Barlow Condensed',sans-serif;font-weight:400;font-size:12px;letter-spacing:2px;color:var(--td)}
 
 .slide-content{
   flex:1;overflow-y:auto;
-  padding:20px 48px 80px;
+  padding:16px 48px 80px;
   -webkit-overflow-scrolling:touch;
   scrollbar-width:thin;scrollbar-color:rgba(229,173,22,.25) transparent
 }
 .slide-content::-webkit-scrollbar{width:3px}
 .slide-content::-webkit-scrollbar-thumb{background:rgba(229,173,22,.25);border-radius:2px}
-@media(max-width:768px){.slide-content{padding:14px 20px 80px}}
+@media(max-width:768px){.slide-content{padding:12px 20px 80px}}
 
 /* ── TYPOGRAPHY ── */
 .stitle{
   font-family:'Barlow Condensed',sans-serif;font-weight:900;
-  font-size:clamp(28px,4.5vw,48px);line-height:1;
-  color:var(--tw);margin-bottom:5px;letter-spacing:-1px
+  font-size:clamp(20px,2.6vw,32px);line-height:1.05;
+  color:var(--tw);margin-bottom:4px;letter-spacing:-.5px
 }
 .stitle .acc{color:var(--y)}
-.stitle .dim{color:var(--tm);font-weight:300;font-size:.52em;letter-spacing:0;vertical-align:middle}
-.ssub{font-size:13px;color:var(--tm);font-weight:300;margin-bottom:22px;letter-spacing:.2px}
+.stitle .dim{color:var(--td);font-weight:300;font-size:.62em;letter-spacing:0;vertical-align:middle}
+.ssub{font-size:13px;color:var(--tm);font-weight:400;margin-bottom:18px;letter-spacing:.1px;line-height:1.5}
 
 h3.st{
   font-family:'Barlow Condensed',sans-serif;font-weight:700;
-  font-size:13px;letter-spacing:3px;text-transform:uppercase;
-  color:var(--y);margin:22px 0 10px;padding-bottom:6px;
+  font-size:12px;letter-spacing:2.5px;text-transform:uppercase;
+  color:var(--y);margin:20px 0 10px;padding-bottom:5px;
   border-bottom:1px solid var(--bry)
 }
-h4.su{font-family:'Barlow',sans-serif;font-weight:600;font-size:12px;color:var(--tw);margin:14px 0 8px;letter-spacing:.4px}
-p{font-size:12px;color:var(--tm);line-height:1.65;margin-bottom:10px}
+h4.su{font-family:'Barlow',sans-serif;font-weight:600;font-size:13px;color:var(--tw);margin:12px 0 7px;letter-spacing:.3px}
+p{font-size:13px;color:var(--tm);line-height:1.75;margin-bottom:10px}
 
 /* ── GRIDS ── */
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.g21{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:16px}
 @media(max-width:768px){.g3,.g2,.g21{grid-template-columns:1fr}}
 
 /* ── CARDS ── */
-.card{background:var(--surf);border:1px solid var(--br);border-radius:6px;padding:16px}
+.card{background:var(--surf);border:1px solid var(--br);border-radius:8px;padding:18px 20px}
 .card.cy{border-top:2px solid var(--y)}
 .card.cp{border-top:2px solid var(--p)}
 .card.cd{border-top:2px solid rgba(255,255,255,.15)}
-.ctitle{font-family:'Barlow',sans-serif;font-weight:700;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--y);margin-bottom:8px}
-.card p{font-size:11.5px;margin-bottom:0}
+.ctitle{font-family:'Barlow',sans-serif;font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--y);margin-bottom:10px;opacity:.9}
+.card p{font-size:13px;line-height:1.75;margin-bottom:0;color:var(--tm)}
 
 /* ── ARCH BOX ── */
 .ab{
   background:#080404;border:1px solid var(--br);border-left:3px solid var(--y);
-  font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.85;
-  padding:18px 22px;border-radius:0 6px 6px 0;margin:10px 0;
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:2;
+  padding:16px 20px;border-radius:0 6px 6px 0;margin:10px 0;
   overflow-x:auto;white-space:pre
 }
 .ab .hl{color:var(--y);font-weight:600}
@@ -122,13 +122,13 @@ p{font-size:12px;color:var(--tm);line-height:1.65;margin-bottom:10px}
 .ab .cy{color:#7ECFFF}
 
 /* ── TABLE ── */
-.tbl{width:100%;border-collapse:collapse;font-size:11.5px;margin:10px 0}
-.tbl th{background:var(--surf2);color:var(--y);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:8px 12px;text-align:left;border-bottom:1px solid var(--bry)}
-.tbl td{padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--tm);vertical-align:top}
-.tbl tr:hover td{background:rgba(229,173,22,.04);color:var(--tw)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+.tbl th{background:var(--surf2);color:var(--y);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;padding:9px 13px;text-align:left;border-bottom:1px solid var(--bry)}
+.tbl td{padding:8px 13px;border-bottom:1px solid rgba(255,255,255,.05);color:var(--tm);vertical-align:top;line-height:1.55}
+.tbl tr:hover td{background:rgba(229,173,22,.05);color:var(--tw)}
 
 /* ── BADGE ── */
-.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-family:'Barlow',sans-serif;font-weight:700;font-size:10px;letter-spacing:.4px}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-family:'Barlow',sans-serif;font-weight:700;font-size:11px;letter-spacing:.4px}
 .bd{background:rgba(46,160,67,.18);color:#3FB950;border:1px solid rgba(46,160,67,.3)}
 .bw{background:rgba(229,173,22,.15);color:var(--y);border:1px solid var(--bry)}
 .bp{background:rgba(88,166,255,.1);color:#79BAFF;border:1px solid rgba(88,166,255,.2)}
@@ -136,26 +136,26 @@ p{font-size:12px;color:var(--tm);line-height:1.65;margin-bottom:10px}
 
 /* ── CHECKLIST ── */
 .cl{list-style:none}
-.cl li{font-size:11.5px;color:var(--tm);padding:3px 0 3px 18px;position:relative;line-height:1.5}
-.cl li::before{content:'✓';position:absolute;left:0;color:#3FB950;font-size:10px;font-weight:700;top:4px}
+.cl li{font-size:13px;color:var(--tm);padding:4px 0 4px 20px;position:relative;line-height:1.6}
+.cl li::before{content:'✓';position:absolute;left:0;color:#3FB950;font-size:11px;font-weight:700;top:5px}
 .cl li.pend::before{content:'○';color:var(--td)}
 .cl li.wip::before{content:'⟳';color:var(--y)}
 
 /* ── FLOW ── */
 .flow{display:flex;flex-direction:column}
-.fs{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px dashed rgba(255,255,255,.06)}
+.fs{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px dashed rgba(255,255,255,.07)}
 .fs:last-child{border-bottom:none}
-.fn{flex-shrink:0;width:24px;height:24px;background:var(--y);color:var(--b);border-radius:50%;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center}
-.fc strong{font-size:11.5px;display:block;margin-bottom:2px;color:var(--tw)}
-.fc span{font-size:10.5px;color:var(--tm)}
+.fn{flex-shrink:0;width:24px;height:24px;background:var(--y);color:var(--b);border-radius:50%;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center}
+.fc strong{font-size:13px;display:block;margin-bottom:3px;color:var(--tw);font-weight:600}
+.fc span{font-size:12px;color:var(--tm);line-height:1.5}
 
 /* ── CALLOUT ── */
-.co{background:rgba(229,173,22,.06);border-left:3px solid var(--y);padding:10px 14px;border-radius:0 5px 5px 0;margin:10px 0;font-size:11.5px;color:var(--tm)}
-.co strong{color:var(--y);display:block;margin-bottom:3px}
+.co{background:rgba(229,173,22,.07);border-left:3px solid var(--y);padding:12px 16px;border-radius:0 6px 6px 0;margin:12px 0;font-size:13px;color:var(--tm);line-height:1.65}
+.co strong{color:var(--y);display:block;margin-bottom:4px;font-size:12px;letter-spacing:.5px;text-transform:uppercase}
 .co.warn{background:rgba(232,0,67,.06);border-left-color:var(--p)}
 .co.warn strong{color:#FF6B8A}
 
-code{font-family:'JetBrains Mono',monospace;font-size:10.5px;background:rgba(229,173,22,.1);color:var(--y);padding:1px 5px;border-radius:3px}
+code{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(229,173,22,.1);color:var(--y);padding:2px 6px;border-radius:3px}
 
 /* ── BG NUMBER ── */
 .bg-num{position:absolute;right:40px;top:50%;transform:translateY(-50%);font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(100px,15vw,180px);color:rgba(229,173,22,.035);line-height:1;pointer-events:none;user-select:none;letter-spacing:-4px;z-index:0}
@@ -166,25 +166,25 @@ code{font-family:'JetBrains Mono',monospace;font-size:10.5px;background:rgba(229
 .cover-slide::after{content:'';position:absolute;bottom:-150px;left:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(232,0,67,.08) 0%,transparent 70%);pointer-events:none}
 .ci{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:center;padding:50px 80px}
 @media(max-width:768px){.ci{padding:30px 24px}}
-.cbadge{display:inline-block;background:var(--y);color:var(--b);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:10px;letter-spacing:3px;text-transform:uppercase;padding:4px 12px;border-radius:2px;margin-bottom:24px;align-self:flex-start}
+.cbadge{display:inline-block;background:var(--y);color:var(--b);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:3px;text-transform:uppercase;padding:4px 12px;border-radius:2px;margin-bottom:24px;align-self:flex-start}
 .ctitle{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(60px,9vw,96px);line-height:.95;letter-spacing:-3px;color:var(--tw);margin-bottom:12px}
 .ctitle .acc{color:var(--y)}
-.ctagline{font-size:14px;color:var(--tm);font-weight:300;margin-bottom:40px;letter-spacing:.4px}
+.ctagline{font-size:15px;color:var(--tm);font-weight:300;margin-bottom:40px;letter-spacing:.4px}
 .csvc{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:40px}
 @media(max-width:768px){.csvc{grid-template-columns:1fr;gap:8px}}
 .svc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:18px;position:relative;overflow:hidden}
 .svc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
 .svc.s1::before{background:var(--y)}.svc.s2::before{background:var(--p)}.svc.s3::before{background:rgba(255,255,255,.25)}
-.svc .sl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:9px;letter-spacing:3px;color:var(--y);margin-bottom:5px}
+.svc .sl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:10px;letter-spacing:3px;color:var(--y);margin-bottom:5px}
 .svc .sn{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:var(--tw);margin-bottom:3px}
-.svc .sd{font-size:10.5px;color:rgba(255,255,255,.38);line-height:1.45}
-.cmeta{font-size:10.5px;color:rgba(255,255,255,.28);display:flex;gap:16px;flex-wrap:wrap}
+.svc .sd{font-size:11.5px;color:rgba(255,255,255,.38);line-height:1.45}
+.cmeta{font-size:11.5px;color:rgba(255,255,255,.28);display:flex;gap:16px;flex-wrap:wrap}
 .cmeta span{color:rgba(255,255,255,.55)}
 
 /* ── STAT BOX ── */
 .stat{text-align:center;padding:14px 10px;background:var(--surf);border:1px solid var(--br);border-radius:6px}
 .stat-n{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:40px;color:var(--y);line-height:1}
-.stat-l{font-size:10px;color:var(--td);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
+.stat-l{font-size:11px;color:var(--td);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
 
 /* ── STATUS BAR ── */
 .sbar{width:100%;height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;margin:8px 0}
@@ -198,7 +198,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:10.5px;background:rgba(229
   border:1px solid rgba(255,255,255,.09);border-radius:40px;
   padding:7px 14px;z-index:200
 }
-.nbtn{width:32px;height:32px;border:1px solid rgba(255,255,255,.1);background:transparent;border-radius:50%;color:var(--tm);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .18s}
+.nbtn{width:32px;height:32px;border:1px solid rgba(255,255,255,.1);background:transparent;border-radius:50%;color:var(--tm);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .18s}
 .nbtn:hover{background:rgba(229,173,22,.12);border-color:var(--y);color:var(--y)}
 .nbtn:disabled{opacity:.25;cursor:default}
 .dots{display:flex;gap:4px;align-items:center;padding:0 4px}
@@ -208,24 +208,24 @@ code{font-family:'JetBrains Mono',monospace;font-size:10.5px;background:rgba(229
 
 /* ── CORNER CONTROLS ── */
 .corner{position:fixed;top:14px;right:18px;display:flex;gap:6px;z-index:200}
-.cbtn{width:30px;height:30px;background:rgba(8,4,4,.75);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.09);border-radius:5px;color:var(--td);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .18s}
+.cbtn{width:30px;height:30px;background:rgba(8,4,4,.75);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.09);border-radius:5px;color:var(--td);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .18s}
 .cbtn:hover{color:var(--y);border-color:rgba(229,173,22,.3)}
 
 /* ── KB HINT ── */
-.kb-hint{position:fixed;bottom:60px;right:18px;font-size:9px;color:var(--td);letter-spacing:.8px;z-index:100;display:flex;gap:6px}
-.key{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:1px 5px;font-family:'JetBrains Mono',monospace;font-size:8px}
+.kb-hint{position:fixed;bottom:60px;right:18px;font-size:10px;color:var(--td);letter-spacing:.8px;z-index:100;display:flex;gap:6px}
+.key{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:1px 5px;font-family:'JetBrains Mono',monospace;font-size:9px}
 @media(max-width:768px){.kb-hint{display:none}}
 
 /* ── OVERVIEW ── */
 .overview{position:fixed;inset:0;background:rgba(8,4,4,.96);backdrop-filter:blur(20px);z-index:500;display:none;flex-direction:column;align-items:center;padding:32px 20px;overflow-y:auto}
 .overview.vis{display:flex}
-.ov-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:4px;color:var(--y);text-transform:uppercase;margin-bottom:24px}
+.ov-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:4px;color:var(--y);text-transform:uppercase;margin-bottom:24px}
 .ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;width:100%;max-width:960px}
 .ov-item{background:var(--surf);border:1px solid var(--br);border-radius:7px;padding:14px;cursor:pointer;transition:all .18s}
 .ov-item:hover,.ov-item.cur{border-color:var(--y);background:var(--surf2)}
 .ov-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;color:rgba(229,173,22,.25);line-height:1;margin-bottom:5px}
-.ov-lbl{font-size:10px;color:var(--td);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
-.ov-name{font-family:'Barlow',sans-serif;font-weight:700;font-size:12px;color:var(--tw)}
+.ov-lbl{font-size:11px;color:var(--td);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.ov-name{font-family:'Barlow',sans-serif;font-weight:700;font-size:13px;color:var(--tw)}
 
 /* ── ENTRANCE ANIMATIONS ── */
 .slide.active .stitle{animation:sup .45s ease .05s both}
@@ -238,7 +238,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:10.5px;background:rgba(229
 @keyframes sup{from{transform:translateY(14px);opacity:0}to{transform:translateY(0);opacity:1}}
 
 /* ── MOBILE SWIPE HINT ── */
-.swipe-hint{display:none;position:fixed;bottom:60px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--td);letter-spacing:1px;text-transform:uppercase;animation:fadeio 4s ease 1.5s forwards;pointer-events:none;opacity:0}
+.swipe-hint{display:none;position:fixed;bottom:60px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--td);letter-spacing:1px;text-transform:uppercase;animation:fadeio 4s ease 1.5s forwards;pointer-events:none;opacity:0}
 @media(max-width:768px){.swipe-hint{display:block}}
 @keyframes fadeio{0%{opacity:0}15%{opacity:1}75%{opacity:1}100%{opacity:0}}
 </style>
@@ -365,7 +365,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:10.5px;background:rgba(229
         </table>
 
         <h3 class="st">로컬 실행 순서</h3>
-        <div class="ab" style="font-size:10.5px"><span class="mt"># 터미널 1  —  반드시 먼저 실행</span>
+        <div class="ab" style="font-size:11.5px"><span class="mt"># 터미널 1  —  반드시 먼저 실행</span>
 cd C:\src\projects\core-api
 python -m uvicorn main:app --reload --port=<span class="hl">8100</span>
 
@@ -387,7 +387,7 @@ cd C:\src\projects\crew &amp;&amp; php artisan serve --port=<span class="hl">830
         </div>
 
         <h3 class="st" style="margin-top:18px">GitHub 저장소</h3>
-        <div class="ab" style="font-size:10px; white-space:pre-wrap"><span class="hl">review_site</span>           → REVIEW (dev/main)
+        <div class="ab" style="font-size:11px; white-space:pre-wrap"><span class="hl">review_site</span>           → REVIEW (dev/main)
 <span class="pk">crew_site</span>             → CREW   (dev/main)
 <span class="gn">python_core_api_site</span>  → CORE   (dev/main)</div>
       </div>
@@ -441,7 +441,7 @@ cd C:\src\projects\crew &amp;&amp; php artisan serve --port=<span class="hl">830
         </table>
 
         <h3 class="st">코드 구조</h3>
-        <div class="ab" style="font-size:10px; white-space:pre-wrap">app/Http/Controllers/
+        <div class="ab" style="font-size:11px; white-space:pre-wrap">app/Http/Controllers/
 ├── RaceController.php
 ├── ReviewController.php
 ├── Admin/RaceController.php
@@ -474,7 +474,7 @@ app/Models/
     <div class="g2">
       <div>
         <h3 class="st">조직 계층</h3>
-        <div class="ab" style="font-size:10.5px; white-space:pre-wrap">1차 <span class="hl">기수 (generation)</span>  → 1기, 2기, 3기...
+        <div class="ab" style="font-size:11.5px; white-space:pre-wrap">1차 <span class="hl">기수 (generation)</span>  → 1기, 2기, 3기...
 2차 <span class="hl">지역 (region)</span>      → 반포·연대·인천·군포
 3차 <span class="hl">조 (group)</span>         → A조/B조... (5~15명)
 4차 <span class="hl">등급 (grade)</span>       → A/B/C 자동 매칭
@@ -493,7 +493,7 @@ app/Models/
       </div>
       <div>
         <h3 class="st">완료 기능</h3>
-        <ul class="cl" style="font-size:11px">
+        <ul class="cl" style="font-size:12px">
           <li>초대 코드 기반 가입 (클로즈 베타)</li>
           <li>crew 스키마 전체 마이그레이션</li>
           <li>러닝 이미지 2단계 파싱 플로우</li>
@@ -579,8 +579,8 @@ app/Models/
     <div class="g3">
       <div>
         <h3 class="st">public 스키마</h3>
-        <p style="font-size:10.5px;color:var(--td);margin-bottom:8px">3개 서비스 공통</p>
-        <div class="ab" style="font-size:10px; white-space:pre-wrap"><span class="hl">users</span>
+        <p style="font-size:11.5px;color:var(--td);margin-bottom:8px">3개 서비스 공통</p>
+        <div class="ab" style="font-size:11px; white-space:pre-wrap"><span class="hl">users</span>
   role, email_verified_at
   crew_id, branch_id
   is_beta, invite_code
@@ -597,8 +597,8 @@ app/Models/
       </div>
       <div>
         <h3 class="st">review 스키마</h3>
-        <p style="font-size:10.5px;color:var(--td);margin-bottom:8px">REVIEW 전용</p>
-        <div class="ab" style="font-size:10px; white-space:pre-wrap"><span class="hl">races</span>
+        <p style="font-size:11.5px;color:var(--td);margin-bottom:8px">REVIEW 전용</p>
+        <div class="ab" style="font-size:11px; white-space:pre-wrap"><span class="hl">races</span>
   name, date, location
   distances text[]
   ai_race_summary JSONB
@@ -616,8 +616,8 @@ app/Models/
       </div>
       <div>
         <h3 class="st">crew 스키마</h3>
-        <p style="font-size:10.5px;color:var(--td);margin-bottom:8px">CREW 전용 (18개+)</p>
-        <div class="ab" style="font-size:10px; white-space:pre-wrap"><span class="hl">running_logs</span>  is_confirmed
+        <p style="font-size:11.5px;color:var(--td);margin-bottom:8px">CREW 전용 (18개+)</p>
+        <div class="ab" style="font-size:11px; white-space:pre-wrap"><span class="hl">running_logs</span>  is_confirmed
 <span class="hl">events</span>         form_schema JSONB
 <span class="hl">event_scores</span>
 <span class="hl">user_goals</span>
@@ -655,7 +655,7 @@ app/Models/
     <div class="g2">
       <div>
         <h3 class="st">3계층 아키텍처</h3>
-        <div class="ab" style="font-size:10.5px; white-space:pre-wrap"><span class="hl">Controller</span>  app/Http/Controllers/
+        <div class="ab" style="font-size:11.5px; white-space:pre-wrap"><span class="hl">Controller</span>  app/Http/Controllers/
   요청 수신 → validate() → Service 호출
   <span class="pk">비즈니스 로직 작성 금지</span>
        ↓
@@ -670,11 +670,11 @@ app/Models/
 
         <h3 class="st">기능 추가 표준 절차</h3>
         <div class="flow">
-          <div class="fs"><div class="fn" style="font-size:10px;width:20px;height:20px">1</div><div class="fc"><strong>Model</strong><span>fillable, casts, scope 정의</span></div></div>
-          <div class="fs"><div class="fn" style="font-size:10px;width:20px;height:20px">2</div><div class="fc"><strong>Migration</strong><span>기존: Schema::table / 신규: Schema::create</span></div></div>
-          <div class="fs"><div class="fn" style="font-size:10px;width:20px;height:20px">3</div><div class="fc"><strong>Service</strong><span>비즈니스 로직, Model 호출</span></div></div>
-          <div class="fs"><div class="fn" style="font-size:10px;width:20px;height:20px">4</div><div class="fc"><strong>Controller</strong><span>validate → Service → 응답</span></div></div>
-          <div class="fs"><div class="fn" style="font-size:10px;width:20px;height:20px">5</div><div class="fc"><strong>View</strong><span>Blade + Tailwind CSS</span></div></div>
+          <div class="fs"><div class="fn" style="font-size:11px;width:20px;height:20px">1</div><div class="fc"><strong>Model</strong><span>fillable, casts, scope 정의</span></div></div>
+          <div class="fs"><div class="fn" style="font-size:11px;width:20px;height:20px">2</div><div class="fc"><strong>Migration</strong><span>기존: Schema::table / 신규: Schema::create</span></div></div>
+          <div class="fs"><div class="fn" style="font-size:11px;width:20px;height:20px">3</div><div class="fc"><strong>Service</strong><span>비즈니스 로직, Model 호출</span></div></div>
+          <div class="fs"><div class="fn" style="font-size:11px;width:20px;height:20px">4</div><div class="fc"><strong>Controller</strong><span>validate → Service → 응답</span></div></div>
+          <div class="fs"><div class="fn" style="font-size:11px;width:20px;height:20px">5</div><div class="fc"><strong>View</strong><span>Blade + Tailwind CSS</span></div></div>
         </div>
       </div>
       <div>
@@ -699,7 +699,7 @@ app/Models/
         </table>
 
         <h3 class="st">코드 스타일 규칙</h3>
-        <ul class="cl" style="font-size:11px">
+        <ul class="cl" style="font-size:12px">
           <li>에러 메시지 / 안내 문구: 한국어 작성</li>
           <li>뷰 스타일: Tailwind CSS만 (인라인 style 금지)</li>
           <li>주석: WHY가 명확할 때만 작성</li>
@@ -737,7 +737,7 @@ app/Models/
           <tr><td>2단계</td><td>이메일 인증 자유 가입</td><td><span class="badge bp">예정</span></td></tr>
           <tr><td>3단계</td><td>완주 인증 등 추가 기능</td><td><span class="badge bp">예정</span></td></tr>
         </table>
-        <p style="margin-top:6px;font-size:11px">초대 코드: <code>CREW2026</code> <code>PACRUN</code> <code>RUNNING</code></p>
+        <p style="margin-top:6px;font-size:12px">초대 코드: <code>CREW2026</code> <code>PACRUN</code> <code>RUNNING</code></p>
 
         <h3 class="st">명예 뱃지 (시스템 권한 없음)</h3>
         <table class="tbl">
@@ -745,12 +745,12 @@ app/Models/
           <tr><td>페이서</td><td><code>pacer</code></td><td>선두 러너</td></tr>
           <tr><td>멤버대장</td><td><code>group_leader</code></td><td>이벤트 팀장</td></tr>
         </table>
-        <p style="font-size:10.5px">예시: <code>{"pacer": true, "group_leader": true}</code></p>
+        <p style="font-size:11.5px">예시: <code>{"pacer": true, "group_leader": true}</code></p>
       </div>
       <div>
         <h3 class="st">Filament v4 어드민 패널</h3>
-        <p style="font-size:10.5px;color:var(--td);margin-bottom:8px">CREW /admin · 15+ 리소스</p>
-        <ul class="cl" style="font-size:11px">
+        <p style="font-size:11.5px;color:var(--td);margin-bottom:8px">CREW /admin · 15+ 리소스</p>
+        <ul class="cl" style="font-size:12px">
           <li>UserResource — 이메일 복호화, 비밀번호 초기화</li>
           <li>RunningLogResource — 검수 확인/취소</li>
           <li>EventResource — A/B타입 동적 폼 빌더</li>
@@ -790,7 +790,7 @@ app/Models/
           <div class="sbar" style="flex:1"><div class="fill" style="width:95%"></div></div>
           <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:900;color:var(--y)">95%</span>
         </div>
-        <p style="font-size:11px"><span class="badge bd">v1 운영 중</span><br>v2 기획 단계</p>
+        <p style="font-size:12px"><span class="badge bd">v1 운영 중</span><br>v2 기획 단계</p>
       </div>
       <div class="card cp">
         <div class="ctitle">CREW</div>
@@ -798,7 +798,7 @@ app/Models/
           <div class="sbar" style="flex:1"><div class="fill" style="width:75%;background:var(--p)"></div></div>
           <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:900;color:var(--p)">75%</span>
         </div>
-        <p style="font-size:11px"><span class="badge bw">배포 완료</span><br>기능 추가 중</p>
+        <p style="font-size:12px"><span class="badge bw">배포 완료</span><br>기능 추가 중</p>
       </div>
       <div class="card cd">
         <div class="ctitle">CORE API</div>
@@ -806,7 +806,7 @@ app/Models/
           <div class="sbar" style="flex:1"><div class="fill" style="width:80%"></div></div>
           <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:900;color:var(--y)">80%</span>
         </div>
-        <p style="font-size:11px"><span class="badge bd">v1 운영 중</span><br>날씨/SNS/IG 예정</p>
+        <p style="font-size:12px"><span class="badge bd">v1 운영 중</span><br>날씨/SNS/IG 예정</p>
       </div>
     </div>
 
@@ -814,11 +814,11 @@ app/Models/
       <div>
         <h3 class="st">CREW 다음 작업 (우선순위)</h3>
         <div class="flow">
-          <div class="fs"><div class="fn" style="background:var(--p);font-size:10px;width:20px;height:20px">1</div><div class="fc"><strong>이벤트 목록 페이지 (/events)</strong><span>내비게이션 라우트 연결</span></div></div>
-          <div class="fs"><div class="fn" style="background:var(--p);font-size:10px;width:20px;height:20px">2</div><div class="fc"><strong>개인 / 조별 기록 조회 뷰</strong><span>달성 현황 + 마일리지 그래프</span></div></div>
-          <div class="fs"><div class="fn" style="background:var(--p);font-size:10px;width:20px;height:20px">3</div><div class="fc"><strong>관리자 엑셀 업로드</strong><span>UserImport (maatwebsite)</span></div></div>
-          <div class="fs"><div class="fn" style="background:var(--p);font-size:10px;width:20px;height:20px">4</div><div class="fc"><strong>Instagram 연동</strong><span>Graph API + 대시보드 노출</span></div></div>
-          <div class="fs"><div class="fn" style="background:var(--p);font-size:10px;width:20px;height:20px">5</div><div class="fc"><strong>그룹 편성 UI</strong><span>드래그앤드롭 인터페이스</span></div></div>
+          <div class="fs"><div class="fn" style="background:var(--p);font-size:11px;width:20px;height:20px">1</div><div class="fc"><strong>이벤트 목록 페이지 (/events)</strong><span>내비게이션 라우트 연결</span></div></div>
+          <div class="fs"><div class="fn" style="background:var(--p);font-size:11px;width:20px;height:20px">2</div><div class="fc"><strong>개인 / 조별 기록 조회 뷰</strong><span>달성 현황 + 마일리지 그래프</span></div></div>
+          <div class="fs"><div class="fn" style="background:var(--p);font-size:11px;width:20px;height:20px">3</div><div class="fc"><strong>관리자 엑셀 업로드</strong><span>UserImport (maatwebsite)</span></div></div>
+          <div class="fs"><div class="fn" style="background:var(--p);font-size:11px;width:20px;height:20px">4</div><div class="fc"><strong>Instagram 연동</strong><span>Graph API + 대시보드 노출</span></div></div>
+          <div class="fs"><div class="fn" style="background:var(--p);font-size:11px;width:20px;height:20px">5</div><div class="fc"><strong>그룹 편성 UI</strong><span>드래그앤드롭 인터페이스</span></div></div>
         </div>
       </div>
       <div>
@@ -835,7 +835,7 @@ app/Models/
 
         <div style="margin-top:18px;text-align:center;padding:18px;background:var(--surf);border-radius:8px;border:1px solid var(--br)">
           <div style="font-family:'Barlow Condensed';font-weight:900;font-size:30px;color:var(--y);letter-spacing:-1px">PAC-RUN</div>
-          <div style="font-size:10.5px;color:var(--td);margin-top:5px;line-height:1.8">
+          <div style="font-size:11.5px;color:var(--td);margin-top:5px;line-height:1.8">
             Project Documentation v2.1<br>
             김대윤 · dykim10iufc@gmail.com<br>
             2026-05-30
@@ -858,7 +858,7 @@ app/Models/
 
 <!-- Overview modal -->
 <div class="overview" id="ov" onclick="if(event.target===this)closeOv()">
-  <div class="ov-title">슬라이드 목록 &nbsp;<span style="opacity:.5;font-size:10px">ESC 닫기</span></div>
+  <div class="ov-title">슬라이드 목록 &nbsp;<span style="opacity:.5;font-size:11px">ESC 닫기</span></div>
   <div class="ov-grid" id="ovg"></div>
 </div>
 
