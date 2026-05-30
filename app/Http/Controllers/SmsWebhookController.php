@@ -21,13 +21,6 @@ class SmsWebhookController extends Controller
         // Secret token 검증 (Solapi 콘솔에 등록된 URL에 포함)
         $secret = config('services.sms.webhook_secret');
 
-        // [DEBUG] 토큰 불일치 원인 확인용 임시 로그 — 확인 후 제거
-        Log::warning('SMS 웹훅 토큰 디버그', [
-            'received'  => $request->query('token'),
-            'config'    => $secret,
-            'match'     => $request->query('token') === $secret,
-        ]);
-
         if ($secret && $request->query('token') !== $secret) {
             Log::warning('SMS 웹훅 인증 실패', ['ip' => $request->ip()]);
             return response()->json(['error' => 'Unauthorized'], 401);
