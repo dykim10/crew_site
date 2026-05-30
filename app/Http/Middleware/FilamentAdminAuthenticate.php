@@ -44,11 +44,9 @@ class FilamentAdminAuthenticate extends FilamentAuthenticate
             ? $user->canAccessPanel($panel)
             : (config('app.env') === 'local');
 
-        // 기본 구현은 abort(403)으로 에러 페이지를 반환하지만,
-        // member 권한 유저가 /admin 직접 접근 시 로그인 페이지로 보내도록 변경.
-        // unauthenticated() → AuthenticationException → redirectTo() → /admin/login 흐름.
+        // 관리자 권한 없는 유저(member 등)는 전용 접근 불가 페이지로 안내
         if (! $canAccess) {
-            $this->unauthenticated($request, $guards);
+            abort(redirect(route('admin.forbidden')));
         }
     }
 }

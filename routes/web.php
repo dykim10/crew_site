@@ -35,6 +35,7 @@ use App\Http\Controllers\PhotoGalleryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\RunningLogController;
+use App\Http\Controllers\AdminPasswordConfirmController;
 use App\Http\Controllers\SmsWebhookController;
 use Illuminate\Support\Facades\Route;
 
@@ -86,6 +87,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/photos/{photoGallery}', [PhotoGalleryController::class, 'show'])->name('photos.show');
 });
 
+
+// 관리자 비밀번호 재확인 (로그인 상태 필요, CSRF 적용)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin-confirm', [AdminPasswordConfirmController::class, 'show'])->name('admin.password.confirm');
+    Route::post('/admin-confirm', [AdminPasswordConfirmController::class, 'store'])->name('admin.password.confirm.store');
+});
+
+// 비 관리자 접근 불가 안내 (로그인 상태 필요)
+Route::get('/admin-forbidden', fn () => view('admin.forbidden'))
+    ->middleware(['auth'])
+    ->name('admin.forbidden');
 
 // Solapi 수신 결과 웹훅 (CSRF 제외는 bootstrap/app.php에서 처리)
 Route::post('/webhooks/sms', [SmsWebhookController::class, 'handle'])->name('webhooks.sms');
