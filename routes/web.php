@@ -48,6 +48,11 @@ Route::get('/preview', function () {
     return response(file_get_contents(public_path('preview.html')))->header('Content-Type', 'text/html; charset=utf-8');
 })->name('preview');
 
+// 이벤트 A타입 기획초안 (공개)
+Route::get('/testevent_a_type', function () {
+    return response(file_get_contents(public_path('testevent_a_type.html')))->header('Content-Type', 'text/html; charset=utf-8');
+})->name('testevent_a_type');
+
 // 기수 신청서 (공개 — 인증 불필요)
 Route::get('/apply', [ApplyController::class, 'index'])->name('apply');
 Route::post('/apply', [ApplyController::class, 'store'])->name('apply.store');
