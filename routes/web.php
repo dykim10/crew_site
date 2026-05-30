@@ -36,6 +36,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\RunningLogController;
 use App\Http\Controllers\AdminPasswordConfirmController;
+use App\Http\Controllers\PlanningFeedbackController;
 use App\Http\Controllers\SmsWebhookController;
 use Illuminate\Support\Facades\Route;
 
@@ -48,10 +49,9 @@ Route::get('/preview', function () {
     return response(file_get_contents(public_path('preview.html')))->header('Content-Type', 'text/html; charset=utf-8');
 })->name('preview');
 
-// 이벤트 A타입 기획초안 (공개)
-Route::get('/testevent_a_type', function () {
-    return response(file_get_contents(public_path('testevent_a_type.html')))->header('Content-Type', 'text/html; charset=utf-8');
-})->name('testevent_a_type');
+// 이벤트 A타입 기획초안 + 피드백 설문 (공개)
+Route::get('/testevent_a_type', [PlanningFeedbackController::class, 'showEventAType'])->name('testevent_a_type');
+Route::post('/testevent_a_type/feedback', [PlanningFeedbackController::class, 'storeEventAType'])->name('testevent_a_type.store');
 
 // 기수 신청서 (공개 — 인증 불필요)
 Route::get('/apply', [ApplyController::class, 'index'])->name('apply');
