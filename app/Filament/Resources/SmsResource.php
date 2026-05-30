@@ -104,6 +104,31 @@ class SmsResource extends Resource
                     ->sortable(),
             ])
             ->actions([
+                Action::make('view_detail')
+                    ->label('상세')
+                    ->icon('heroicon-o-document-magnifying-glass')
+                    ->color('info')
+                    ->modalHeading(fn ($record) => '발송 상세 내역 — ' . $record->created_at?->format('Y.m.d H:i'))
+                    ->modalContent(function ($record) {
+                        $messages = [];
+                        if ($record->group_id) {
+                            try {
+                                $resp = Http::timeout(15)->get(
+                                    config('services.core_api.url') . '/api/sms/messages/' . $record->group_id
+                                );
+                                if ($resp->successful()) {
+                                    $messages = $resp->json()['messages'] ?? [];
+                                }
+                            } catch (\Throwable) {}
+                        }
+                        return view('filament.sms-log-detail', [
+                            'log'      => $record,
+                            'messages' => $messages,
+                        ]);
+                    })
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('닫기'),
+
                 Action::make('refresh_status')
                     ->label('상태 갱신')
                     ->icon('heroicon-o-arrow-path')
