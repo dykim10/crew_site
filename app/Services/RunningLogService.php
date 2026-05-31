@@ -305,13 +305,17 @@ class RunningLogService
 
     private function convertToWebp(UploadedFile $file): ?string
     {
-        $image = @imagecreatefromstring(file_get_contents($file->getRealPath()));
+        if (!function_exists('imagecreatefromstring')) {
+            return null;
+        }
+
+        $image = @\imagecreatefromstring(file_get_contents($file->getRealPath()));
         if (!$image) return null;
 
         ob_start();
-        imagewebp($image, null, 82);
+        \imagewebp($image, null, 82);
         $content = ob_get_clean();
-        imagedestroy($image);
+        \imagedestroy($image);
 
         return $content ?: null;
     }
