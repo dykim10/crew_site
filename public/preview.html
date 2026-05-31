@@ -271,7 +271,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(229,1
     <div class="s-num" id="snum">01 / 10</div>
   </div>
   <div class="ci">
-    <div class="cbadge">Project Documentation v2.1 · 2026-05-30</div>
+    <div class="cbadge">Project Documentation v2.1 · 2026-05-31</div>
     <div class="ctitle"><span class="acc">PAC</span>-RUN</div>
     <div class="ctagline">러닝 커뮤니티 통합 플랫폼 · 기술 아키텍처 포트폴리오</div>
     <div class="csvc">
@@ -292,7 +292,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(229,1
       </div>
     </div>
     <div class="cmeta">
-      작성일: <span>2026-05-30</span> &nbsp;·&nbsp; 담당자: <span>김대윤</span> &nbsp;·&nbsp; 문의: <span>dykim10iufc@gmail.com</span>
+      작성일: <span>2026-05-31</span> &nbsp;·&nbsp; 담당자: <span>김대윤</span> &nbsp;·&nbsp; 문의: <span>dykim10iufc@gmail.com</span>
     </div>
   </div>
   <div class="bg-num">01</div>
@@ -556,9 +556,10 @@ app/Models/
       <tr><td><code>GET</code></td><td>/api/sms/senders</td><td>발신번호 목록 (ACTIVE)</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
       <tr><td><code>GET</code></td><td>/api/sms/status/{id}</td><td>SMS 수신 결과 집계</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
       <tr><td><code>DELETE</code></td><td>/api/s3/image</td><td>S3 이미지 삭제</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>GET</code></td><td>/api/apify/youtube</td><td>YouTube 영상 검색 (Apify)</td><td>REVIEW/CREW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>GET</code></td><td>/api/instagram/posts</td><td>인스타그램 캐시 반환</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>POST</code></td><td>/api/instagram/fetch</td><td>인스타그램 수동 수집 (Apify)</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
       <tr><td><code>GET</code></td><td>/api/weather</td><td>날씨 데이터</td><td>REVIEW</td><td><span class="badge bp">미구현</span></td></tr>
-      <tr><td><code>GET</code></td><td>/api/instagram/posts</td><td>인스타그램 캐시 반환</td><td>CREW</td><td><span class="badge bp">예정</span></td></tr>
-      <tr><td><code>POST</code></td><td>/api/instagram/fetch</td><td>인스타그램 수동 수집</td><td>CREW</td><td><span class="badge bp">예정</span></td></tr>
     </table>
 
     <div class="co">
@@ -806,7 +807,7 @@ app/Models/
           <div class="sbar" style="flex:1"><div class="fill" style="width:80%"></div></div>
           <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:900;color:var(--y)">80%</span>
         </div>
-        <p style="font-size:12px"><span class="badge bd">v1 운영 중</span><br>날씨/SNS/IG 예정</p>
+        <p style="font-size:12px"><span class="badge bd">v1 운영 중</span><br>YouTube/IG Apify 완료 · 날씨 예정</p>
       </div>
     </div>
 
@@ -815,10 +816,12 @@ app/Models/
         <h3 class="st">CREW 다음 작업 (우선순위)</h3>
         <div class="flow">
           <div class="fs"><div class="fn" style="background:var(--p);font-size:11px;width:20px;height:20px">1</div><div class="fc"><strong>이벤트 목록 페이지 (/events)</strong><span>내비게이션 라우트 연결</span></div></div>
+          <div class="fs"><div class="fn" style="background:var(--p);font-size:11px;width:20px;height:20px">5</div><div class="fc"><strong>그룹 편성 UI</strong><span>드래그앤드롭 인터페이스</span></div></div>
           <div class="fs"><div class="fn" style="background:var(--p);font-size:11px;width:20px;height:20px">2</div><div class="fc"><strong>개인 / 조별 기록 조회 뷰</strong><span>달성 현황 + 마일리지 그래프</span></div></div>
           <div class="fs"><div class="fn" style="background:var(--p);font-size:11px;width:20px;height:20px">3</div><div class="fc"><strong>관리자 엑셀 업로드</strong><span>UserImport (maatwebsite)</span></div></div>
+          <div class="fs"><div class="fn" style="background:var(--p);font-size:11px;width:20px;height:20px">3</div><div class="fc"><strong>관리자 재고 관리</strong><span>Stock Control </span></div></div>
           <div class="fs"><div class="fn" style="background:var(--p);font-size:11px;width:20px;height:20px">4</div><div class="fc"><strong>Instagram 연동</strong><span>Graph API + 대시보드 노출</span></div></div>
-          <div class="fs"><div class="fn" style="background:var(--p);font-size:11px;width:20px;height:20px">5</div><div class="fc"><strong>그룹 편성 UI</strong><span>드래그앤드롭 인터페이스</span></div></div>
+
         </div>
       </div>
       <div>
@@ -838,7 +841,7 @@ app/Models/
           <div style="font-size:11.5px;color:var(--td);margin-top:5px;line-height:1.8">
             Project Documentation v2.1<br>
             김대윤 · dykim10iufc@gmail.com<br>
-            2026-05-30
+            2026-05-31
           </div>
         </div>
       </div>
