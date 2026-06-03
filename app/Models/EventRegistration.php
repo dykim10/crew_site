@@ -11,7 +11,7 @@ class EventRegistration extends Model
 
     protected $fillable = [
         'event_id', 'user_id', 'form_data',
-        'phone_enc', 'email',
+        'phone_enc', 'email_enc',
     ];
 
     protected function casts(): array
@@ -36,32 +36,36 @@ class EventRegistration extends Model
         return app(CryptoService::class)->decrypt($this->phone_enc);
     }
 
+    // 이메일 복호화
+    public function getDecryptedEmail(): ?string
+    {
+        if (!$this->email_enc) return null;
+        return app(CryptoService::class)->decrypt($this->email_enc);
+    }
+
     // 신청 데이터를 평문으로 반환 (엑셀 출력 등)
     public function getDecryptedFormData(): array
     {
         $schema = $this->event?->form_schema ?? [];
-        $data   = $this->form_data ?? [];
         $result = [];
 
         foreach ($schema as $field) {
-            $key   = $field['key'] ?? null;
-            $col   = $field['data']['column'] ?? null;
+            $key = $field['key'] ?? null;
+            $col = $field['data']['column'] ?? null;
 
             if ($key === null) continue;
 
-            // phone → phone_enc 별도 컬럼에서 복호화
             if ($key === 'phone' && $col === 'phone_enc') {
                 $result[$key] = $this->getDecryptedPhone() ?? '';
                 continue;
             }
 
-            // email → email 별도 컬럼
-            if ($key === 'email') {
-                $result[$key] = $this->email ?? ($data[$key] ?? '');
+            if ($key === 'email' && $col === 'email_enc') {
+                $result[$key] = $this->getDecryptedEmail() ?? '';
                 continue;
             }
 
-            $result[$key] = $data[$key] ?? '';
+            $result[$key] = $this->form_data[$key] ?? '';
         }
 
         return $result;
@@ -73,7 +77,7 @@ class EventRegistration extends Model
         $crypto   = app(CryptoService::class);
         $formData = [];
         $phoneEnc = null;
-        $email    = null;
+        $emailEnc = null;
 
         foreach ($schema as $field) {
             $key   = $field['key'] ?? null;
@@ -87,9 +91,9 @@ class EventRegistration extends Model
                 continue;
             }
 
-            if ($key === 'email' || str_contains((string) $value, '@')) {
-                $email = (string) $value;
-                $formData[$key] = $value;
+            if ($key === 'email' && $col === 'email_enc') {
+                $emailEnc = $crypto->encrypt((string) $value);
+                $formData[$key] = $value; // form_data에도 원본 유지(표시용)
                 continue;
             }
 
@@ -99,7 +103,7 @@ class EventRegistration extends Model
         return [
             'form_data' => $formData,
             'phone_enc' => $phoneEnc,
-            'email'     => $email,
+            'email_enc' => $emailEnc,
         ];
     }
 

@@ -380,7 +380,9 @@ class EventResource extends Resource
                             '휴대폰번호' => fn ($r) => $r->phone_enc
                                 ? $crypto->decrypt($r->phone_enc)
                                 : '',
-                            '이메일'    => fn ($r) => $r->email ?? '',
+                            '이메일'    => fn ($r) => $r->email_enc
+                                ? $crypto->decrypt($r->email_enc)
+                                : '',
                         ];
 
                         // 동적 추가 컬럼 (name/phone/email 제외)

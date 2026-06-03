@@ -134,6 +134,8 @@ class Event extends Model
                 'required' => true,
                 'data'     => ['encrypted' => true, 'column' => 'phone_enc'],
             ],
+            // 이메일은 선택적으로 포함 가능 (관리자가 폼 빌더로 추가 시 자동 암호화)
+            // key='email', data.column='email_enc' 이면 email_enc 컬럼에 암호화 저장
         ];
     }
 }

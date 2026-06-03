@@ -14,7 +14,7 @@ class EventRegistrationService
 
     public function register(Event $event, User $user, array $rawData, array $files = []): EventRegistration
     {
-        ['form_data' => $formData, 'phone_enc' => $phoneEnc, 'email' => $email]
+        ['form_data' => $formData, 'phone_enc' => $phoneEnc, 'email_enc' => $emailEnc]
             = $this->buildFormData($event, $rawData, $files);
 
         $reg = EventRegistration::updateOrCreate(
@@ -22,7 +22,7 @@ class EventRegistrationService
             [
                 'form_data' => $formData,
                 'phone_enc' => $phoneEnc,
-                'email'     => $email,
+                'email_enc' => $emailEnc,
             ]
         );
 
@@ -48,17 +48,17 @@ class EventRegistrationService
             ->exists();
     }
 
-    // form_schema 기준으로 입력값 정제 + phone_enc / email 분리
+    // form_schema 기준으로 입력값 정제 + phone_enc / email_enc 분리 저장
     private function buildFormData(Event $event, array $rawData, array $files): array
     {
         $formData = [];
         $phoneEnc = null;
-        $email    = null;
+        $emailEnc = null;
 
         foreach ($event->form_schema ?? [] as $field) {
-            $key       = $field['key'] ?? null;
-            $type      = $field['type'] ?? 'text';
-            $colHint   = $field['data']['column'] ?? null;
+            $key     = $field['key'] ?? null;
+            $type    = $field['type'] ?? 'text';
+            $colHint = $field['data']['column'] ?? null;
 
             if (!$key) continue;
 
@@ -69,10 +69,10 @@ class EventRegistrationService
                 continue;
             }
 
-            // 이메일 → email 별도 컬럼 (평문, @로 식별)
-            if ($key === 'email' || (isset($rawData[$key]) && str_contains((string) ($rawData[$key] ?? ''), '@'))) {
-                $email = $rawData[$key] ?? null;
-                $formData[$key] = $rawData[$key] ?? null;
+            // 이메일 → email_enc 별도 컬럼 (암호화, @로 식별)
+            if ($key === 'email' && $colHint === 'email_enc') {
+                $value    = $rawData[$key] ?? null;
+                $emailEnc = $value ? $this->crypto->encrypt((string) $value) : null;
                 continue;
             }
 
@@ -92,7 +92,7 @@ class EventRegistrationService
             $formData[$key] = $rawData[$key] ?? null;
         }
 
-        return compact('formData', 'phoneEnc', 'email');
+        return compact('formData', 'phoneEnc', 'emailEnc');
     }
 
     /*
