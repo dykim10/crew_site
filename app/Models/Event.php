@@ -90,14 +90,16 @@ class Event extends Model
         return $this->status === 'ended';
     }
 
-    // 모집 중 여부 (recruit 기간 기준)
+    // 모집 중 여부 (날짜 기준 — status 의존 제거)
+    // status 는 스케쥴러가 갱신하므로 lag 가 발생할 수 있어 날짜만으로 판단한다.
     public function isRecruitOpen(): bool
     {
         if (!$this->is_registration_open) return false;
+        if ($this->status === 'ended')    return false;
         $now = now();
         if ($this->recruit_start_at && $now->lt($this->recruit_start_at)) return false;
         if ($this->recruit_end_at   && $now->gt($this->recruit_end_at))   return false;
-        return $this->status === 'active';
+        return true;
     }
 
     // 참가 정원 초과 여부

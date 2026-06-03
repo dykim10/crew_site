@@ -1,214 +1,182 @@
 <x-app-layout>
-<div class="max-w-4xl mx-auto px-4 py-5 md:px-6 md:py-6 lg:px-8 lg:py-8 space-y-4">
+<div class="max-w-5xl mx-auto px-4 py-6 md:px-6 lg:px-8 space-y-5">
 
-    {{-- 페이지 헤더 --}}
-    <div class="flex items-center justify-between">
-        <div>
-            <p class="font-display text-[10px] font-bold text-pac-black-400 uppercase tracking-widest mb-0.5">MY RUNNING</p>
-            <h1 class="font-display text-2xl font-bold text-pac-black-900 uppercase tracking-tight">기록 목록</h1>
-        </div>
-        <a href="{{ route('running-logs.create') }}"
-           class="inline-flex items-center gap-2 px-5 py-2.5
-                  bg-pac-yellow-500 hover:bg-pac-yellow-400
-                  text-pac-black-900 font-display font-bold text-sm uppercase tracking-wide
-                  rounded-xl transition-colors duration-200">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-            </svg>
-            기록 추가
-        </a>
+  {{-- 페이지 헤더 --}}
+  <div class="flex items-end justify-between gap-4">
+    <div>
+      <p class="font-display text-[9px] font-bold text-pac-black-500 uppercase tracking-[0.3em] mb-1">MY RUNNING</p>
+      <h1 class="font-display text-4xl lg:text-5xl font-black text-white uppercase tracking-tight leading-none">
+        기록 <span class="text-pac-yellow-400">목록</span>
+      </h1>
+    </div>
+    <a href="{{ route('running-logs.create') }}"
+       class="shrink-0 inline-flex items-center gap-2 px-5 py-2.5
+              bg-pac-yellow-500 hover:bg-pac-yellow-400
+              text-pac-black-900 font-display font-black text-sm uppercase tracking-wider
+              transition-colors duration-150">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+      </svg>
+      기록 추가
+    </a>
+  </div>
+
+  {{-- 플래시 --}}
+  @if(session('success'))
+    <div class="flex items-center gap-3 px-4 py-3 bg-pac-green-500/10 border border-pac-green-500/30 text-pac-green-500 font-body text-sm">
+      <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+      </svg>
+      {{ session('success') }}
+    </div>
+  @endif
+
+  {{-- 검토 대기 배너 --}}
+  @if($pendingCount > 0)
+    <div class="flex items-center gap-3 px-4 py-3.5
+                bg-pac-yellow-500/10 border-l-2 border-pac-yellow-400">
+      <svg class="w-4 h-4 text-pac-yellow-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+      </svg>
+      <p class="font-body text-sm text-pac-black-300 flex-1">
+        AI 파싱 후 <span class="font-bold text-pac-yellow-400">검토 대기 {{ $pendingCount }}건</span>이 있습니다. 수정 후 확정해주세요.
+      </p>
+    </div>
+  @endif
+
+  {{-- 이달 통계 --}}
+  <div class="grid grid-cols-3 gap-3">
+    <div class="bg-pac-black-900 border border-white/[0.05] border-t-2 border-t-pac-yellow-500 px-5 py-4">
+      <p class="font-display text-[9px] font-bold text-pac-black-500 uppercase tracking-[0.2em] mb-2">이번 달 거리</p>
+      <p class="font-display text-3xl font-black text-pac-yellow-400 leading-none">
+        {{ number_format($monthlyStats['total_km'], 1) }}
+        <span class="font-body text-sm font-normal text-pac-black-500">km</span>
+      </p>
+    </div>
+    <div class="bg-pac-black-900 border border-white/[0.05] border-t-2 border-t-white/10 px-5 py-4">
+      <p class="font-display text-[9px] font-bold text-pac-black-500 uppercase tracking-[0.2em] mb-2">확정 횟수</p>
+      <p class="font-display text-3xl font-black text-white leading-none">
+        {{ $monthlyStats['total_count'] }}
+        <span class="font-body text-sm font-normal text-pac-black-500">회</span>
+      </p>
+    </div>
+    <div class="bg-pac-black-900 border border-white/[0.05] border-t-2 border-t-pac-pink-500 px-5 py-4">
+      <p class="font-display text-[9px] font-bold text-pac-black-500 uppercase tracking-[0.2em] mb-2">평균 페이스</p>
+      @php
+        $pace = $monthlyStats['avg_pace'];
+        $paceStr = $pace ? sprintf("%d'%02d\"", intdiv($pace, 60), $pace % 60) : '—';
+      @endphp
+      <p class="font-display text-3xl font-black text-white leading-none">{{ $paceStr }}</p>
+    </div>
+  </div>
+
+  {{-- 기록 목록 --}}
+  <div class="bg-pac-black-900 border border-white/[0.05] overflow-hidden">
+    <div class="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.06]">
+      <span class="font-display text-xs font-black text-white uppercase tracking-[0.15em]">전체 기록</span>
+      @if($pendingCount > 0)
+        <span class="font-display text-[10px] font-black uppercase tracking-wider
+                     bg-pac-yellow-500 text-pac-black-900 px-2 py-0.5">
+          검토 대기 {{ $pendingCount }}
+        </span>
+      @endif
     </div>
 
-    @if(session('success'))
-        <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl font-body text-sm">
-            {{ session('success') }}
-        </div>
-    @endif
+    @forelse($logs as $log)
+      @if($log->is_confirmed)
+        <a href="{{ route('running-logs.show', $log) }}"
+           class="flex items-center gap-4 px-5 py-4 border-b border-white/[0.04] last:border-0
+                  hover:bg-white/[0.025] transition-colors group">
+      @else
+        <a href="{{ route('running-logs.edit', $log) }}"
+           class="flex items-center gap-4 px-5 py-4 border-b border-white/[0.04] last:border-0
+                  hover:bg-pac-yellow-500/5 border-l-2 border-l-pac-yellow-400 transition-colors group">
+      @endif
 
-    {{-- 검토 대기 배너 --}}
-    @if($pendingCount > 0)
-        <div class="flex items-center gap-3 bg-pac-yellow-50 border border-pac-yellow-200 rounded-xl px-4 py-3">
-            <svg class="w-4 h-4 text-pac-yellow-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
-            </svg>
-            <p class="font-body text-sm text-pac-black-700 flex-1">
-                AI 파싱 후 <span class="font-bold text-pac-yellow-700">검토 대기 {{ $pendingCount }}건</span>이 있습니다. 수정 후 확정해주세요.
-            </p>
-        </div>
-    @endif
+          {{-- 날짜 블록 --}}
+          <div class="shrink-0 w-12 h-12 bg-pac-black-800 border border-white/[0.06]
+                      flex flex-col items-center justify-center
+                      group-hover:border-pac-yellow-500/30 transition-colors">
+            <span class="font-display text-lg font-black text-pac-yellow-400 leading-none">
+              {{ $log->run_date->format('d') }}
+            </span>
+            <span class="font-display text-[8px] text-pac-black-500 uppercase tracking-wider">
+              {{ $log->run_date->format('M') }}
+            </span>
+          </div>
 
-    {{-- 이달 통계 (확정 기록 기준) --}}
-    <div class="grid grid-cols-3 gap-3">
-        <div class="bg-pac-black-900 rounded-2xl p-4 border-t-2 border-pac-yellow-500 text-center">
-            <p class="font-display text-[10px] font-bold text-pac-black-400 uppercase tracking-widest mb-2">이번 달 거리</p>
-            <p class="font-display text-3xl font-bold text-white leading-none">
-                {{ number_format($monthlyStats['total_km'], 1) }}
-                <span class="font-body text-sm font-normal text-pac-black-400">km</span>
-            </p>
-        </div>
-        <div class="bg-pac-black-900 rounded-2xl p-4 border-t-2 border-pac-black-600 text-center">
-            <p class="font-display text-[10px] font-bold text-pac-black-400 uppercase tracking-widest mb-2">확정 횟수</p>
-            <p class="font-display text-3xl font-bold text-white leading-none">
-                {{ $monthlyStats['total_count'] }}
-                <span class="font-body text-sm font-normal text-pac-black-400">회</span>
-            </p>
-        </div>
-        <div class="bg-pac-black-900 rounded-2xl p-4 border-t-2 border-pac-pink-500 text-center">
-            <p class="font-display text-[10px] font-bold text-pac-black-400 uppercase tracking-widest mb-2">평균 페이스</p>
-            @php
-                $pace = $monthlyStats['avg_pace'];
-                $paceStr = $pace ? sprintf("%d'%02d\"", intdiv($pace, 60), $pace % 60) : '—';
-            @endphp
-            <p class="font-display text-3xl font-bold text-white leading-none">{{ $paceStr }}</p>
-        </div>
-    </div>
-
-    {{-- 기록 목록 --}}
-    <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-        <div class="flex items-center justify-between px-5 py-3.5 bg-pac-black-900">
-            <h3 class="font-display text-sm font-bold text-white uppercase tracking-widest">전체 기록</h3>
-            @if($pendingCount > 0)
-                <span class="font-display text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded bg-pac-yellow-500 text-pac-black-900">
-                    검토 대기 {{ $pendingCount }}
+          {{-- 거리 + 페이스 --}}
+          <div class="flex-1 min-w-0">
+            <div class="flex items-baseline gap-2">
+              <span class="font-display text-2xl font-black text-white leading-none
+                           group-hover:text-pac-yellow-400 transition-colors">
+                {{ number_format($log->distance_km, 2) }}
+              </span>
+              <span class="font-body text-xs text-pac-black-500">km</span>
+              @if(!$log->is_confirmed)
+                <span class="font-display text-[9px] font-black uppercase tracking-wider
+                             border border-pac-yellow-500/50 text-pac-yellow-500 px-1.5 py-0.5 ml-1">
+                  검토 대기
                 </span>
-            @endif
-        </div>
-
-        @forelse($logs as $log)
-            @if($log->is_confirmed)
-                {{-- 확정 기록 --}}
-                <div class="flex items-center justify-between px-5 py-4 border-b border-pac-black-100 last:border-0
-                            hover:bg-pac-black-50 transition-colors duration-200">
-                    <div class="flex items-center gap-4 flex-1 min-w-0">
-                        <div class="shrink-0 w-12 h-12 rounded-xl bg-pac-black-900
-                                    flex flex-col items-center justify-center">
-                            <p class="font-display text-lg font-bold text-pac-yellow-400 leading-none">
-                                {{ $log->run_date->format('d') }}
-                            </p>
-                            <p class="font-body text-[9px] text-pac-black-500 uppercase">
-                                {{ $log->run_date->format('M') }}
-                            </p>
-                        </div>
-                        @if($log->image_url)
-                            <img src="{{ $log->image_url }}" class="shrink-0 w-12 h-12 rounded-xl object-cover" alt="">
-                        @endif
-                        <div class="min-w-0">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <p class="font-display text-xl font-bold text-pac-black-900 leading-none">
-                                    {{ number_format($log->distance_km, 2) }}
-                                    <span class="font-body text-sm font-normal text-pac-black-400">km</span>
-                                </p>
-                                <span class="font-display text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded
-                                             bg-green-100 text-green-700 border border-green-200">
-                                    확정
-                                </span>
-                            </div>
-                            <p class="font-body text-xs text-pac-black-400 mt-0.5">
-                                {{ $log->duration_formatted }}
-                                @if($log->avg_pace_formatted)
-                                    · {{ $log->avg_pace_formatted }}/km
-                                @endif
-                                · <span class="{{ $log->is_indoor ? 'text-pac-black-400' : 'text-pac-yellow-600' }}">
-                                    {{ $log->is_indoor ? '실내' : '야외' }}
-                                </span>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2 shrink-0">
-                        <a href="{{ route('running-logs.show', $log) }}"
-                           class="font-display text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg
-                                  border border-pac-yellow-400 text-pac-yellow-600 hover:bg-pac-yellow-50 transition-colors">
-                            상세
-                        </a>
-                        <a href="{{ route('running-logs.edit', $log) }}"
-                           class="font-display text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg
-                                  border border-pac-black-200 text-pac-black-500 hover:bg-pac-black-50 transition-colors">
-                            수정
-                        </a>
-                        <form method="POST" action="{{ route('running-logs.destroy', $log) }}"
-                              onsubmit="return confirm('이 기록을 삭제하시겠습니까?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                    class="font-display text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg
-                                           border border-pac-pink-300 text-pac-pink-500 hover:bg-pink-50 transition-colors">
-                                삭제
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            @else
-                {{-- 미확정(검토 대기) 기록 --}}
-                <div class="flex items-center justify-between px-5 py-4 border-b border-yellow-100 last:border-0
-                            border-l-4 border-l-yellow-400 bg-yellow-50 hover:bg-yellow-100
-                            transition-colors duration-200">
-                    <div class="flex items-center gap-4 flex-1 min-w-0">
-                        <div class="shrink-0 w-12 h-12 rounded-xl bg-pac-black-700
-                                    flex flex-col items-center justify-center">
-                            <p class="font-display text-lg font-bold text-pac-yellow-300 leading-none">
-                                {{ $log->run_date->format('d') }}
-                            </p>
-                            <p class="font-body text-[9px] text-pac-black-400 uppercase">
-                                {{ $log->run_date->format('M') }}
-                            </p>
-                        </div>
-                        @if($log->image_url)
-                            <img src="{{ $log->image_url }}" class="shrink-0 w-12 h-12 rounded-xl object-cover opacity-70" alt="">
-                        @endif
-                        <div class="min-w-0">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <p class="font-display text-xl font-bold text-pac-black-700 leading-none">
-                                    {{ number_format($log->distance_km, 2) }}
-                                    <span class="font-body text-sm font-normal text-pac-black-400">km</span>
-                                </p>
-                                <span class="font-display text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded
-                                             bg-yellow-100 text-yellow-700 border border-yellow-300">
-                                    검토 대기
-                                </span>
-                            </div>
-                            <p class="font-body text-xs text-pac-black-400 mt-0.5">
-                                {{ $log->duration_formatted ?? '시간 미입력' }}
-                                @if($log->avg_pace_formatted)
-                                    · {{ $log->avg_pace_formatted }}/km
-                                @endif
-                                · AI 파싱 완료 · 내용을 확인 후 수정 버튼으로 확정하세요
-                            </p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2 shrink-0">
-                        <a href="{{ route('running-logs.edit', $log) }}"
-                           class="font-display text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg
-                                  border border-yellow-400 text-yellow-700 bg-yellow-50 hover:bg-yellow-100 transition-colors">
-                            검토·수정
-                        </a>
-                        <form method="POST" action="{{ route('running-logs.destroy', $log) }}"
-                              onsubmit="return confirm('이 기록을 삭제하시겠습니까?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit"
-                                    class="font-display text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg
-                                           border border-pac-pink-300 text-pac-pink-500 hover:bg-pink-50 transition-colors">
-                                삭제
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            @endif
-        @empty
-            <div class="py-16 text-center">
-                <p class="font-body text-sm text-pac-black-400 mb-5">아직 러닝 기록이 없습니다.</p>
-                <a href="{{ route('running-logs.create') }}"
-                   class="inline-flex items-center gap-2 px-6 py-3
-                          bg-pac-yellow-500 hover:bg-pac-yellow-400
-                          text-pac-black-900 font-display font-bold text-sm uppercase tracking-wide
-                          rounded-xl transition-colors duration-200">
-                    첫 기록 추가하기
-                </a>
+              @endif
             </div>
-        @endforelse
-    </div>
+            <p class="font-body text-xs text-pac-black-500 mt-0.5">
+              {{ $log->run_date->format('Y.m.d') }}
+              @if($log->avg_pace_formatted) · {{ $log->avg_pace_formatted }}/km @endif
+              @if($log->duration_formatted)  · {{ $log->duration_formatted }} @endif
+            </p>
+          </div>
 
-    <div>{{ $logs->links() }}</div>
+          {{-- 태그 + 거리 그래프 바 --}}
+          <div class="hidden sm:flex shrink-0 flex-col items-end gap-2">
+            <span class="font-display text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5
+                         {{ $log->is_indoor
+                             ? 'bg-pac-black-700 text-pac-black-400'
+                             : 'bg-pac-yellow-500/10 text-pac-yellow-500 border border-pac-yellow-500/20' }}">
+              {{ $log->is_indoor ? '실내' : '야외' }}
+            </span>
+            @if($log->calories)
+              <span class="font-display text-[9px] text-pac-black-600 uppercase tracking-wider">
+                {{ $log->calories }}kcal
+              </span>
+            @endif
+          </div>
+
+          {{-- 삭제 폼 --}}
+          <form method="POST" action="{{ route('running-logs.destroy', $log) }}"
+                onsubmit="return confirm('기록을 삭제하시겠습니까?')"
+                class="shrink-0">
+            @csrf @method('DELETE')
+            <button type="submit"
+                    class="p-2 text-pac-black-700 hover:text-pac-pink-400 transition-colors opacity-0 group-hover:opacity-100">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+            </button>
+          </form>
+        </a>
+
+    @empty
+      <div class="px-5 py-20 text-center">
+        <p class="font-display text-5xl font-black text-pac-black-800 uppercase tracking-widest mb-3">0 KM</p>
+        <p class="font-body text-sm text-pac-black-600 mb-6">아직 러닝 기록이 없어요</p>
+        <a href="{{ route('running-logs.create') }}"
+           class="inline-flex items-center gap-2 px-6 py-2.5
+                  bg-pac-yellow-500 hover:bg-pac-yellow-400
+                  text-pac-black-900 font-display font-black text-sm uppercase tracking-wider
+                  transition-colors duration-150">
+          첫 기록 추가하기
+        </a>
+      </div>
+    @endforelse
+  </div>
+
+  {{-- 페이지네이션 --}}
+  @if($logs->hasPages())
+    <div class="flex justify-center">
+      {{ $logs->links() }}
+    </div>
+  @endif
 
 </div>
 </x-app-layout>
