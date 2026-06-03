@@ -4,7 +4,7 @@
      Bebas Neue logo · pac-yellow active states
      ================================================= --}}
 <header x-data="{ open: false }"
-        class="sticky top-0 z-50 bg-pac-black-900 border-b border-white/[0.06] backdrop-blur-md">
+        class="sticky top-0 z-40 bg-pac-black-900 border-b border-white/[0.06] backdrop-blur-md">
 
   {{-- 메인 바 --}}
   <div class="h-[60px] flex items-center justify-between px-5 lg:px-8">
