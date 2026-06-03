@@ -158,11 +158,11 @@ class DashboardService
         ];
     }
 
-    // ④ 진행 중 이벤트 목록
+    // ④ 진행 중 이벤트 목록 (Eloquent — route() 헬퍼에서 모델 키 자동 추출)
     public function getActiveEvents(User $user): Collection
     {
         $now = now();
-        return DB::table('crew.events')
+        return \App\Models\Event::query()
             ->where('status', 'active')
             ->whereDate('start_date', '<=', $now->toDateString())
             ->whereDate('end_date', '>=', $now->toDateString())
@@ -179,5 +179,74 @@ class DashboardService
             ->orderByDesc('created_at')
             ->limit($limit)
             ->get();
+    }
+
+    // ⑥ A타입 이벤트 현황 (진행 중인 A타입 이벤트 1건)
+    public function getActiveATypeEvent(User $user): ?array
+    {
+        $now = now();
+
+        $event = DB::table('crew.events')
+            ->where('event_type', 'A')
+            ->where('status', 'active')
+            ->whereDate('start_date', '<=', $now->toDateString())
+            ->whereDate('end_date', '>=', $now->toDateString())
+            ->orderByDesc('created_at')
+            ->first();
+
+        if (!$event) return null;
+
+        return (array) $event;
+    }
+
+    // ⑦ A타입 이벤트 사용자 그룹 조회
+    public function getATypeUserGroup(User $user, int $eventId): ?object
+    {
+        return DB::table('crew.event_group_members')
+            ->where('user_id', $user->id)
+            ->join('crew.event_groups', 'crew.event_group_members.group_id', '=', 'crew.event_groups.id')
+            ->where('crew.event_groups.event_id', $eventId)
+            ->first(['crew.event_groups.*']);
+    }
+
+    // ⑧ A타입 이벤트 사용자 마일리지 (인증 + 대기)
+    public function getATypeUserKm(User $user, int $eventId): array
+    {
+        $event = DB::table('crew.events')->find($eventId);
+        if (!$event) return ['confirmed' => 0.0, 'pending' => 0.0, 'target' => 0.0];
+
+        // 인증 km (is_confirmed = true)
+        $confirmedKm = (float) DB::table('crew.running_logs')
+            ->where('user_id', $user->id)
+            ->where('is_confirmed', true)
+            ->whereDate('run_date', '>=', $event->start_date)
+            ->whereDate('run_date', '<=', $event->end_date)
+            ->sum('distance_km');
+
+        // 대기 km (is_confirmed = false)
+        $pendingKm = (float) DB::table('crew.running_logs')
+            ->where('user_id', $user->id)
+            ->where('is_confirmed', false)
+            ->whereDate('run_date', '>=', $event->start_date)
+            ->whereDate('run_date', '<=', $event->end_date)
+            ->sum('distance_km');
+
+        // 사용자 등급 기반 목표 km
+        $userDetail = DB::table('crew.users_detail')
+            ->where('user_id', $user->id)
+            ->first();
+
+        $targetKm = 0.0;
+        if ($userDetail && $userDetail->grade && $event->score_config) {
+            $scoreConfig = is_string($event->score_config) ? json_decode($event->score_config, true) : $event->score_config;
+            $gradeRow = collect($scoreConfig)->firstWhere('grade', $userDetail->grade);
+            $targetKm = (float) ($gradeRow['target_km'] ?? 0);
+        }
+
+        return [
+            'confirmed' => $confirmedKm,
+            'pending'   => $pendingKm,
+            'target'    => $targetKm,
+        ];
     }
 }

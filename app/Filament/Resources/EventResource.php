@@ -249,27 +249,61 @@ class EventResource extends Resource
                     Select::make('score_type')
                         ->label('점수 방식')
                         ->options([
-                            'mileage_grade' => '마일리지 등급',
-                            'fixed'         => '고정 점수',
+                            'mileage_grade' => '마일리지 등급 — 목표 km 달성 시 자동 부여',
+                            'fixed'         => '고정 점수 — 미션 제출 후 관리자 승인',
                         ])
-                        ->live(),
+                        ->live()
+                        ->helperText('마일리지: 등급별 목표 km 달성 시 지정 점수 자동 부여 / 고정: 미션 업로드 → 관리자 승인 후 점수 부여'),
 
+                    // mileage_grade: 등급별 목표 km + 달성 시 획득 점수
                     Repeater::make('score_config')
-                        ->label('등급별 목표 거리')
+                        ->label('등급별 목표 설정')
                         ->schema([
-                            TextInput::make('grade')->label('등급명')->required()->maxLength(20),
-                            TextInput::make('target_km')->label('목표 km')->numeric()->required()->suffix('km'),
+                            TextInput::make('grade')
+                                ->label('등급명')
+                                ->required()
+                                ->maxLength(20)
+                                ->placeholder('예: A, B, C'),
+                            TextInput::make('target_km')
+                                ->label('목표 km')
+                                ->numeric()
+                                ->required()
+                                ->suffix('km')
+                                ->minValue(0),
+                            TextInput::make('reward_score')
+                                ->label('달성 시 획득 점수')
+                                ->numeric()
+                                ->required()
+                                ->suffix('점')
+                                ->minValue(0)
+                                ->helperText('목표 km 달성 시 자동 부여할 점수'),
                         ])
-                        ->columns(2)
+                        ->columns(3)
                         ->defaultItems(3)
                         ->default([
-                            ['grade' => 'A', 'target_km' => 120],
-                            ['grade' => 'B', 'target_km' => 100],
-                            ['grade' => 'C', 'target_km' => 80],
+                            ['grade' => 'A', 'target_km' => 120, 'reward_score' => 10],
+                            ['grade' => 'B', 'target_km' => 100, 'reward_score' => 8],
+                            ['grade' => 'C', 'target_km' => 80,  'reward_score' => 6],
                         ])
                         ->addActionLabel('등급 추가')
                         ->reorderable()
                         ->visible(fn ($get) => $get('score_type') === 'mileage_grade'),
+
+                    // fixed: 미션 설명 + 획득 점수
+                    \Filament\Forms\Components\Textarea::make('score_rules->fixed_description')
+                        ->label('미션 설명')
+                        ->rows(4)
+                        ->placeholder('사용자에게 안내할 미션 내용을 입력하세요. 예: 이벤트 기간 중 10km 완주 후 러닝 앱 화면 캡처를 업로드하세요.')
+                        ->helperText('대시보드에서 사용자에게 표시되는 안내 문구입니다.')
+                        ->visible(fn ($get) => $get('score_type') === 'fixed'),
+
+                    TextInput::make('score_rules->fixed_score')
+                        ->label('고정 점수')
+                        ->numeric()
+                        ->suffix('점')
+                        ->minValue(0)
+                        ->helperText('관리자 승인 시 자동으로 부여할 점수')
+                        ->visible(fn ($get) => $get('score_type') === 'fixed'),
                 ])
                 ->visible(fn ($get) => $get('event_type') === 'A')
                 ->columns(1),
@@ -477,6 +511,17 @@ class EventResource extends Resource
 
                         return Excel::download($exporter, $filename);
                     }),
+
+                TableAction::make('group_assign')
+                    ->label('조 편성')
+                    ->icon('heroicon-o-user-group')
+                    ->color('warning')
+                    ->url(fn (Event $record) => route('admin.events.groups.index', $record))
+                    ->openUrlInNewTab(false)
+                    ->visible(fn (Event $record) =>
+                        $record->isTypeA() &&
+                        in_array(auth()->user()->role, ['super_admin', 'region_admin'])
+                    ),
 
                 EditAction::make()->label('수정'),
                 DeleteAction::make()->label('삭제'),

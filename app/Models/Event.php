@@ -62,6 +62,16 @@ class Event extends Model
         return $this->hasMany(EventRegistration::class);
     }
 
+    public function groups()
+    {
+        return $this->hasMany(EventGroup::class);
+    }
+
+    public function fixedSubmissions()
+    {
+        return $this->hasMany(EventFixedSubmission::class);
+    }
+
     public function subEvents()
     {
         return $this->hasMany(Event::class, 'parent_event_id');

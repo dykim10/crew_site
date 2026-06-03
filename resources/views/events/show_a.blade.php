@@ -122,6 +122,51 @@
         </div>
     @endif
 
+    {{-- 지부별 조 현황 (현황 테이블) --}}
+    @if($groupRankings && count($groupRankings) > 0)
+        <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div class="px-5 py-3.5 bg-pac-black-50 border-b border-pac-black-100">
+                <h3 class="font-display text-xs font-bold text-pac-black-600 uppercase tracking-widest">조별 현황 ({{ count($groupRankings) }}개 조)</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-pac-black-900 border-b border-pac-black-800">
+                        <tr>
+                            <th class="text-left px-4 py-3 font-display text-xs font-bold text-pac-black-400 uppercase tracking-wider">조명</th>
+                            <th class="text-center px-4 py-3 font-display text-xs font-bold text-pac-black-400 uppercase tracking-wider">인원</th>
+                            <th class="text-right px-4 py-3 font-display text-xs font-bold text-pac-black-400 uppercase tracking-wider">인증km</th>
+                            <th class="text-right px-4 py-3 font-display text-xs font-bold text-pac-black-400 uppercase tracking-wider">순위</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-pac-black-50">
+                        @foreach($groupRankings as $item)
+                            <tr class="hover:bg-pac-black-50 transition-colors
+                                       {{ ($myGroup && $myGroup->id === $item['group_id']) ? 'bg-pac-yellow-500/8 font-bold' : '' }}">
+                                <td class="px-4 py-4 font-body text-sm
+                                           {{ ($myGroup && $myGroup->id === $item['group_id']) ? 'text-pac-yellow-600 font-semibold' : 'text-pac-black-800' }}">
+                                    {{ $item['group_name'] }}
+                                    @if($myGroup && $myGroup->id === $item['group_id'])
+                                        <span class="font-display text-[9px] font-bold bg-pac-yellow-500 text-pac-black-900 px-1.5 py-0.5 rounded uppercase tracking-wide ml-1">내 조</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-4 font-body text-sm text-center text-pac-black-600">
+                                    {{ $item['member_count'] }}명
+                                </td>
+                                <td class="px-4 py-4 font-display text-sm font-bold text-right
+                                           {{ ($myGroup && $myGroup->id === $item['group_id']) ? 'text-pac-yellow-600' : 'text-pac-black-800' }}">
+                                    {{ number_format($item['total_km'], 1) }} km
+                                </td>
+                                <td class="px-4 py-4 font-display text-sm font-bold text-right text-pac-pink-500">
+                                    {{ $item['rank'] }}위
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endif
+
     {{-- 등급별 목표 (전체 공개) --}}
     @if(!empty($event->score_config))
         <div class="bg-white rounded-2xl shadow-sm overflow-hidden">

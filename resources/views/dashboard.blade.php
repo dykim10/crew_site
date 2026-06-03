@@ -183,6 +183,155 @@
   </div>
 
   {{-- ══════════════════════════════════════════════
+       A타입 이벤트 현황 (진행 중인 경우만)
+       ══════════════════════════════════════════════ --}}
+  @if($activeAEvent)
+    <div class="bg-pac-black-900 border border-white/[0.05] overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.06]">
+        <span class="font-display text-xs font-black text-white uppercase tracking-[0.15em]">이벤트 현황</span>
+        <a href="{{ route('events.show', $activeAEvent) }}"
+           class="font-display text-[10px] font-bold uppercase tracking-widest text-pac-yellow-500 hover:text-pac-yellow-300 transition-colors">
+          상세 →
+        </a>
+      </div>
+
+      {{-- 이벤트명 + 기간 + D-day --}}
+      <div class="px-5 py-3 border-b border-white/[0.06]">
+        <p class="font-body text-sm font-semibold text-pac-black-300 truncate max-w-[60%]">
+          {{ $activeAEvent->name }}
+        </p>
+        <div class="flex items-center justify-between mt-1.5">
+          <span class="font-display text-[9px] text-pac-black-600 uppercase tracking-wider">
+            ~ {{ \Carbon\Carbon::parse($activeAEvent->end_date)->format('Y.m.d') }}
+          </span>
+          @php
+            $daysLeft = now()->diffInDays(\Carbon\Carbon::parse($activeAEvent->end_date), false);
+          @endphp
+          @if($daysLeft > 0)
+            <span class="font-display text-xs font-black text-pac-yellow-400">D-{{ $daysLeft }}</span>
+          @else
+            <span class="font-display text-xs font-black text-pac-black-500">종료</span>
+          @endif
+        </div>
+      </div>
+
+      {{-- 내 조정보 --}}
+      @if($myAGroup)
+        <div class="px-5 py-3 border-b border-white/[0.06] bg-pac-black-800">
+          <p class="font-display text-[9px] font-bold uppercase tracking-widest text-pac-black-400 mb-1">내 조</p>
+          <p class="font-body text-sm font-semibold text-pac-yellow-400">{{ $myAGroup->group_name }}</p>
+        </div>
+      @endif
+
+      {{-- 3개 수치 카드: 인증km / 대기km / 목표km --}}
+      <div class="grid grid-cols-3 gap-0 px-5 py-4">
+        <div class="text-center pr-3 border-r border-white/[0.06]">
+          <p class="font-display text-[9px] font-bold uppercase tracking-widest text-pac-black-500 mb-1">
+            인증 km
+          </p>
+          <p class="font-display text-2xl font-black text-pac-yellow-400 leading-none">
+            {{ number_format($myConfirmedKm, 1) }}
+          </p>
+          <p class="font-body text-[10px] text-pac-black-500 mt-1">{{ (int)$myConfirmedKm }}km</p>
+        </div>
+
+        <div class="text-center px-3 border-r border-white/[0.06]">
+          <p class="font-display text-[9px] font-bold uppercase tracking-widest text-pac-black-500 mb-1">
+            대기 km
+          </p>
+          <p class="font-display text-2xl font-black text-pac-pink-400 leading-none">
+            {{ number_format($myPendingKm, 1) }}
+          </p>
+          <p class="font-body text-[10px] text-pac-black-500 mt-1">검수 대기</p>
+        </div>
+
+        <div class="text-center pl-3">
+          <p class="font-display text-[9px] font-bold uppercase tracking-widest text-pac-black-500 mb-1">
+            목표 km
+          </p>
+          <p class="font-display text-2xl font-black text-white leading-none">
+            {{ number_format($myTargetKm, 0) }}
+          </p>
+          <p class="font-body text-[10px] text-pac-black-500 mt-1">등급 목표</p>
+        </div>
+      </div>
+
+      {{-- 프로그레스 바 --}}
+      @php
+        $aEventProgress = $myTargetKm > 0 ? min(100, round($myConfirmedKm / $myTargetKm * 100)) : 0;
+      @endphp
+      <div class="px-5 py-4 border-t border-white/[0.06]">
+        <div class="h-2 bg-pac-black-700 rounded-full overflow-hidden">
+          <div class="h-full rounded-full transition-all duration-700"
+               style="width:{{ $aEventProgress }}%;
+                      background:linear-gradient(90deg, #E5AD16, #E80043 {{ min(100, $aEventProgress) > 80 ? '100%' : '300%' }});">
+          </div>
+        </div>
+        <div class="flex items-center justify-between mt-2">
+          <span class="font-display text-[9px] text-pac-black-500 uppercase tracking-wider">진행률</span>
+          <span class="font-display text-sm font-black text-pac-yellow-400">{{ $aEventProgress }}%</span>
+        </div>
+      </div>
+
+      {{-- 기간 필터 (간단) --}}
+      <div class="px-5 py-3 border-t border-white/[0.06] text-center">
+        <p class="font-display text-[9px] font-bold uppercase tracking-widest text-pac-black-500 mb-2">기간 필터</p>
+        <div class="flex items-center justify-center gap-2">
+          <button type="button"
+                  data-filter="all"
+                  class="filter-btn font-display text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded
+                         bg-pac-yellow-500 text-pac-black-900 transition-colors"
+                  onclick="filterAEventKm('all')">
+            전체
+          </button>
+          <button type="button"
+                  data-filter="month"
+                  class="filter-btn font-display text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded
+                         border border-white/[0.1] text-pac-black-400 hover:text-pac-yellow-400 transition-colors"
+                  onclick="filterAEventKm('month')">
+            이번달
+          </button>
+          <button type="button"
+                  data-filter="week"
+                  class="filter-btn font-display text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded
+                         border border-white/[0.1] text-pac-black-400 hover:text-pac-yellow-400 transition-colors"
+                  onclick="filterAEventKm('week')">
+            7일
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function filterAEventKm(filter) {
+        // 버튼 스타일 업데이트
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+          if (btn.dataset.filter === filter) {
+            btn.classList.remove('border', 'border-white/[0.1]', 'text-pac-black-400');
+            btn.classList.add('bg-pac-yellow-500', 'text-pac-black-900');
+          } else {
+            btn.classList.remove('bg-pac-yellow-500', 'text-pac-black-900');
+            btn.classList.add('border', 'border-white/[0.1]', 'text-pac-black-400');
+          }
+        });
+
+        // AJAX 호출 (미구현 — 추후 백엔드 추가)
+        console.log('Filter by:', filter);
+      }
+    </script>
+  @endif
+
+  {{-- ══════════════════════════════════════════════
+       고정점수 이벤트 제출물 (미션 제출 폼)
+       ══════════════════════════════════════════════ --}}
+  @if($activeFixedEvent)
+    @include('events.partials.fixed-submission', [
+      'event' => $activeFixedEvent,
+      'mySubmissions' => $myFixedSubmissions,
+    ])
+  @endif
+
+  {{-- ══════════════════════════════════════════════
        공지 + 이벤트 / 마일리지 (2열)
        ══════════════════════════════════════════════ --}}
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">

@@ -33,9 +33,10 @@
 
   {{-- 우측 영역 --}}
   @php
-    $nick      = Auth::user()->nickname ?? Auth::user()->name ?? '?';
+    $authed    = auth()->check();
+    $nick      = $authed ? (auth()->user()->nickname ?? auth()->user()->name ?? '?') : '게스트';
     $initial   = mb_strtoupper(mb_substr($nick, 0, 1));
-    $role      = Auth::user()->role;
+    $role      = $authed ? auth()->user()->role : null;
     $avatarBg  = match($role) {
       'super_admin'  => '#E80043',
       'region_admin' => '#E5AD16',
@@ -47,7 +48,8 @@
 
   <div class="flex items-center gap-3">
 
-    {{-- 사용자 아바타 + 이름 (데스크탑) --}}
+    {{-- 사용자 아바타 + 이름 (데스크탑, 로그인 시만) --}}
+    @if($authed)
     <div class="hidden lg:flex items-center gap-2.5">
       <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
            style="background:{{ $avatarBg }};">
@@ -72,6 +74,15 @@
        class="pac-nav-cta hidden md:inline-flex">
       + 기록
     </a>
+    @endif
+
+  @if(!$authed)
+    {{-- 비로그인: 로그인 버튼 --}}
+    <a href="{{ route('login') }}"
+       class="pac-nav-cta hidden md:inline-flex">
+      로그인
+    </a>
+  @endif
 
     {{-- 햄버거 (모바일) --}}
     <button @click="open = !open"

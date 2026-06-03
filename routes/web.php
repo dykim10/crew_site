@@ -29,6 +29,8 @@
 use App\Http\Controllers\ApplyController;
 use App\Http\Controllers\BugReportController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\EventBoardController;
+use App\Http\Controllers\EventFixedSubmissionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NoticeController;
@@ -36,6 +38,7 @@ use App\Http\Controllers\PhotoGalleryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\RunningLogController;
+use App\Http\Controllers\Admin\EventGroupController;
 use App\Http\Controllers\AdminPasswordConfirmController;
 use App\Http\Controllers\PlanningFeedbackController;
 use App\Http\Controllers\SmsWebhookController;
@@ -100,6 +103,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/events/{event}/register', [EventController::class, 'register'])->name('events.register');
     Route::post('/events/{event}/cancel',   [EventController::class, 'cancel'])->name('events.cancel');
 
+    // A타입 이벤트 현황 보드 (로그인 필요)
+    Route::get('/events/{event}/board', [EventBoardController::class, 'index'])->name('events.board');
+    Route::get('/events/{event}/board/group-data', [EventBoardController::class, 'groupData'])->name('events.board.group-data');
+    Route::get('/events/{event}/board/member-logs', [EventBoardController::class, 'memberLogs'])->name('events.board.member-logs');
+
+    // 고정점수 이벤트 제출물 (로그인 필요)
+    Route::post('/events/{event}/submit-fixed', [EventFixedSubmissionController::class, 'store'])->name('events.submit-fixed');
+    Route::get('/events/{event}/my-submissions', [EventFixedSubmissionController::class, 'mySubmissions'])->name('events.my-submissions');
+
     // 공지사항
     Route::get('/notices', [NoticeController::class, 'index'])->name('notices.index');
 
@@ -111,6 +123,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/photos/{photoGallery}', [PhotoGalleryController::class, 'show'])->name('photos.show');
 });
 
+
+// A타입 이벤트 조 편성 (관리자 전용)
+Route::middleware(['auth'])->prefix('admin/events')->name('admin.events.')->group(function () {
+    Route::get('/{event}/groups', [EventGroupController::class, 'index'])->name('groups.index');
+    Route::get('/{event}/groups/data', [EventGroupController::class, 'data'])->name('groups.data');
+    Route::post('/{event}/groups/save', [EventGroupController::class, 'save'])->name('groups.save');
+    Route::get('/{event}/groups/excel', [EventGroupController::class, 'downloadExcel'])->name('groups.excel');
+});
 
 // 관리자 비밀번호 재확인 (로그인 상태 필요, CSRF 적용)
 Route::middleware(['auth'])->group(function () {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
 use App\Services\DashboardService;
 use Illuminate\Http\Request;
 
@@ -28,12 +29,49 @@ class DashboardController extends Controller
     {
         $user = $request->user();
 
+        $activeAEventData = $this->service->getActiveATypeEvent($user);
+        $activeAEvent = $activeAEventData ? Event::find($activeAEventData['id']) : null;
+
+        $myAGroup = null;
+        $myConfirmedKm = 0.0;
+        $myPendingKm = 0.0;
+        $myTargetKm = 0.0;
+
+        if ($activeAEvent) {
+            $myAGroup = $this->service->getATypeUserGroup($user, $activeAEvent->id);
+            $kmData = $this->service->getATypeUserKm($user, $activeAEvent->id);
+            $myConfirmedKm = $kmData['confirmed'];
+            $myPendingKm = $kmData['pending'];
+            $myTargetKm = $kmData['target'];
+        }
+
+        // 고정점수 이벤트 (score_type='fixed') 조회
+        $activeFixedEvent = Event::query()
+            ->where('status', 'active')
+            ->where('score_type', 'fixed')
+            ->first();
+
+        $myFixedSubmissions = [];
+        if ($activeFixedEvent) {
+            $myFixedSubmissions = $activeFixedEvent->fixedSubmissions()
+                ->where('user_id', $user->id)
+                ->orderByDesc('created_at')
+                ->get();
+        }
+
         return view('dashboard', [
-            'stats'      => $this->service->getStats($user),
-            'notices'    => $this->service->getNotices($user),
-            'mileage'    => $this->service->getMileageProgress($user),
-            'events'     => $this->service->getActiveEvents($user),
-            'recentLogs' => $this->service->getRecentLogs($user, 3),
+            'stats'                 => $this->service->getStats($user),
+            'notices'               => $this->service->getNotices($user),
+            'mileage'               => $this->service->getMileageProgress($user),
+            'events'                => $this->service->getActiveEvents($user),
+            'recentLogs'            => $this->service->getRecentLogs($user, 3),
+            'activeAEvent'          => $activeAEvent,
+            'myAGroup'              => $myAGroup,
+            'myConfirmedKm'         => $myConfirmedKm,
+            'myPendingKm'           => $myPendingKm,
+            'myTargetKm'            => $myTargetKm,
+            'activeFixedEvent'      => $activeFixedEvent,
+            'myFixedSubmissions'    => $myFixedSubmissions,
         ]);
     }
 }

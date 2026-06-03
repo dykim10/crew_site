@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\EventGroup;
 use App\Models\EventRegistration;
 use App\Models\EventScore;
 use App\Models\Generation;
@@ -11,6 +12,7 @@ use App\Models\User;
 use App\Models\UsersDetail;
 use App\Services\EventRegistrationService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EventController extends Controller
 {
@@ -49,6 +51,9 @@ class EventController extends Controller
         if ($event->isTypeA()) {
             abort_unless($user, 403, '로그인이 필요합니다.');
 
+            // 기수 자격 확인
+            $eligible = $this->checkEligibility($event, $user);
+
             $detail     = UsersDetail::where('user_id', $user->id)->first();
             $grade      = $detail?->grade;
             $gradeRow   = collect($event->score_config ?? [])->firstWhere('grade', $grade);
@@ -63,7 +68,55 @@ class EventController extends Controller
 
             $eventScore = EventScore::where('event_id', $event->id)->where('user_id', $user->id)->first();
 
-            return view('events.show_a', compact('event', 'grade', 'targetKm', 'achievedKm', 'eventScore'));
+            // 사용자가 속한 그룹 조회 (eligible 인 경우만)
+            $myGroup = null;
+            $groupRankings = [];
+
+            if ($eligible) {
+                $userGroupMember = DB::table('crew.event_group_members')
+                    ->where('user_id', $user->id)
+                    ->join('crew.event_groups', 'crew.event_group_members.group_id', '=', 'crew.event_groups.id')
+                    ->where('crew.event_groups.event_id', $event->id)
+                    ->first();
+
+                if ($userGroupMember) {
+                    $myGroup = EventGroup::find($userGroupMember->group_id);
+                }
+
+                // 지부별 조 현황 조회 (인증km 기준 순위)
+                $eventGroups = EventGroup::where('event_id', $event->id)->get();
+
+                foreach ($eventGroups as $group) {
+                    $memberCount = DB::table('crew.event_group_members')
+                        ->where('group_id', $group->id)
+                        ->count();
+
+                    $totalKm = (float) DB::table('crew.running_logs')
+                        ->join('crew.event_group_members', 'crew.running_logs.user_id', '=', 'crew.event_group_members.user_id')
+                        ->where('crew.event_group_members.group_id', $group->id)
+                        ->where('crew.running_logs.is_confirmed', true)
+                        ->whereBetween('crew.running_logs.run_date', [$event->start_date->toDateString(), $event->end_date->toDateString()])
+                        ->sum('crew.running_logs.distance_km');
+
+                    $groupRankings[] = [
+                        'group_id'     => $group->id,
+                        'group_name'   => $group->group_name,
+                        'group_no'     => $group->group_no,
+                        'member_count' => $memberCount,
+                        'total_km'     => $totalKm,
+                    ];
+                }
+
+                // 인증km 기준 내림차순 정렬 및 순위 부여
+                usort($groupRankings, fn ($a, $b) => $b['total_km'] <=> $a['total_km']);
+                $rank = 1;
+                foreach ($groupRankings as &$item) {
+                    $item['rank'] = $rank++;
+                }
+                unset($item);
+            }
+
+            return view('events.show_a', compact('event', 'grade', 'targetKm', 'achievedKm', 'eventScore', 'eligible', 'myGroup', 'groupRankings'));
         }
 
         // B타입
