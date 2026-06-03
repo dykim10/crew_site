@@ -7,6 +7,7 @@ use App\Models\EventRegistration;
 use App\Models\EventScore;
 use App\Models\Generation;
 use App\Models\RunningLog;
+use App\Models\User;
 use App\Models\UsersDetail;
 use App\Services\EventRegistrationService;
 use Illuminate\Http\Request;
@@ -138,7 +139,7 @@ class EventController extends Controller
     }
 
     // 기수·지부 참여 자격 체크
-    private function checkEligibility(Event $event, ?$user): bool
+    private function checkEligibility(Event $event, ?User $user): bool
     {
         if (!$user) return false;
 
