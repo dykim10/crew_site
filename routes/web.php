@@ -49,6 +49,17 @@ Route::get('/preview', function () {
     return response(file_get_contents(public_path('preview.html')))->header('Content-Type', 'text/html; charset=utf-8');
 })->name('preview');
 
+// 메인 페이지 디자인 시안 (공개)
+Route::get('/design/v1', function () {
+    return response(file_get_contents(public_path('design/v1.html')))->header('Content-Type', 'text/html; charset=utf-8');
+})->name('design.v1');
+Route::get('/design/v2', function () {
+    return response(file_get_contents(public_path('design/v2.html')))->header('Content-Type', 'text/html; charset=utf-8');
+})->name('design.v2');
+Route::get('/design/v3', function () {
+    return response(file_get_contents(public_path('design/v3.html')))->header('Content-Type', 'text/html; charset=utf-8');
+})->name('design.v3');
+
 // 이벤트 A타입 기획초안 + 피드백 설문 (공개)
 Route::get('/testevent_a_type', [PlanningFeedbackController::class, 'showEventAType'])->name('testevent_a_type');
 Route::post('/testevent_a_type/feedback', [PlanningFeedbackController::class, 'storeEventAType'])->name('testevent_a_type.store');
