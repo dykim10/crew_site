@@ -52,6 +52,9 @@ class MeetingMinuteResource extends Resource
                 DatePicker::make('meeting_date')
                     ->label('회의 일자')
                     ->required()
+                    ->native(false)
+                    ->displayFormat('Y년 m월 d일')
+                    ->placeholder('날짜를 선택하세요')
                     ->default(now()),
 
                 Toggle::make('is_pinned')

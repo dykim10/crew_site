@@ -1,3 +1,234 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ════════════════════════════════════════════════════════
+   PAC-RUN Design System — 공용 토큰
+   home/v1 + 내부 페이지 전체에서 동일하게 적용
+════════════════════════════════════════════════════════ */
+
+:root {
+  --pac-yellow:  #E5AD16;
+  --pac-black:   #1A1212;
+  --pac-pink:    #E80043;
+  --pac-bg:      #0D0D0D;
+  --pac-bg2:     #131313;
+  --pac-white:   #FFFFFF;
+  --pac-border:  rgba(255,255,255,0.08);
+  --pac-muted:   rgba(255,255,255,0.45);
+}
+
+/* ── NAV ────────────────────────────────────────────── */
+.pac-nav {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 56px;
+  height: 68px;
+  background: rgba(13,13,13,0.95);
+  border-bottom: 1px solid var(--pac-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.pac-nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  letter-spacing: 5px;
+  color: var(--pac-yellow);
+  text-decoration: none;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.pac-nav-logo .logo-suffix { color: var(--pac-white); }
+
+.pac-nav-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.pac-nav-links a {
+  color: rgba(255,255,255,.50);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: color .18s;
+  position: relative;
+  padding-bottom: 2px;
+}
+.pac-nav-links a:hover,
+.pac-nav-links a.pac-active { color: var(--pac-yellow); }
+.pac-nav-links a.pac-active::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--pac-yellow);
+}
+
+.pac-nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--pac-yellow);
+  color: var(--pac-black);
+  padding: 8px 22px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 15px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  text-decoration: none;
+  transition: opacity .15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.pac-nav-cta:hover { opacity: .85; color: var(--pac-black); }
+
+/* ── ADMIN BAR ──────────────────────────────────────── */
+.pac-admin-bar {
+  position: relative;
+  z-index: 200;
+  background: #121212;
+  border-bottom: 1px solid rgba(229,173,22,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 56px;
+  height: 36px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+.pac-admin-bar-label { color: rgba(255,255,255,.4); }
+.pac-admin-bar-actions { display: flex; align-items: center; gap: 6px; }
+.pac-theme-btn {
+  padding: 3px 14px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: 'Bebas Neue', sans-serif;
+  transition: all .15s;
+  border: 1px solid rgba(255,255,255,.15);
+  background: transparent;
+  color: rgba(255,255,255,.4);
+}
+.pac-theme-btn.active {
+  background: var(--pac-yellow);
+  border-color: var(--pac-yellow);
+  color: var(--pac-black);
+}
+.pac-theme-btn:not(.active):hover {
+  border-color: rgba(255,255,255,.4);
+  color: rgba(255,255,255,.7);
+}
+.pac-admin-bar-link {
+  color: rgba(229,173,22,.5);
+  text-decoration: none;
+  font-size: 9px;
+  letter-spacing: 1px;
+  margin-left: 16px;
+}
+.pac-admin-bar-link:hover { color: var(--pac-yellow); }
+
+/* ── SECTION UTILITIES ──────────────────────────────── */
+.pac-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--pac-yellow);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.pac-section-label::before {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 2px;
+  background: var(--pac-yellow);
+  flex-shrink: 0;
+}
+.pac-section-heading {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(44px, 5.5vw, 80px);
+  letter-spacing: 1px;
+  line-height: 1;
+  margin-bottom: 56px;
+}
+
+/* ── SHARED BUTTONS ─────────────────────────────────── */
+.pac-btn {
+  background: var(--pac-yellow);
+  color: var(--pac-black);
+  padding: 14px 36px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: opacity .15s;
+}
+.pac-btn:hover { opacity: .9; color: var(--pac-black); }
+
+.pac-btn-ghost {
+  border: 1px solid rgba(255,255,255,.25);
+  color: rgba(255,255,255,.7);
+  padding: 14px 36px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all .25s;
+  display: inline-flex;
+  align-items: center;
+}
+.pac-btn-ghost:hover { border-color: var(--pac-yellow); color: var(--pac-yellow); }
+
+.pac-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(229,173,22,.5);
+  color: var(--pac-yellow);
+  padding: 12px 28px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all .25s;
+  width: fit-content;
+}
+.pac-btn-outline:hover { background: var(--pac-yellow); color: var(--pac-black); }
+
+/* ── RESPONSIVE ─────────────────────────────────────── */
+@media (max-width: 767px) {
+  /* Tailwind hidden/md:inline-flex보다 늦게 선언되므로 명시적으로 숨김 */
+  .pac-nav-cta { display: none; }
+}
+@media (max-width: 1023px) {
+  .pac-nav { padding: 0 20px; }
+  .pac-nav-links { display: none; }
+  .pac-admin-bar { padding: 0 20px; }
+}

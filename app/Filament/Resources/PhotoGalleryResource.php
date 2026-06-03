@@ -58,6 +58,9 @@ class PhotoGalleryResource extends Resource
                 DatePicker::make('taken_at')
                     ->label('촬영 일자')
                     ->required()
+                    ->native(false)
+                    ->displayFormat('Y년 m월 d일')
+                    ->placeholder('날짜를 선택하세요')
                     ->default(now()),
             ])->columns(3),
 

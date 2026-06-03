@@ -10,7 +10,9 @@ use App\Models\Branch;
 use App\Models\Event;
 use App\Models\EventRegistration;
 use App\Models\Generation;
+use App\Models\UserGeneration;
 use App\Services\CryptoService;
+use Filament\Forms\Components\Placeholder;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -128,12 +130,16 @@ class EventResource extends Resource
                         ->label('모집 시작일시')
                         ->seconds(false)
                         ->native(false)
+                        ->displayFormat('Y년 m월 d일 H:i')
+                        ->placeholder('날짜 및 시간을 선택하세요')
                         ->helperText('이 날짜 포함 → active 전환'),
 
                     DateTimePicker::make('recruit_end_at')
                         ->label('모집 종료일시')
                         ->seconds(false)
-                        ->native(false),
+                        ->native(false)
+                        ->displayFormat('Y년 m월 d일 H:i')
+                        ->placeholder('날짜 및 시간을 선택하세요'),
                 ])
                 ->columns(2),
 
@@ -143,12 +149,16 @@ class EventResource extends Resource
                     DatePicker::make('start_date')
                         ->label('이벤트 시작일')
                         ->required()
-                        ->native(false),
+                        ->native(false)
+                        ->displayFormat('Y년 m월 d일')
+                        ->placeholder('날짜를 선택하세요'),
 
                     DatePicker::make('end_date')
                         ->label('이벤트 종료일')
                         ->required()
                         ->native(false)
+                        ->displayFormat('Y년 m월 d일')
+                        ->placeholder('날짜를 선택하세요')
                         ->helperText('종료일 경과 → ended 자동 전환'),
 
                     Select::make('target_scope')
@@ -197,6 +207,42 @@ class EventResource extends Resource
                 ])
                 ->columns(2),
 
+            // ── A타입 전용: 참여 기수 선택 ──────────────────────────
+            Section::make('참여 기수 (A타입 전용)')
+                ->description('선택한 기수의 전체 구성원이 이벤트 참여자로 자동 등록됩니다. 이후 신규 가입 구성원도 매일 자동 동기화됩니다.')
+                ->schema([
+                    Select::make('generation')
+                        ->label('참여 기수')
+                        ->options(
+                            Generation::orderByDesc('number')
+                                ->get()
+                                ->mapWithKeys(fn ($g) => [
+                                    $g->number => $g->alias
+                                        ? "{$g->number}기 — {$g->alias}"
+                                        : "{$g->number}기",
+                                ])
+                                ->toArray()
+                        )
+                        ->searchable()
+                        ->live()
+                        ->required()
+                        ->placeholder('기수를 선택하세요')
+                        ->helperText('저장 시 해당 기수 구성원 전원에게 EventScore 레코드가 생성됩니다.'),
+
+                    Placeholder::make('member_preview')
+                        ->label('등록 예정 구성원')
+                        ->content(function ($get) {
+                            $num = $get('generation');
+                            if (!$num) return '기수를 선택하면 구성원 수가 표시됩니다.';
+                            $gen = Generation::where('number', $num)->first();
+                            if (!$gen) return '해당 기수를 찾을 수 없습니다.';
+                            $count = UserGeneration::where('generation_id', $gen->id)->count();
+                            return "{$gen->display_name} · 총 {$count}명이 참여자로 등록됩니다.";
+                        }),
+                ])
+                ->columns(2)
+                ->visible(fn ($get) => $get('event_type') === 'A'),
+
             // ── A타입 전용: 점수 설정 ────────────────────────────────
             Section::make('점수 설정 (A타입 전용)')
                 ->schema([
@@ -239,16 +285,29 @@ class EventResource extends Resource
                                 ->label('단답 텍스트')
                                 ->icon('heroicon-o-minus')
                                 ->schema([
+                                    TextInput::make('key')
+                                        ->label('필드 키 (영문)')
+                                        ->required()
+                                        ->alphaNum()
+                                        ->dehydrateStateUsing(fn ($state) => strtolower($state ?? ''))
+                                        ->placeholder('예: name, phone, email')
+                                        ->helperText('휴대폰=phone, 이메일=email 로 설정하면 암호화 컬럼에 자동 분리 저장됩니다.'),
                                     TextInput::make('label')->label('항목명')->required(),
                                     Toggle::make('required')->label('필수 입력')->default(true)->inline(false),
                                     Toggle::make('encrypted')->label('개인정보 암호화 저장')->default(false)->inline(false)
-                                        ->helperText('연락처·이메일 등 민감 정보에 사용하세요.'),
+                                        ->helperText('phone·email 키와 함께 사용하면 별도 암호화 컬럼에 저장됩니다.'),
                                 ]),
 
                             Builder\Block::make('textarea')
                                 ->label('장문 텍스트')
                                 ->icon('heroicon-o-bars-3-bottom-left')
                                 ->schema([
+                                    TextInput::make('key')
+                                        ->label('필드 키 (영문)')
+                                        ->required()
+                                        ->alphaNum()
+                                        ->dehydrateStateUsing(fn ($state) => strtolower($state ?? ''))
+                                        ->placeholder('예: motivation, memo'),
                                     TextInput::make('label')->label('항목명')->required(),
                                     Toggle::make('required')->label('필수 입력')->default(false)->inline(false),
                                 ]),
@@ -257,6 +316,12 @@ class EventResource extends Resource
                                 ->label('라디오 (단일 선택)')
                                 ->icon('heroicon-o-check-circle')
                                 ->schema([
+                                    TextInput::make('key')
+                                        ->label('필드 키 (영문)')
+                                        ->required()
+                                        ->alphaNum()
+                                        ->dehydrateStateUsing(fn ($state) => strtolower($state ?? ''))
+                                        ->placeholder('예: region, size'),
                                     TextInput::make('label')->label('항목명')->required(),
                                     Toggle::make('required')->label('필수 입력')->default(true)->inline(false),
                                     Repeater::make('options')
@@ -271,6 +336,12 @@ class EventResource extends Resource
                                 ->label('체크박스 (복수 선택)')
                                 ->icon('heroicon-o-check')
                                 ->schema([
+                                    TextInput::make('key')
+                                        ->label('필드 키 (영문)')
+                                        ->required()
+                                        ->alphaNum()
+                                        ->dehydrateStateUsing(fn ($state) => strtolower($state ?? ''))
+                                        ->placeholder('예: agree, items'),
                                     TextInput::make('label')->label('항목명')->required(),
                                     Toggle::make('required')->label('필수 입력')->default(false)->inline(false),
                                     Repeater::make('options')

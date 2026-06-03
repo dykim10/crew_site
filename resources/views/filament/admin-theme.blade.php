@@ -1,3 +1,15 @@
+<script src="{{ asset('js/flatpickr-ko.js') }}"></script>
+<script>
+/* DateTimePicker 시/분 입력 2자리 제한 */
+document.addEventListener('input', function (e) {
+    var el = e.target;
+    if (!el || el.type !== 'number') return;
+    if (!el.closest('.fi-fo-date-time-picker-time-inputs')) return;
+    if (el.value.length > 2) {
+        el.value = el.value.slice(0, 2);
+    }
+}, true);
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">

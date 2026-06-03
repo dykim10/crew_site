@@ -96,7 +96,10 @@ class UserResource extends Resource
                         ->placeholder('예: S, 1조, 2조'),
 
                     DatePicker::make('detail_join_date')
-                        ->label('합류일'),
+                        ->label('합류일')
+                        ->native(false)
+                        ->displayFormat('Y년 m월 d일')
+                        ->placeholder('날짜를 선택하세요'),
 
                     Textarea::make('detail_memo')
                         ->label('관리자 메모')
@@ -213,6 +216,9 @@ class UserResource extends Resource
 
                             DatePicker::make('joined_at')
                                 ->label('합류일')
+                                ->native(false)
+                                ->displayFormat('Y년 m월 d일')
+                                ->placeholder('날짜를 선택하세요')
                                 ->helperText('비워두면 합류일을 기록하지 않습니다.'),
 
                             Toggle::make('is_current')

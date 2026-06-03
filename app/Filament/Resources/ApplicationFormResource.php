@@ -85,10 +85,16 @@ class ApplicationFormResource extends Resource
                 ->schema([
                     DatePicker::make('open_from')
                         ->label('모집 시작일')
+                        ->native(false)
+                        ->displayFormat('Y년 m월 d일')
+                        ->placeholder('날짜를 선택하세요')
                         ->nullable(),
 
                     DatePicker::make('open_until')
                         ->label('모집 종료일')
+                        ->native(false)
+                        ->displayFormat('Y년 m월 d일')
+                        ->placeholder('날짜를 선택하세요')
                         ->nullable(),
                 ])
                 ->columns(2),

@@ -49,6 +49,7 @@ class EventRegistrationService
     }
 
     // form_schema 기준으로 입력값 정제 + phone_enc / email_enc 분리 저장
+    // flat 형식({ key, type, label, ... }) 과 Builder 형식({ type, data.key, data.label, ... }) 모두 처리
     private function buildFormData(Event $event, array $rawData, array $files): array
     {
         $formData = [];
@@ -56,21 +57,29 @@ class EventRegistrationService
         $emailEnc = null;
 
         foreach ($event->form_schema ?? [] as $field) {
-            $key     = $field['key'] ?? null;
-            $type    = $field['type'] ?? 'text';
-            $colHint = $field['data']['column'] ?? null;
+            // Builder 형식: data.key 우선, 없으면 최상위 key
+            $key       = $field['data']['key'] ?? $field['key'] ?? null;
+            $type      = $field['type'] ?? 'text';
+            $encrypted = $field['data']['encrypted'] ?? $field['encrypted'] ?? false;
+            $colHint   = $field['data']['column']    ?? null;
 
             if (!$key) continue;
 
-            // 휴대폰 → phone_enc 별도 컬럼 (암호화)
-            if ($key === 'phone' && $colHint === 'phone_enc') {
+            // phone_enc: key='phone' + encrypted=true 또는 명시적 column='phone_enc'
+            $isPhoneEnc = ($key === 'phone' && ($encrypted || $colHint === 'phone_enc'))
+                       || $colHint === 'phone_enc';
+
+            // email_enc: key='email' + encrypted=true 또는 명시적 column='email_enc'
+            $isEmailEnc = ($key === 'email' && ($encrypted || $colHint === 'email_enc'))
+                       || $colHint === 'email_enc';
+
+            if ($isPhoneEnc) {
                 $value    = $rawData[$key] ?? null;
                 $phoneEnc = $value ? $this->crypto->encrypt((string) $value) : null;
                 continue;
             }
 
-            // 이메일 → email_enc 별도 컬럼 (암호화, @로 식별)
-            if ($key === 'email' && $colHint === 'email_enc') {
+            if ($isEmailEnc) {
                 $value    = $rawData[$key] ?? null;
                 $emailEnc = $value ? $this->crypto->encrypt((string) $value) : null;
                 continue;
@@ -92,7 +101,7 @@ class EventRegistrationService
             $formData[$key] = $rawData[$key] ?? null;
         }
 
-        return compact('formData', 'phoneEnc', 'emailEnc');
+        return ['form_data' => $formData, 'phone_enc' => $phoneEnc, 'email_enc' => $emailEnc];
     }
 
     /*

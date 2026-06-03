@@ -173,11 +173,11 @@
 
         @foreach($event->form_schema ?? [] as $field)
         @php
-          $key      = $field['key'] ?? null;
-          $label    = $field['label'] ?? $key;
-          $type     = $field['type'] ?? 'text';
-          $required = $field['required'] ?? false;
-          $options  = $field['data']['options'] ?? [];
+          $key      = $field['data']['key']      ?? $field['key']      ?? null;
+          $label    = $field['data']['label']    ?? $field['label']    ?? $key;
+          $type     = $field['type']             ?? 'text';
+          $required = $field['data']['required'] ?? $field['required'] ?? false;
+          $options  = $field['data']['options']  ?? [];
           $name     = "field_{$key}";
         @endphp
         @if(!$key) @continue @endif

@@ -58,7 +58,7 @@ export default {
                 },
             },
             fontFamily: {
-                'display': ['"Barlow Condensed"', 'sans-serif'],
+                'display': ['"Bebas Neue"', '"Barlow Condensed"', 'sans-serif'],
                 'body':    ['"Noto Sans KR"', 'sans-serif'],
                 sans: ['"Noto Sans KR"', ...defaultTheme.fontFamily.sans],
             },

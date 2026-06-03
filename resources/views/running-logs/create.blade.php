@@ -332,6 +332,58 @@
                                                  focus:border-pac-yellow-500 focus:ring-pac-yellow-400 font-body"
                                           placeholder="오늘의 러닝 한 줄 메모"></textarea>
                             </div>
+
+                            {{-- 디버그 패널 --}}
+                            <template x-if="f.raw">
+                                <div class="border border-pac-black-100 rounded-xl overflow-hidden">
+                                    <button type="button" @click="f.debugOpen = !f.debugOpen"
+                                            class="w-full flex items-center justify-between px-3 py-2
+                                                   bg-pac-black-50 hover:bg-pac-black-100 transition-colors">
+                                        <div class="flex items-center gap-2">
+                                            <svg class="w-3.5 h-3.5 text-pac-black-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                                            </svg>
+                                            <span class="font-display text-[9px] font-bold text-pac-black-400 uppercase tracking-widest">
+                                                CORE API 파싱 원본
+                                            </span>
+                                            {{-- null 필드 경고 --}}
+                                            <template x-if="Object.values(f.raw).filter(v => v === null).length > 0">
+                                                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded text-[9px] font-bold">
+                                                    <span x-text="Object.values(f.raw).filter(v => v === null).length"></span> null
+                                                </span>
+                                            </template>
+                                        </div>
+                                        <svg class="w-3.5 h-3.5 text-pac-black-400 transition-transform duration-150"
+                                             :class="f.debugOpen ? 'rotate-180' : ''"
+                                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                        </svg>
+                                    </button>
+
+                                    <div x-show="f.debugOpen" x-cloak>
+                                        {{-- 필드별 파싱 결과 테이블 --}}
+                                        <div class="px-3 pt-3 pb-1">
+                                            <table class="w-full text-xs font-mono border-collapse">
+                                                <template x-for="[k, v] in Object.entries(f.raw)" :key="k">
+                                                    <tr class="border-b border-pac-black-50">
+                                                        <td class="py-1 pr-3 text-pac-black-400 w-40 align-top" x-text="k"></td>
+                                                        <td class="py-1 align-top"
+                                                            :class="v === null ? 'text-red-400' : 'text-emerald-600'"
+                                                            x-text="v === null ? 'null' : (typeof v === 'object' ? JSON.stringify(v) : String(v))">
+                                                        </td>
+                                                    </tr>
+                                                </template>
+                                            </table>
+                                        </div>
+                                        {{-- 전체 JSON --}}
+                                        <div class="px-3 pt-2 pb-3">
+                                            <p class="font-display text-[8px] font-bold text-pac-black-300 uppercase tracking-widest mb-1">RAW JSON</p>
+                                            <pre class="text-[10px] font-mono bg-pac-black-900 text-pac-green-400 p-2 rounded-lg overflow-x-auto whitespace-pre-wrap break-all"
+                                                 x-text="JSON.stringify(f.raw, null, 2)"></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
                     </template>
                 </div>
@@ -400,6 +452,8 @@ function runLogCreate() {
                     elevation_m:       '',
                     memo:              '',
                 },
+                raw:       null,
+                debugOpen: false,
                 error: null,
             }));
             this.phase = 'parsing';
@@ -422,6 +476,7 @@ function runLogCreate() {
                 if (res.ok && data.success) {
                     this.files[idx].status = 'done';
                     this.files[idx].logId  = data.log_id;
+                    this.files[idx].raw    = data.raw ?? null;
                     Object.assign(this.files[idx].parsed, {
                         image_url:         data.image_url,
                         run_date:          data.parsed.run_date          || new Date().toISOString().slice(0, 10),

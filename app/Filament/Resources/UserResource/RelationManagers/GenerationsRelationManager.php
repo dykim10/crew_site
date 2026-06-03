@@ -46,7 +46,9 @@ class GenerationsRelationManager extends RelationManager
 
             DatePicker::make('joined_at')
                 ->label('합류일')
-                ->placeholder('기수 시작일'),
+                ->native(false)
+                ->displayFormat('Y년 m월 d일')
+                ->placeholder('날짜를 선택하세요'),
 
             Toggle::make('is_current')
                 ->label('현재 소속 기수')

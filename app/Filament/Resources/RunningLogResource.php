@@ -86,7 +86,10 @@ class RunningLogResource extends Resource
 
                     DatePicker::make('run_date')
                         ->label('러닝 날짜')
-                        ->required(),
+                        ->required()
+                        ->native(false)
+                        ->displayFormat('Y년 m월 d일')
+                        ->placeholder('날짜를 선택하세요'),
 
                     TextInput::make('distance_km')
                         ->label('거리 (km)')
@@ -249,8 +252,8 @@ class RunningLogResource extends Resource
 
                 Filter::make('run_date')
                     ->form([
-                        DatePicker::make('from')->label('시작일'),
-                        DatePicker::make('until')->label('종료일'),
+                        DatePicker::make('from')->label('시작일')->native(false)->displayFormat('Y년 m월 d일')->placeholder('시작일'),
+                        DatePicker::make('until')->label('종료일')->native(false)->displayFormat('Y년 m월 d일')->placeholder('종료일'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query

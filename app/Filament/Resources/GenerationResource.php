@@ -123,10 +123,16 @@ class GenerationResource extends Resource
                 ->schema([
                     DatePicker::make('start_date')
                         ->label('운영 시작일')
+                        ->native(false)
+                        ->displayFormat('Y년 m월 d일')
+                        ->placeholder('날짜를 선택하세요')
                         ->live(),
 
                     DatePicker::make('end_date')
                         ->label('운영 종료일')
+                        ->native(false)
+                        ->displayFormat('Y년 m월 d일')
+                        ->placeholder('날짜를 선택하세요')
                         ->live()
                         ->helperText('종료일은 시작일보다 이후여야 합니다.'),
                 ])

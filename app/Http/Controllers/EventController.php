@@ -21,16 +21,19 @@ class EventController extends Controller
     {
         $active = Event::where('event_type', 'B')
             ->where('status', 'active')
+            ->withCount('registrations')
             ->orderBy('start_date')
             ->get();
 
         $upcoming = Event::where('event_type', 'B')
             ->where('status', 'upcoming')
+            ->withCount('registrations')
             ->orderBy('recruit_start_at')
             ->get();
 
         $ended = Event::where('event_type', 'B')
             ->where('status', 'ended')
+            ->withCount('registrations')
             ->orderByDesc('end_date')
             ->limit(12)
             ->get();
@@ -88,12 +91,12 @@ class EventController extends Controller
             return back()->with('error', '이미 신청하셨습니다.');
         }
 
-        // 동적 유효성 검사
+        // 동적 유효성 검사 (Builder 형식/flat 형식 모두 처리)
         $rules = [];
         foreach ($event->form_schema ?? [] as $field) {
-            $key      = $field['key'] ?? null;
+            $key      = $field['data']['key'] ?? $field['key'] ?? null;
             $type     = $field['type'] ?? 'text';
-            $required = $field['required'] ?? ($field['data']['required'] ?? false);
+            $required = $field['data']['required'] ?? $field['required'] ?? false;
             if (!$key) continue;
 
             $rule               = $required ? 'required' : 'nullable';
@@ -109,7 +112,7 @@ class EventController extends Controller
         $rawData = [];
         $files   = [];
         foreach ($event->form_schema ?? [] as $field) {
-            $key  = $field['key'] ?? null;
+            $key  = $field['data']['key'] ?? $field['key'] ?? null;
             $type = $field['type'] ?? 'text';
             if (!$key) continue;
             if ($type === 'image' && $request->hasFile("field_{$key}")) {

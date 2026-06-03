@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\EventResource\Pages;
 
 use App\Filament\Resources\EventResource;
+use App\Filament\Resources\EventResource\Pages\CreateEvent;
 use App\Models\Event;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
@@ -23,6 +24,18 @@ class EditEvent extends EditRecord
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
+    }
+
+    // A타입 수정 후 기수 구성원 동기화 (신규 가입 구성원 추가)
+    protected function afterSave(): void
+    {
+        $event = $this->record;
+        if ($event->event_type === 'A') {
+            $synced = CreateEvent::syncGenerationParticipants($event);
+            if ($synced > 0) {
+                $this->sendSuccessNotification();
+            }
+        }
     }
 
     // B타입 수정 시: 새로 추가된 Builder 블록만 정규화 (기존 key 유지)

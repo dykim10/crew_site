@@ -3,144 +3,118 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>PAC-RUN CREW</title>
+
+  {{-- Swiper (홈 전용 슬라이더) --}}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+  {{-- PAC-RUN 공용 CSS/JS (Bebas Neue 포함) --}}
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+
   <style>
-    :root { --yellow:#E5AD16; --black:#1A1212; --pink:#E80043; --bg:#0D0D0D; --bg2:#131313; --white:#FFFFFF; --border:rgba(255,255,255,0.08); }
+    /* ── 홈 전용 리셋 ── */
     * { margin:0; padding:0; box-sizing:border-box; }
     html { scroll-behavior:smooth; }
-    body { background:var(--bg); color:var(--white); font-family:'Barlow','Noto Sans KR',sans-serif; overflow-x:hidden; }
+    body { background:var(--pac-bg); color:var(--pac-white); font-family:'Barlow','Noto Sans KR',sans-serif; overflow-x:hidden; }
 
-    /* ===== 어드민 테마 스위처 바 ===== */
-    .admin-theme-bar {
-      position:fixed; top:0; left:0; right:0; z-index:200;
-      background:#1A1212; border-bottom:1px solid var(--yellow);
-      display:flex; align-items:center; justify-content:space-between;
-      padding:0 56px; height:40px; font-size:11px;
-    }
-    .admin-theme-bar-label { color:rgba(255,255,255,.5); letter-spacing:2px; text-transform:uppercase; font-weight:600; }
-    .theme-switch-btns { display:flex; gap:6px; align-items:center; }
-    .theme-btn {
-      padding:4px 16px; font-size:10px; font-weight:700; letter-spacing:2px;
-      text-transform:uppercase; border:1px solid rgba(255,255,255,.2);
-      background:transparent; color:rgba(255,255,255,.5); cursor:pointer; transition:all .2s;
-    }
-    .theme-btn.active { background:var(--yellow); border-color:var(--yellow); color:var(--black); }
-    .theme-btn:not(.active):hover { border-color:rgba(255,255,255,.5); color:rgba(255,255,255,.8); }
-    .admin-bar-link { color:rgba(229,173,22,.6); text-decoration:none; font-size:10px; letter-spacing:1px; margin-left:20px; }
-    .admin-bar-link:hover { color:var(--yellow); }
+    /* 홈: nav/admin-bar는 fixed (hero 위에 오버레이) */
+    .pac-admin-bar { position:fixed; top:0; left:0; right:0; z-index:200; }
+    .pac-nav { position:fixed; }
+    .has-admin-bar .pac-nav { top:36px; }
 
-    /* NAV */
-    .has-admin-bar nav { top:40px; }
-    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:0 56px; height:68px; background:rgba(13,13,13,0.92); border-bottom:1px solid var(--border); backdrop-filter:blur(16px); }
-    .nav-logo { font-family:'Bebas Neue',sans-serif; font-size:26px; letter-spacing:5px; color:var(--yellow); text-decoration:none; }
-    .nav-logo span { color:var(--white); }
-    .nav-links { display:flex; gap:36px; list-style:none; }
-    .nav-links a { color:rgba(255,255,255,.55); text-decoration:none; font-size:12px; font-weight:600; letter-spacing:2px; text-transform:uppercase; transition:color .2s; }
-    .nav-links a:hover { color:var(--yellow); }
-    .nav-btn { background:var(--yellow); color:var(--black); padding:9px 22px; font-size:12px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%); text-decoration:none; }
-
-    /* HERO */
+    /* ── HERO ── */
     .hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:120px 56px 80px; position:relative; overflow:hidden; }
     .has-admin-bar .hero { padding-top:160px; }
     .hero-glow { position:absolute; top:20%; right:10%; width:600px; height:600px; background:radial-gradient(circle, rgba(229,173,22,0.07) 0%, transparent 70%); pointer-events:none; }
     .hero-grid-lines { position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px); background-size:80px 80px; }
-    .hero-eyebrow { font-size:11px; font-weight:700; letter-spacing:5px; text-transform:uppercase; color:var(--yellow); margin-bottom:20px; }
+    .hero-eyebrow { font-size:11px; font-weight:700; letter-spacing:5px; text-transform:uppercase; color:var(--pac-yellow); margin-bottom:20px; }
     .hero-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(90px,15vw,220px); line-height:.85; letter-spacing:-3px; position:relative; z-index:1; }
     .hero-title .line2 { -webkit-text-stroke:2px rgba(255,255,255,0.15); color:transparent; }
-    .hero-title .accent { color:var(--yellow); }
-    .hero-rule { width:80px; height:3px; background:var(--yellow); margin:36px 0; }
+    .hero-title .accent { color:var(--pac-yellow); }
+    .hero-rule { width:80px; height:3px; background:var(--pac-yellow); margin:36px 0; }
     .hero-sub { font-size:16px; font-weight:300; color:rgba(255,255,255,.55); max-width:500px; line-height:1.8; margin-bottom:52px; }
     .hero-cta { display:flex; gap:16px; align-items:center; }
-    .btn-primary { background:var(--yellow); color:var(--black); padding:14px 36px; font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; text-decoration:none; display:inline-flex; align-items:center; gap:10px; }
-    .btn-ghost { border:1px solid rgba(255,255,255,.25); color:rgba(255,255,255,.7); padding:14px 36px; font-size:12px; font-weight:600; letter-spacing:2px; text-transform:uppercase; text-decoration:none; transition:all .25s; }
-    .btn-ghost:hover { border-color:var(--yellow); color:var(--yellow); }
-    .hero-stats { display:flex; gap:0; margin-top:80px; border-top:1px solid var(--border); padding-top:40px; }
-    .hero-stat { flex:1; padding-right:40px; border-right:1px solid var(--border); margin-right:40px; }
+    .hero-stats { display:flex; gap:0; margin-top:80px; border-top:1px solid var(--pac-border); padding-top:40px; }
+    .hero-stat { flex:1; padding-right:40px; border-right:1px solid var(--pac-border); margin-right:40px; }
     .hero-stat:last-child { border-right:none; margin-right:0; }
-    .hero-stat-num { font-family:'Bebas Neue',sans-serif; font-size:52px; color:var(--yellow); line-height:1; }
+    .hero-stat-num { font-family:'Bebas Neue',sans-serif; font-size:52px; color:var(--pac-yellow); line-height:1; }
     .hero-stat-label { font-size:11px; font-weight:600; letter-spacing:2px; color:rgba(255,255,255,.35); text-transform:uppercase; margin-top:4px; }
 
-    /* SECTION COMMON */
+    /* ── SECTION COMMON ── */
     section { padding:100px 56px; }
-    .section-label { font-size:11px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--yellow); margin-bottom:12px; display:flex; align-items:center; gap:14px; }
-    .section-label::before { content:''; width:28px; height:2px; background:var(--yellow); flex-shrink:0; }
-    .section-heading { font-family:'Bebas Neue',sans-serif; font-size:clamp(44px,5.5vw,80px); letter-spacing:1px; line-height:1; margin-bottom:56px; }
 
-    /* PAC 소개 */
-    .pac-section { background:var(--bg2); }
-    .pac-banner { display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--border); overflow:hidden; }
+    /* ── PAC 소개 ── */
+    .pac-intro-section { background:var(--pac-bg2); }
+    .pac-banner { display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--pac-border); overflow:hidden; }
     .pac-image { height:420px; background:linear-gradient(135deg, #1a1212 0%, #3d2800 60%, #1a1212 100%); position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden; }
     .pac-image::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(229,173,22,0.03) 30px, rgba(229,173,22,0.03) 31px); }
     .pac-image-big-text { font-family:'Bebas Neue',sans-serif; font-size:100px; letter-spacing:10px; color:rgba(229,173,22,0.12); position:absolute; }
-    .pac-image-tag { position:absolute; bottom:24px; left:24px; background:var(--yellow); color:var(--black); font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; padding:6px 14px; }
+    .pac-image-tag { position:absolute; bottom:24px; left:24px; background:var(--pac-yellow); color:var(--pac-black); font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; padding:6px 14px; }
     .pac-content { padding:64px; display:flex; flex-direction:column; justify-content:center; }
     .pac-content h2 { font-family:'Bebas Neue',sans-serif; font-size:52px; line-height:1.05; margin-bottom:20px; }
-    .pac-content h2 em { color:var(--yellow); font-style:normal; }
+    .pac-content h2 em { color:var(--pac-yellow); font-style:normal; }
     .pac-content p { font-size:15px; line-height:1.9; color:rgba(255,255,255,.55); margin-bottom:16px; font-weight:300; }
-    .btn-outline { display:inline-flex; align-items:center; gap:10px; border:1px solid rgba(229,173,22,.5); color:var(--yellow); padding:12px 28px; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; text-decoration:none; transition:all .25s; width:fit-content; margin-top:20px; }
-    .btn-outline:hover { background:var(--yellow); color:var(--black); }
 
-    /* 지부 */
-    .branch-section { background:var(--bg); }
+    /* ── 지부 ── */
+    .branch-section { background:var(--pac-bg); }
     .swiper-branches { overflow:hidden; }
-    .branch-card { height:300px; position:relative; overflow:hidden; cursor:pointer; border:1px solid var(--border); transition:border-color .3s; }
-    .branch-card:hover { border-color:var(--yellow); }
+    .branch-card { height:300px; position:relative; overflow:hidden; cursor:pointer; border:1px solid var(--pac-border); transition:border-color .3s; }
+    .branch-card:hover { border-color:var(--pac-yellow); }
     .branch-bg { position:absolute; inset:0; transition:transform .6s ease; }
     .branch-card:hover .branch-bg { transform:scale(1.06); }
-    .branch-banpo { background:linear-gradient(160deg, #2d1a00, #0d0d0d); }
-    .branch-yonsei { background:linear-gradient(160deg, #001a2d, #0d0d0d); }
-    .branch-gunpo { background:linear-gradient(160deg, #0d2200, #0d0d0d); }
+    .branch-banpo   { background:linear-gradient(160deg, #2d1a00, #0d0d0d); }
+    .branch-yonsei  { background:linear-gradient(160deg, #001a2d, #0d0d0d); }
+    .branch-gunpo   { background:linear-gradient(160deg, #0d2200, #0d0d0d); }
     .branch-incheon { background:linear-gradient(160deg, #001a2d, #1a001a); }
     .branch-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.9) 0%, transparent 55%); }
     .branch-number { position:absolute; top:20px; right:20px; font-family:'Bebas Neue',sans-serif; font-size:64px; color:rgba(255,255,255,0.05); line-height:1; }
     .branch-content { position:absolute; bottom:0; left:0; right:0; padding:24px; }
-    .branch-region-tag { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--yellow); margin-bottom:8px; }
+    .branch-region-tag { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--pac-yellow); margin-bottom:8px; }
     .branch-name { font-family:'Bebas Neue',sans-serif; font-size:34px; letter-spacing:2px; margin-bottom:8px; }
     .branch-slogan { font-size:12px; color:rgba(255,255,255,.5); line-height:1.5; }
     .branch-arrow { position:absolute; top:20px; left:20px; width:38px; height:38px; border:1px solid rgba(229,173,22,.4); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .3s; font-size:14px; }
     .branch-card:hover .branch-arrow { opacity:1; }
 
-    /* 이벤트 */
-    .event-section { background:var(--bg2); }
+    /* ── 이벤트 ── */
+    .event-section { background:var(--pac-bg2); }
     .event-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
-    .event-card { border:1px solid var(--border); overflow:hidden; cursor:pointer; transition:border-color .3s, transform .3s; }
-    .event-card:hover { border-color:var(--yellow); transform:translateY(-6px); }
+    .event-card { border:1px solid var(--pac-border); overflow:hidden; cursor:pointer; transition:border-color .3s, transform .3s; }
+    .event-card:hover { border-color:var(--pac-yellow); transform:translateY(-6px); }
     .event-thumb { height:200px; position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden; }
     .et-1 { background:linear-gradient(135deg, #2d1a00, #0d0d0d); }
     .et-2 { background:linear-gradient(135deg, #00122d, #0d0d0d); }
     .et-3 { background:linear-gradient(135deg, #2d001a, #0d0d0d); }
     .et-4 { background:linear-gradient(135deg, #001a15, #0d0d0d); }
     .event-thumb::after { content:'EVENT'; font-family:'Bebas Neue',sans-serif; font-size:52px; letter-spacing:8px; color:rgba(255,255,255,0.05); position:absolute; }
-    .event-date-tag { position:absolute; top:14px; left:14px; background:var(--yellow); color:var(--black); font-size:10px; font-weight:700; letter-spacing:1px; padding:4px 10px; z-index:1; }
+    .event-date-tag { position:absolute; top:14px; left:14px; background:var(--pac-yellow); color:var(--pac-black); font-size:10px; font-weight:700; letter-spacing:1px; padding:4px 10px; z-index:1; }
     .event-info { padding:18px 20px 22px; }
-    .event-type-tag { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--yellow); margin-bottom:8px; }
+    .event-type-tag { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--pac-yellow); margin-bottom:8px; }
     .event-title { font-size:15px; font-weight:700; margin-bottom:12px; line-height:1.4; }
     .event-meta { font-size:12px; color:rgba(255,255,255,.4); display:flex; flex-direction:column; gap:4px; }
     .event-meta span { display:flex; align-items:center; gap:6px; }
 
-    /* 커뮤니티 */
-    .community-section { background:var(--bg); }
+    /* ── 커뮤니티 ── */
+    .community-section { background:var(--pac-bg); }
     .community-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .community-card { border:1px solid var(--border); padding:28px 32px; transition:border-color .3s; }
+    .community-card { border:1px solid var(--pac-border); padding:28px 32px; transition:border-color .3s; }
     .community-card:hover { border-color:rgba(229,173,22,.3); }
-    .community-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+    .community-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; padding-bottom:16px; border-bottom:1px solid var(--pac-border); }
     .community-card-name { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:2px; }
-    .community-card-link { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--yellow); text-decoration:none; }
+    .community-card-link { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--pac-yellow); text-decoration:none; }
     .notice-tabs { display:flex; gap:0; margin-bottom:14px; }
-    .ntab { padding:5px 12px; font-size:10px; font-weight:700; letter-spacing:1.5px; cursor:pointer; border:1px solid var(--border); border-right:none; color:rgba(255,255,255,.4); transition:all .2s; }
-    .ntab:last-child { border-right:1px solid var(--border); }
-    .ntab.on { background:var(--yellow); border-color:var(--yellow); color:var(--black); }
+    .ntab { padding:5px 12px; font-size:10px; font-weight:700; letter-spacing:1.5px; cursor:pointer; border:1px solid var(--pac-border); border-right:none; color:rgba(255,255,255,.4); transition:all .2s; }
+    .ntab:last-child { border-right:1px solid var(--pac-border); }
+    .ntab.on { background:var(--pac-yellow); border-color:var(--pac-yellow); color:var(--pac-black); }
     .post-list { list-style:none; }
     .post-item { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid rgba(255,255,255,.04); cursor:pointer; }
     .post-item:last-child { border-bottom:none; }
-    .post-item:hover .post-name { color:var(--yellow); }
+    .post-item:hover .post-name { color:var(--pac-yellow); }
     .post-name { font-size:13px; color:rgba(255,255,255,.75); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:220px; transition:color .2s; }
     .post-date { font-size:11px; color:rgba(255,255,255,.25); flex-shrink:0; margin-left:10px; }
 
-    /* Instagram */
-    .insta-section { background:var(--bg2); }
+    /* ── Instagram ── */
+    .insta-section { background:var(--pac-bg2); }
     .swiper-insta { overflow:hidden; }
     .insta-card { aspect-ratio:1; position:relative; overflow:hidden; cursor:pointer; }
     .ic-1 { background:linear-gradient(135deg,#3d2800,#E5AD16 250%); }
@@ -155,51 +129,49 @@
     .insta-hover-text { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,.8); }
     .insta-watermark { position:absolute; bottom:10px; left:12px; font-size:10px; font-weight:700; letter-spacing:2px; color:rgba(255,255,255,.35); }
 
-    /* Footer */
-    footer { background:#090909; border-top:1px solid var(--border); padding:64px 56px 32px; }
+    /* ── Footer ── */
+    footer { background:#090909; border-top:1px solid var(--pac-border); padding:64px 56px 32px; }
     .footer-main { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:60px; margin-bottom:48px; }
-    .footer-brand-name { font-family:'Bebas Neue',sans-serif; font-size:34px; letter-spacing:5px; color:var(--yellow); margin-bottom:12px; }
+    .footer-brand-name { font-family:'Bebas Neue',sans-serif; font-size:34px; letter-spacing:5px; color:var(--pac-yellow); margin-bottom:12px; }
     .footer-brand-name span { color:white; }
     .footer-desc { font-size:13px; line-height:1.9; color:rgba(255,255,255,.3); font-weight:300; }
-    .footer-col-title { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--yellow); margin-bottom:18px; }
+    .footer-col-title { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--pac-yellow); margin-bottom:18px; }
     .footer-links { list-style:none; }
     .footer-links li { margin-bottom:10px; }
     .footer-links a { font-size:13px; color:rgba(255,255,255,.4); text-decoration:none; transition:color .2s; }
-    .footer-links a:hover { color:var(--white); }
-    .footer-bottom { border-top:1px solid var(--border); padding-top:24px; display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(255,255,255,.2); }
-    .footer-bottom a { color:var(--yellow); text-decoration:none; }
+    .footer-links a:hover { color:var(--pac-white); }
+    .footer-bottom { border-top:1px solid var(--pac-border); padding-top:24px; display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(255,255,255,.2); }
+    .footer-bottom a { color:var(--pac-yellow); text-decoration:none; }
   </style>
 </head>
 <body class="{{ auth()->check() && in_array(auth()->user()->role, ['super_admin','region_admin']) ? 'has-admin-bar' : '' }}">
 
-{{-- 어드민 전용 테마 스위처 바 --}}
+{{-- 어드민 테마 스위처 바 (공용 .pac-admin-bar 사용) --}}
 @auth
   @if(in_array(auth()->user()->role, ['super_admin', 'region_admin']))
-  <div class="admin-theme-bar">
-    <span class="admin-theme-bar-label">🎨 Theme · 관리자 전용</span>
-    <div style="display:flex;align-items:center;gap:12px;">
-      <div class="theme-switch-btns">
-        <form method="POST" action="{{ route('theme.switch') }}" style="display:inline;">
-          @csrf
-          <input type="hidden" name="theme" value="v1">
-          <button type="submit" class="theme-btn active">V1 Dark</button>
-        </form>
-        <form method="POST" action="{{ route('theme.switch') }}" style="display:inline;">
-          @csrf
-          <input type="hidden" name="theme" value="v2">
-          <button type="submit" class="theme-btn">V2 Energy</button>
-        </form>
-      </div>
-      <a href="/admin/theme-settings" class="admin-bar-link">어드민 설정 →</a>
+  <div class="pac-admin-bar">
+    <span class="pac-admin-bar-label">THEME · 관리자 전용</span>
+    <div class="pac-admin-bar-actions">
+      <form method="POST" action="{{ route('theme.switch') }}" style="display:inline;">
+        @csrf
+        <input type="hidden" name="theme" value="v1">
+        <button type="submit" class="pac-theme-btn active">V1 Dark</button>
+      </form>
+      <form method="POST" action="{{ route('theme.switch') }}" style="display:inline;">
+        @csrf
+        <input type="hidden" name="theme" value="v2">
+        <button type="submit" class="pac-theme-btn">V2 Energy</button>
+      </form>
+      <a href="/admin/theme-settings" class="pac-admin-bar-link">설정 →</a>
     </div>
   </div>
   @endif
 @endauth
 
-<!-- NAV -->
-<nav>
-  <a href="{{ route('home') }}" class="nav-logo">PAC<span>-RUN</span></a>
-  <ul class="nav-links">
+{{-- NAV (공용 .pac-nav 사용) --}}
+<nav class="pac-nav">
+  <a href="{{ route('home') }}" class="pac-nav-logo">PAC<span class="logo-suffix">-RUN</span></a>
+  <ul class="pac-nav-links">
     <li><a href="#">소개</a></li>
     <li><a href="#">지부</a></li>
     <li><a href="#">이벤트</a></li>
@@ -207,9 +179,9 @@
     <li><a href="#">기록</a></li>
   </ul>
   @auth
-    <a href="{{ route('dashboard') }}" class="nav-btn">대시보드</a>
+    <a href="{{ route('dashboard') }}" class="pac-nav-cta">대시보드</a>
   @else
-    <a href="{{ route('login') }}" class="nav-btn">로그인</a>
+    <a href="{{ route('login') }}" class="pac-nav-cta">로그인</a>
   @endauth
 </nav>
 
@@ -226,8 +198,8 @@
   <div class="hero-rule"></div>
   <p class="hero-sub">함께 달리고, 함께 성장하는 서울 러닝 크루.<br>반포·연대·군포·인천 — 각 지역에서 달린다.</p>
   <div class="hero-cta">
-    <a href="{{ route('apply') }}" class="btn-primary">크루 참여하기 →</a>
-    <a href="#about" class="btn-ghost">크루 소개</a>
+    <a href="{{ route('apply') }}" class="pac-btn">크루 참여하기 →</a>
+    <a href="#about" class="pac-btn-ghost">크루 소개</a>
   </div>
   <div class="hero-stats">
     <div class="hero-stat"><div class="hero-stat-num">240+</div><div class="hero-stat-label">Active Runners</div></div>
@@ -238,9 +210,9 @@
 </section>
 
 <!-- PAC 소개 -->
-<section class="pac-section" id="about">
-  <div class="section-label">About PAC-RUN</div>
-  <div class="section-heading">우리는 함께 달린다</div>
+<section class="pac-intro-section" id="about">
+  <div class="pac-section-label">About PAC-RUN</div>
+  <div class="pac-section-heading">우리는 함께 달린다</div>
   <div class="pac-banner">
     <div class="pac-image">
       <div class="pac-image-big-text">PAC</div>
@@ -250,15 +222,15 @@
       <h2>달리기로 하나 되는<br><em>러닝 크루</em></h2>
       <p>PAC-RUN은 서울과 수도권을 기반으로 활동하는 러닝 크루입니다. 반포, 연대, 군포, 인천 4개 지부가 각 지역의 러너들을 연결하고, 함께 달리며 성장하는 커뮤니티를 만들어갑니다.</p>
       <p>매월 정기 런, 특별 이벤트, 지부 간 교류를 통해 혼자가 아닌 함께 달리는 즐거움을 경험하세요.</p>
-      <a href="#" class="btn-outline">자세히 보기 →</a>
+      <a href="#" class="pac-btn-outline" style="margin-top:20px;">자세히 보기 →</a>
     </div>
   </div>
 </section>
 
 <!-- 지부 소개 -->
 <section class="branch-section">
-  <div class="section-label">지부 소개</div>
-  <div class="section-heading">우리 지부를 만나세요</div>
+  <div class="pac-section-label">지부 소개</div>
+  <div class="pac-section-heading">우리 지부를 만나세요</div>
   <div class="swiper swiper-branches">
     <div class="swiper-wrapper">
       <div class="swiper-slide" style="width:340px">
@@ -319,8 +291,8 @@
 
 <!-- 이벤트 -->
 <section class="event-section">
-  <div class="section-label">Events</div>
-  <div class="section-heading">다가오는 이벤트</div>
+  <div class="pac-section-label">Events</div>
+  <div class="pac-section-heading">다가오는 이벤트</div>
   @if($events->isNotEmpty())
   <div class="event-grid">
     @foreach($events as $ev)
@@ -346,7 +318,6 @@
       </div>
     </a>
     @endforeach
-    {{-- 이벤트가 4개 미만이면 더보기 카드로 채우기 --}}
     @if($events->count() < 4)
     <a href="{{ route('events.index') }}" class="event-card" style="text-decoration:none;color:inherit;display:flex;align-items:center;justify-content:center;min-height:200px;">
       <div style="text-align:center;opacity:.4;">
@@ -359,18 +330,18 @@
   @else
   <div style="text-align:center;padding:60px 0;opacity:.4;">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:4px;">진행 중인 이벤트가 없습니다</div>
-    <a href="{{ route('events.index') }}" style="color:var(--yellow);font-size:12px;letter-spacing:2px;text-decoration:none;margin-top:12px;display:block;">전체 이벤트 보기 →</a>
+    <a href="{{ route('events.index') }}" style="color:var(--pac-yellow);font-size:12px;letter-spacing:2px;text-decoration:none;margin-top:12px;display:block;">전체 이벤트 보기 →</a>
   </div>
   @endif
   <div style="text-align:right;margin-top:20px;">
-    <a href="{{ route('events.index') }}" class="btn-outline" style="display:inline-flex;">전체 이벤트 →</a>
+    <a href="{{ route('events.index') }}" class="pac-btn-outline">전체 이벤트 →</a>
   </div>
 </section>
 
 <!-- 커뮤니티 -->
 <section class="community-section">
-  <div class="section-label">Community</div>
-  <div class="section-heading">커뮤니티</div>
+  <div class="pac-section-label">Community</div>
+  <div class="pac-section-heading">커뮤니티</div>
   <div class="community-grid">
     <div class="community-card">
       <div class="community-card-top"><div class="community-card-name">공지사항</div><a href="#" class="community-card-link">전체보기</a></div>
@@ -424,8 +395,8 @@
 
 <!-- Instagram -->
 <section class="insta-section">
-  <div class="section-label">Instagram</div>
-  <div class="section-heading">@pac.run.crew</div>
+  <div class="pac-section-label">Instagram</div>
+  <div class="pac-section-heading">@pac.run.crew</div>
   <div class="swiper swiper-insta">
     <div class="swiper-wrapper">
       <div class="swiper-slide" style="width:220px"><div class="insta-card ic-1"><div class="insta-hover"><div class="insta-hover-icon">📸</div><div class="insta-hover-text">보기</div></div><div class="insta-watermark">#pacrun</div></div></div>
