@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 
@@ -11,7 +12,15 @@ class HomeController extends Controller
     {
         $activeTheme = Setting::get('active_theme', 'v1');
 
-        return view("home.{$activeTheme}", compact('activeTheme'));
+        // 메인 노출용 B타입 이벤트: active → upcoming 순, 최대 4개
+        $events = Event::where('event_type', 'B')
+            ->whereIn('status', ['active', 'upcoming'])
+            ->orderByRaw("CASE status WHEN 'active' THEN 0 WHEN 'upcoming' THEN 1 ELSE 2 END")
+            ->orderBy('start_date')
+            ->limit(4)
+            ->get();
+
+        return view("home.{$activeTheme}", compact('activeTheme', 'events'));
     }
 
     public function switchTheme(Request $request)

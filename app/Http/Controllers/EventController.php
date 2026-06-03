@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\EventRegistration;
 use App\Models\EventScore;
 use App\Models\Generation;
 use App\Models\RunningLog;
@@ -14,114 +15,102 @@ class EventController extends Controller
 {
     public function __construct(private EventRegistrationService $service) {}
 
+    // 이벤트 목록 (공개 — 비로그인 접근 가능)
     public function index()
     {
-        $now = now()->toDateString();
-
-        $active = Event::where('status', 'active')
-            ->whereDate('end_date', '>=', $now)
-            ->orderByDesc('start_date')
-            ->get();
-
-        $upcoming = Event::where('status', 'upcoming')
+        $active = Event::where('event_type', 'B')
+            ->where('status', 'active')
             ->orderBy('start_date')
             ->get();
 
-        $ended = Event::where('status', 'ended')
-            ->orWhere(function ($q) use ($now) {
-                $q->where('status', 'active')->whereDate('end_date', '<', $now);
-            })
+        $upcoming = Event::where('event_type', 'B')
+            ->where('status', 'upcoming')
+            ->orderBy('recruit_start_at')
+            ->get();
+
+        $ended = Event::where('event_type', 'B')
+            ->where('status', 'ended')
             ->orderByDesc('end_date')
-            ->limit(10)
+            ->limit(12)
             ->get();
 
         return view('events.index', compact('active', 'upcoming', 'ended'));
     }
 
+    // 이벤트 상세 (공개 — 비로그인 접근 가능, 신청은 로그인 필요)
     public function show(Event $event)
     {
-        $eligible = $this->checkGenerationEligibility($event, auth()->user());
+        $user = auth()->user();
 
-        // A타입: 마일리지 현황 뷰
         if ($event->isTypeA()) {
-            $user       = auth()->user();
+            abort_unless($user, 403, '로그인이 필요합니다.');
+
             $detail     = UsersDetail::where('user_id', $user->id)->first();
             $grade      = $detail?->grade;
             $gradeRow   = collect($event->score_config ?? [])->firstWhere('grade', $grade);
             $targetKm   = (float) ($gradeRow['target_km'] ?? 0);
 
-            $achievedKm = 0.0;
-            if ($event->start_date && $event->end_date) {
-                $achievedKm = (float) RunningLog::where('user_id', $user->id)
+            $achievedKm = $event->start_date && $event->end_date
+                ? (float) RunningLog::where('user_id', $user->id)
                     ->where('is_confirmed', true)
-                    ->whereBetween('run_date', [
-                        $event->start_date->toDateString(),
-                        $event->end_date->toDateString(),
-                    ])
-                    ->sum('distance_km');
-            }
+                    ->whereBetween('run_date', [$event->start_date->toDateString(), $event->end_date->toDateString()])
+                    ->sum('distance_km')
+                : 0.0;
 
-            $eventScore = EventScore::where('event_id', $event->id)
-                ->where('user_id', $user->id)
-                ->first();
+            $eventScore = EventScore::where('event_id', $event->id)->where('user_id', $user->id)->first();
 
-            return view('events.show_a', compact(
-                'event', 'eligible', 'grade', 'targetKm', 'achievedKm', 'eventScore'
-            ));
+            return view('events.show_a', compact('event', 'grade', 'targetKm', 'achievedKm', 'eventScore'));
         }
 
-        // B타입: 동적 신청 폼 뷰
-        $alreadyRegistered = $this->service->alreadyRegistered($event, auth()->user());
+        // B타입
+        $alreadyRegistered = $this->service->alreadyRegistered($event, $user);
+        $eligible          = $this->checkEligibility($event, $user);
 
-        return view('events.show', compact('event', 'alreadyRegistered', 'eligible'));
+        // 참여자 명단 (마스킹)
+        $participants = EventRegistration::where('event_id', $event->id)
+            ->orderBy('created_at')
+            ->get()
+            ->map(fn ($r) => $r->getMaskedName());
+
+        return view('events.show', compact('event', 'alreadyRegistered', 'eligible', 'participants'));
     }
 
+    // 이벤트 신청 (로그인 필수)
     public function register(Request $request, Event $event)
     {
+        abort_unless(auth()->check(), 401, '로그인이 필요합니다.');
         abort_if(!$event->isTypeB(), 404);
         abort_if(!$event->is_registration_open, 403, '신청이 마감되었습니다.');
-
-        // 기수 대상 제한 체크
-        abort_if(
-            !$this->checkGenerationEligibility($event, auth()->user()),
-            403,
-            '참여 대상 기수가 아닙니다.'
-        );
+        abort_unless($this->checkEligibility($event, auth()->user()), 403, '참여 대상이 아닙니다.');
 
         if ($this->service->alreadyRegistered($event, auth()->user())) {
             return back()->with('error', '이미 신청하셨습니다.');
         }
 
-        // 동적 유효성 검사 규칙 생성
+        // 동적 유효성 검사
         $rules = [];
         foreach ($event->form_schema ?? [] as $field) {
             $key      = $field['key'] ?? null;
             $type     = $field['type'] ?? 'text';
-            $required = $field['data']['required'] ?? false;
-
+            $required = $field['required'] ?? ($field['data']['required'] ?? false);
             if (!$key) continue;
 
-            $rule = $required ? 'required' : 'nullable';
-
+            $rule               = $required ? 'required' : 'nullable';
             $rules["field_{$key}"] = match ($type) {
                 'image'    => $rule . '|file|mimes:jpg,jpeg,png,gif,webp|max:5120',
                 'checkbox' => $rule . '|array',
-                'radio'    => $rule . '|string',
-                'textarea' => $rule . '|string|max:3000',
                 default    => $rule . '|string|max:500',
             };
         }
+        $request->validate($rules);
 
-        $validated = $request->validate($rules);
-
-        // key → 값 매핑 정규화
+        // 입력값 수집
         $rawData = [];
         $files   = [];
         foreach ($event->form_schema ?? [] as $field) {
             $key  = $field['key'] ?? null;
             $type = $field['type'] ?? 'text';
             if (!$key) continue;
-
             if ($type === 'image' && $request->hasFile("field_{$key}")) {
                 $files[$key] = $request->file("field_{$key}");
             } else {
@@ -135,20 +124,29 @@ class EventController extends Controller
             ->with('success', '참가 신청이 완료되었습니다!');
     }
 
-    // target_scope가 'generation'일 때 사용자의 기수 참여 이력 검증
-    // 그 외 scope(all/crew/branch/group)는 항상 true 반환
-    private function checkGenerationEligibility(Event $event, $user): bool
+    // 신청 취소 (로그인 필수, 본인만)
+    public function cancel(Event $event)
     {
-        if ($event->target_scope !== 'generation' || !$event->generation) {
-            return true;
+        abort_unless(auth()->check(), 401);
+        $cancelled = $this->service->cancel($event, auth()->user());
+
+        if (!$cancelled) {
+            return back()->with('error', '신청 내역을 찾을 수 없습니다.');
         }
 
-        $generation = Generation::where('number', $event->generation)->first();
+        return back()->with('success', '참가 신청이 취소되었습니다.');
+    }
 
-        if (!$generation) {
-            return false;
+    // 기수·지부 참여 자격 체크
+    private function checkEligibility(Event $event, ?$user): bool
+    {
+        if (!$user) return false;
+
+        if ($event->target_scope === 'generation' && $event->generation) {
+            $gen = Generation::where('number', $event->generation)->first();
+            return $gen && $user->hasGeneration($gen->id);
         }
 
-        return $user->hasGeneration($generation->id);
+        return true;
     }
 }

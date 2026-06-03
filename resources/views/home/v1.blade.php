@@ -321,11 +321,49 @@
 <section class="event-section">
   <div class="section-label">Events</div>
   <div class="section-heading">다가오는 이벤트</div>
+  @if($events->isNotEmpty())
   <div class="event-grid">
-    <div class="event-card"><div class="event-thumb et-1"><div class="event-date-tag">2026.06.14</div></div><div class="event-info"><div class="event-type-tag">B Type · 전체</div><div class="event-title">PAC-RUN 여름 챌린지 런</div><div class="event-meta"><span>📍 반포 한강공원</span><span>🕕 오전 6:30</span></div></div></div>
-    <div class="event-card"><div class="event-thumb et-2"><div class="event-date-tag">2026.06.21</div></div><div class="event-info"><div class="event-type-tag">B Type · 반포</div><div class="event-title">반포 나이트런 5K</div><div class="event-meta"><span>📍 반포대교 남단</span><span>🌙 오후 8:00</span></div></div></div>
-    <div class="event-card"><div class="event-thumb et-3"><div class="event-date-tag">2026.07.05</div></div><div class="event-info"><div class="event-type-tag">B Type · 인천</div><div class="event-title">인천 오션런 10K</div><div class="event-meta"><span>📍 인천 송도 센트럴파크</span><span>🌅 오전 7:00</span></div></div></div>
-    <div class="event-card"><div class="event-thumb et-4"><div class="event-date-tag">2026.07.12</div></div><div class="event-info"><div class="event-type-tag">B Type · 군포</div><div class="event-title">수리산 트레일 러닝</div><div class="event-meta"><span>📍 군포 수리산도립공원</span><span>🌄 오전 6:00</span></div></div></div>
+    @foreach($events as $ev)
+    @php
+      $thumb = $ev->thumbnail_url
+        ? (str_starts_with($ev->thumbnail_url,'http') ? $ev->thumbnail_url : \Storage::disk('s3')->url($ev->thumbnail_url))
+        : null;
+    @endphp
+    <a href="{{ route('events.show', $ev) }}" class="event-card" style="text-decoration:none;color:inherit;">
+      <div class="event-thumb" style="{{ $thumb ? 'background:url('.e($thumb).') center/cover no-repeat;' : 'background:linear-gradient(135deg,#2d1a00,#0d0d0d);' }}">
+        <div class="event-date-tag">{{ $ev->start_date->format('Y.m.d') }}</div>
+        @if($ev->status === 'active')
+          <div style="position:absolute;top:14px;right:14px;background:#E80043;color:white;font-size:9px;font-weight:700;padding:3px 8px;letter-spacing:2px;">LIVE</div>
+        @endif
+      </div>
+      <div class="event-info">
+        <div class="event-type-tag">B Type · {{ $ev->target_scope === 'all' ? '전체' : ($ev->target_scope === 'generation' ? $ev->generation.'기' : '지부') }}</div>
+        <div class="event-title">{{ Str::limit($ev->name, 28) }}</div>
+        <div class="event-meta">
+          @if($ev->location) <span>📍 {{ $ev->location }}</span> @endif
+          <span>📅 {{ $ev->start_date->format('m.d') }}@if($ev->start_date->ne($ev->end_date))~{{ $ev->end_date->format('m.d') }}@endif</span>
+        </div>
+      </div>
+    </a>
+    @endforeach
+    {{-- 이벤트가 4개 미만이면 더보기 카드로 채우기 --}}
+    @if($events->count() < 4)
+    <a href="{{ route('events.index') }}" class="event-card" style="text-decoration:none;color:inherit;display:flex;align-items:center;justify-content:center;min-height:200px;">
+      <div style="text-align:center;opacity:.4;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:4px;">MORE</div>
+        <div style="font-size:11px;letter-spacing:2px;margin-top:4px;">전체 이벤트 →</div>
+      </div>
+    </a>
+    @endif
+  </div>
+  @else
+  <div style="text-align:center;padding:60px 0;opacity:.4;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:4px;">진행 중인 이벤트가 없습니다</div>
+    <a href="{{ route('events.index') }}" style="color:var(--yellow);font-size:12px;letter-spacing:2px;text-decoration:none;margin-top:12px;display:block;">전체 이벤트 보기 →</a>
+  </div>
+  @endif
+  <div style="text-align:right;margin-top:20px;">
+    <a href="{{ route('events.index') }}" class="btn-outline" style="display:inline-flex;">전체 이벤트 →</a>
   </div>
 </section>
 

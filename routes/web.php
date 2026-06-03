@@ -69,6 +69,10 @@ Route::get('/design/v3', function () {
 Route::get('/testevent_a_type', [PlanningFeedbackController::class, 'showEventAType'])->name('testevent_a_type');
 Route::post('/testevent_a_type/feedback', [PlanningFeedbackController::class, 'storeEventAType'])->name('testevent_a_type.store');
 
+// 이벤트 목록·상세 (공개 — 비로그인 접근 가능)
+Route::get('/events',        [EventController::class, 'index'])->name('events.index');
+Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
+
 // 기수 신청서 (공개 — 인증 불필요)
 Route::get('/apply', [ApplyController::class, 'index'])->name('apply');
 Route::post('/apply', [ApplyController::class, 'store'])->name('apply.store');
@@ -92,10 +96,9 @@ Route::middleware(['auth'])->group(function () {
     // 버그 제보
     Route::resource('bug-reports', BugReportController::class)->only(['index', 'create', 'store', 'show']);
 
-    // 이벤트
-    Route::get('/events', [EventController::class, 'index'])->name('events.index');
-    Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
+    // 이벤트 (신청·취소는 로그인 필요)
     Route::post('/events/{event}/register', [EventController::class, 'register'])->name('events.register');
+    Route::post('/events/{event}/cancel',   [EventController::class, 'cancel'])->name('events.cancel');
 
     // 공지사항
     Route::get('/notices', [NoticeController::class, 'index'])->name('notices.index');

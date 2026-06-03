@@ -1,191 +1,268 @@
 <x-app-layout>
-<div class="max-w-2xl mx-auto px-4 py-5 md:px-6 md:py-6 lg:px-8 lg:py-8 space-y-4">
+@php
+  $user  = auth()->user();
+  $thumb = $event->thumbnail_url
+    ? (str_starts_with($event->thumbnail_url, 'http')
+        ? $event->thumbnail_url
+        : \Storage::disk('s3')->url($event->thumbnail_url))
+    : null;
+  $canRegister   = $event->isRecruitOpen() && !$alreadyRegistered && $eligible;
+  $recruitClosed = !$event->isRecruitOpen() && $event->status !== 'ended';
+@endphp
 
-    {{-- 헤더 --}}
-    <div>
-        <p class="font-display text-[10px] font-bold text-pac-black-400 uppercase tracking-widest mb-1">EVENT</p>
-        <h1 class="font-display text-2xl font-bold text-pac-black-900 uppercase tracking-tight leading-tight">
-            {{ $event->name }}
-        </h1>
-        <div class="flex items-center gap-3 mt-2">
-            <span class="font-display text-xs font-bold uppercase tracking-widest px-2.5 py-1 rounded
-                         {{ $event->isActive() ? 'bg-pac-pink-500 text-white' : 'bg-pac-black-100 text-pac-black-500' }}">
-                {{ $event->isActive() ? 'LIVE' : ($event->status === 'upcoming' ? '예정' : '종료') }}
-            </span>
-            <span class="font-body text-sm text-pac-black-400">
-                {{ $event->start_date->format('Y.m.d') }} ~ {{ $event->end_date->format('Y.m.d') }}
-            </span>
-            @if($event->max_participants)
-                <span class="font-body text-sm text-pac-black-400">
-                    · 최대 {{ number_format($event->max_participants) }}명
-                </span>
-            @endif
-        </div>
+<div class="max-w-3xl mx-auto px-4 py-5 md:px-6 lg:px-8 space-y-5">
+
+  {{-- 썸네일 히어로 --}}
+  @if($thumb)
+  <div class="relative rounded-2xl overflow-hidden h-56 md:h-72">
+    <img src="{{ $thumb }}" alt="{{ $event->name }}" class="w-full h-full object-cover">
+    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+    <div class="absolute bottom-0 left-0 p-6">
+      <span class="inline-flex items-center gap-1.5 mb-2
+        {{ $event->status === 'active' ? 'bg-pac-pink-500 text-white' : ($event->status === 'upcoming' ? 'bg-pac-yellow-500 text-pac-black-900' : 'bg-white/20 text-white') }}
+        text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
+        @if($event->status === 'active') <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> LIVE
+        @elseif($event->status === 'upcoming') 모집 예정
+        @else 종료 @endif
+      </span>
+      <h1 class="font-display text-2xl md:text-3xl font-bold text-white uppercase tracking-tight leading-tight">
+        {{ $event->name }}
+      </h1>
+    </div>
+  </div>
+  @else
+  {{-- 썸네일 없는 헤더 --}}
+  <div>
+    <div class="flex items-center gap-2 mb-2">
+      <span class="font-display text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full
+        {{ $event->status === 'active' ? 'bg-pac-pink-500 text-white' : ($event->status === 'upcoming' ? 'bg-pac-yellow-500 text-pac-black-900' : 'bg-pac-black-100 text-pac-black-500') }}">
+        {{ $event->status === 'active' ? 'LIVE' : ($event->status === 'upcoming' ? '예정' : '종료') }}
+      </span>
+      <span class="font-display text-[10px] font-bold text-pac-yellow-500 uppercase tracking-widest">B TYPE</span>
+    </div>
+    <h1 class="font-display text-2xl font-bold text-pac-black-900 uppercase tracking-tight">{{ $event->name }}</h1>
+  </div>
+  @endif
+
+  {{-- 플래시 --}}
+  @foreach(['success' => 'green', 'error' => 'red'] as $key => $color)
+  @if(session($key))
+  <div class="flex items-center gap-3 px-4 py-3 bg-{{ $color }}-50 border border-{{ $color }}-200 rounded-xl text-sm text-{{ $color }}-700">
+    {{ session($key) }}
+  </div>
+  @endif
+  @endforeach
+
+  {{-- 이벤트 정보 카드 --}}
+  <div class="bg-white rounded-2xl shadow-sm divide-y divide-pac-black-100">
+    <div class="px-6 py-4 grid grid-cols-2 gap-4">
+
+      @if($event->location)
+      <div>
+        <p class="font-display text-[10px] font-bold text-pac-black-400 uppercase tracking-widest mb-1">장소</p>
+        <p class="font-body text-sm text-pac-black-900">{{ $event->location }}</p>
+      </div>
+      @endif
+
+      <div>
+        <p class="font-display text-[10px] font-bold text-pac-black-400 uppercase tracking-widest mb-1">이벤트 기간</p>
+        <p class="font-body text-sm text-pac-black-900">
+          {{ $event->start_date->format('Y.m.d') }}
+          @if($event->start_date->ne($event->end_date)) ~ {{ $event->end_date->format('Y.m.d') }} @endif
+        </p>
+      </div>
+
+      @if($event->recruit_start_at || $event->recruit_end_at)
+      <div>
+        <p class="font-display text-[10px] font-bold text-pac-black-400 uppercase tracking-widest mb-1">모집 기간</p>
+        <p class="font-body text-sm text-pac-black-900">
+          {{ $event->recruit_start_at?->format('Y.m.d') ?? '—' }}
+          ~ {{ $event->recruit_end_at?->format('Y.m.d') ?? '—' }}
+        </p>
+      </div>
+      @endif
+
+      <div>
+        <p class="font-display text-[10px] font-bold text-pac-black-400 uppercase tracking-widest mb-1">신청 현황</p>
+        <p class="font-body text-sm text-pac-black-900">
+          {{ $participants->count() }}명
+          @if($event->max_participants) / 최대 {{ $event->max_participants }}명 @endif
+        </p>
+      </div>
+
+      <div>
+        <p class="font-display text-[10px] font-bold text-pac-black-400 uppercase tracking-widest mb-1">참여 대상</p>
+        <p class="font-body text-sm text-pac-black-900">
+          {{ $event->target_scope === 'all' ? '전체 회원' : ($event->target_scope === 'generation' ? $event->generation.'기' : '지부') }}
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  {{-- 이벤트 설명 --}}
+  @if($event->description)
+  <div class="bg-white rounded-2xl shadow-sm p-6">
+    <h2 class="font-display text-sm font-bold text-pac-black-900 uppercase tracking-widest mb-3">이벤트 소개</h2>
+    <div class="prose prose-sm max-w-none text-pac-black-800">
+      {!! $event->description !!}
+    </div>
+  </div>
+  @endif
+
+  {{-- 참가 신청 영역 --}}
+  <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+    <div class="px-5 py-3.5 bg-pac-black-900">
+      <h2 class="font-display text-sm font-bold text-white uppercase tracking-widest">참가 신청</h2>
     </div>
 
-    {{-- 이벤트 설명 --}}
-    @if($event->description)
-        <div class="bg-white rounded-2xl shadow-sm p-6">
-            <div class="prose prose-sm max-w-none text-pac-black-800">
-                {!! $event->description !!}
-            </div>
-        </div>
-    @endif
-
-    {{-- 플래시 메시지 --}}
-    @if(session('success'))
-        <div class="flex items-center gap-3 px-4 py-3 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700">
-            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="flex items-center gap-3 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
-            {{ session('error') }}
-        </div>
-    @endif
-
-    {{-- 신청 완료 상태 --}}
     @if($alreadyRegistered)
-        <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <div class="px-5 py-3.5 bg-pac-black-900">
-                <h3 class="font-display text-sm font-bold text-white uppercase tracking-widest">참가 신청</h3>
-            </div>
-            <div class="p-6 text-center py-10">
-                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-100 mb-3">
-                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                </div>
-                <p class="font-body text-sm font-semibold text-pac-black-800">참가 신청이 완료되었습니다.</p>
-                <p class="font-body text-xs text-pac-black-400 mt-1">신청 내용은 관리자가 확인합니다.</p>
-            </div>
+      {{-- 이미 신청 완료 --}}
+      <div class="p-6 text-center space-y-4">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-100 mx-auto">
+          <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
         </div>
+        <p class="font-body text-sm font-semibold text-pac-black-900">참가 신청이 완료되었습니다.</p>
+        <p class="font-body text-xs text-pac-black-400">취소는 대시보드 > 내 이벤트에서 가능합니다.</p>
+        @if($event->status !== 'ended')
+        <form method="POST" action="{{ route('events.cancel', $event) }}" class="inline-block"
+              onsubmit="return confirm('정말 신청을 취소하시겠습니까?')">
+          @csrf
+          <button type="submit"
+                  class="font-body text-xs text-pac-black-400 hover:text-pac-pink-500 underline transition-colors">
+            신청 취소
+          </button>
+        </form>
+        @endif
+      </div>
 
-    {{-- 기수 자격 미충족 --}}
+    @elseif(!auth()->check())
+      {{-- 비로그인 --}}
+      <div class="p-6 text-center space-y-3">
+        <p class="font-body text-sm text-pac-black-600">참가 신청은 로그인 후 이용하실 수 있습니다.</p>
+        <a href="{{ route('login') }}?redirect={{ urlencode(request()->url()) }}"
+           class="inline-flex items-center gap-2 bg-pac-yellow-500 hover:bg-pac-yellow-400
+                  text-pac-black-900 font-display font-bold text-sm uppercase tracking-wide
+                  px-6 py-2.5 rounded-xl transition-colors">
+          로그인 후 신청하기
+        </a>
+      </div>
+
     @elseif(!$eligible)
-        <div class="bg-white rounded-2xl shadow-sm p-6 text-center py-10">
-            <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-pac-black-100 mb-3">
-                <svg class="w-6 h-6 text-pac-black-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 15v2m0 0v2m0-2h2m-2 0H10m2-6V7m0 0V5m0 2h2m-2 0H10"/>
-                </svg>
-            </div>
-            <p class="font-display text-base font-bold text-pac-black-700 uppercase tracking-widest">참여 대상 아님</p>
-            <p class="font-body text-sm text-pac-black-400 mt-1">이 이벤트는 특정 기수 대상으로 운영됩니다.</p>
-        </div>
+      <div class="p-6 text-center">
+        <p class="font-body text-sm text-pac-black-500">이 이벤트는 참여 대상이 아닙니다.</p>
+      </div>
 
-    {{-- 신청 마감 --}}
-    @elseif(!$event->is_registration_open || ($event->status === 'ended'))
-        <div class="bg-white rounded-2xl shadow-sm p-6 text-center py-10">
-            <p class="font-display text-lg font-bold text-pac-black-400 uppercase tracking-widest">신청 마감</p>
-            <p class="font-body text-sm text-pac-black-400 mt-1">참가 신청이 종료되었습니다.</p>
-        </div>
+    @elseif($event->status === 'ended')
+      <div class="p-6 text-center">
+        <p class="font-body text-sm text-pac-black-400">이미 종료된 이벤트입니다.</p>
+      </div>
 
-    {{-- 신청 폼 (진행 중 + 예정 모두 허용) --}}
+    @elseif(!$event->is_registration_open || $recruitClosed)
+      <div class="p-6 text-center">
+        <p class="font-body text-sm text-pac-black-400">신청이 마감되었습니다.</p>
+      </div>
+
     @else
-        <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-            <div class="px-5 py-3.5 bg-pac-black-900">
-                <h3 class="font-display text-sm font-bold text-white uppercase tracking-widest">참가 신청</h3>
+      {{-- 신청 폼 --}}
+      <form method="POST" action="{{ route('events.register', $event) }}"
+            class="p-6 space-y-4" enctype="multipart/form-data">
+        @csrf
+
+        @foreach($event->form_schema ?? [] as $field)
+        @php
+          $key      = $field['key'] ?? null;
+          $label    = $field['label'] ?? $key;
+          $type     = $field['type'] ?? 'text';
+          $required = $field['required'] ?? false;
+          $options  = $field['data']['options'] ?? [];
+          $name     = "field_{$key}";
+        @endphp
+        @if(!$key) @continue @endif
+
+        <div>
+          <label class="block font-display text-xs font-bold text-pac-black-700 uppercase tracking-wide mb-1.5">
+            {{ $label }}
+            @if($required) <span class="text-pac-pink-500 ml-0.5">*</span> @endif
+          </label>
+
+          @if($type === 'textarea')
+            <textarea name="{{ $name }}" rows="3" {{ $required ? 'required' : '' }}
+                      class="w-full rounded-xl border border-pac-black-200 px-3 py-2 text-sm font-body focus:ring-2 focus:ring-pac-yellow-400 focus:border-transparent">{{ old($name) }}</textarea>
+
+          @elseif($type === 'radio')
+            <div class="space-y-2">
+              @foreach($options as $opt)
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="radio" name="{{ $name }}" value="{{ $opt['value'] ?? $opt }}"
+                       {{ $required ? 'required' : '' }} class="text-pac-yellow-500 focus:ring-pac-yellow-400">
+                <span class="font-body text-sm text-pac-black-800">{{ $opt['value'] ?? $opt }}</span>
+              </label>
+              @endforeach
             </div>
 
-            <form method="POST" action="{{ route('events.register', $event) }}"
-                  enctype="multipart/form-data"
-                  class="p-6 space-y-5">
-                @csrf
+          @elseif($type === 'checkbox')
+            <div class="space-y-2">
+              @foreach($options as $opt)
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="{{ $name }}[]" value="{{ $opt['value'] ?? $opt }}"
+                       class="text-pac-yellow-500 focus:ring-pac-yellow-400 rounded">
+                <span class="font-body text-sm text-pac-black-800">{{ $opt['value'] ?? $opt }}</span>
+              </label>
+              @endforeach
+            </div>
 
-                @foreach($event->form_schema ?? [] as $field)
-                    @php
-                        $key      = $field['key'];
-                        $type     = $field['type'];
-                        $label    = $field['data']['label'] ?? '항목';
-                        $required = $field['data']['required'] ?? false;
-                        $options  = $field['data']['options'] ?? [];
-                        $inputName = "field_{$key}";
-                    @endphp
+          @elseif($type === 'image')
+            <input type="file" name="{{ $name }}" accept="image/*" {{ $required ? 'required' : '' }}
+                   class="w-full text-sm font-body text-pac-black-600 file:mr-3 file:py-2 file:px-4
+                          file:rounded-lg file:border-0 file:bg-pac-yellow-500 file:text-pac-black-900
+                          file:font-bold file:text-xs file:uppercase file:cursor-pointer">
 
-                    <div>
-                        <label class="block font-body text-sm font-semibold text-pac-black-700 mb-1.5">
-                            {{ $label }}
-                            @if($required)
-                                <span class="text-red-500">*</span>
-                            @else
-                                <span class="font-normal text-pac-black-400">(선택)</span>
-                            @endif
-                        </label>
+          @else
+            <input type="text" name="{{ $name }}" value="{{ old($name) }}"
+                   {{ $required ? 'required' : '' }}
+                   @if($key === 'phone') inputmode="tel" placeholder="010-0000-0000" @endif
+                   class="w-full rounded-xl border border-pac-black-200 px-3 py-2 text-sm font-body
+                          focus:ring-2 focus:ring-pac-yellow-400 focus:border-transparent">
+          @endif
 
-                        @if($type === 'text')
-                            <input type="text" name="{{ $inputName }}" value="{{ old($inputName) }}"
-                                   {{ $required ? 'required' : '' }}
-                                   class="w-full px-4 py-2.5 border border-pac-black-200 rounded-xl font-body text-sm
-                                          focus:outline-none focus:ring-2 focus:ring-pac-yellow-400 focus:border-pac-yellow-400
-                                          @error($inputName) border-red-400 bg-red-50 @enderror">
-
-                        @elseif($type === 'textarea')
-                            <textarea name="{{ $inputName }}" rows="4"
-                                      {{ $required ? 'required' : '' }}
-                                      class="w-full px-4 py-2.5 border border-pac-black-200 rounded-xl font-body text-sm resize-none
-                                             focus:outline-none focus:ring-2 focus:ring-pac-yellow-400 focus:border-pac-yellow-400
-                                             @error($inputName) border-red-400 bg-red-50 @enderror">{{ old($inputName) }}</textarea>
-
-                        @elseif($type === 'radio')
-                            <div class="space-y-2">
-                                @foreach($options as $option)
-                                    <label class="flex items-center gap-3 cursor-pointer">
-                                        <input type="radio" name="{{ $inputName }}" value="{{ $option['value'] }}"
-                                               {{ old($inputName) === $option['value'] ? 'checked' : '' }}
-                                               {{ $required ? 'required' : '' }}
-                                               class="w-4 h-4 accent-pac-yellow-500">
-                                        <span class="font-body text-sm text-pac-black-800">{{ $option['value'] }}</span>
-                                    </label>
-                                @endforeach
-                            </div>
-
-                        @elseif($type === 'checkbox')
-                            <div class="space-y-2">
-                                @foreach($options as $option)
-                                    <label class="flex items-center gap-3 cursor-pointer">
-                                        <input type="checkbox" name="{{ $inputName }}[]" value="{{ $option['value'] }}"
-                                               {{ in_array($option['value'], (array) old($inputName, [])) ? 'checked' : '' }}
-                                               class="w-4 h-4 accent-pac-yellow-500">
-                                        <span class="font-body text-sm text-pac-black-800">{{ $option['value'] }}</span>
-                                    </label>
-                                @endforeach
-                            </div>
-
-                        @elseif($type === 'image')
-                            <div class="border-2 border-dashed border-pac-black-200 rounded-xl px-5 py-6 text-center
-                                        hover:border-pac-yellow-300 transition-colors duration-150">
-                                <input type="file" name="{{ $inputName }}" accept=".jpg,.jpeg,.png,.gif,.webp"
-                                       {{ $required ? 'required' : '' }}
-                                       class="block mx-auto text-sm text-pac-black-500 font-body
-                                              file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0
-                                              file:font-display file:text-xs file:font-bold file:uppercase file:tracking-wide
-                                              file:bg-pac-yellow-500 file:text-pac-black-900 hover:file:bg-pac-yellow-400">
-                                <p class="font-body text-xs text-pac-black-400 mt-2">JPG, PNG, GIF, WEBP · 최대 5MB</p>
-                            </div>
-                        @endif
-
-                        @error($inputName)
-                            <p class="mt-1 font-body text-xs text-red-500">{{ $message }}</p>
-                        @enderror
-                    </div>
-                @endforeach
-
-                <div class="pt-2 flex justify-end gap-3">
-                    <button type="submit"
-                            class="px-6 py-2.5 bg-pac-yellow-500 hover:bg-pac-yellow-400
-                                   text-pac-black-900 font-display font-bold text-sm uppercase tracking-wide
-                                   rounded-xl transition-colors duration-150">
-                        신청 완료
-                    </button>
-                </div>
-            </form>
+          @error($name)
+          <p class="mt-1 text-xs text-pac-pink-500 font-body">{{ $message }}</p>
+          @enderror
         </div>
+        @endforeach
+
+        <button type="submit"
+                class="w-full py-3 bg-pac-yellow-500 hover:bg-pac-yellow-400 text-pac-black-900
+                       font-display font-bold text-sm uppercase tracking-wide rounded-xl
+                       transition-colors duration-200">
+          참가 신청하기
+        </button>
+      </form>
     @endif
+  </div>
+
+  {{-- 참여자 명단 (마스킹) --}}
+  @if($participants->isNotEmpty())
+  <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+    <div class="px-5 py-3.5 bg-pac-black-900 flex items-center justify-between">
+      <h2 class="font-display text-sm font-bold text-white uppercase tracking-widest">참여자 명단</h2>
+      <span class="font-body text-xs text-pac-black-400">{{ $participants->count() }}명</span>
+    </div>
+    <div class="p-5">
+      <div class="flex flex-wrap gap-2">
+        @foreach($participants as $name)
+        <span class="inline-block bg-pac-black-50 border border-pac-black-100 text-pac-black-600
+                     font-body text-xs px-3 py-1.5 rounded-lg">
+          {{ $name }}
+        </span>
+        @endforeach
+      </div>
+    </div>
+  </div>
+  @endif
 
 </div>
 </x-app-layout>
