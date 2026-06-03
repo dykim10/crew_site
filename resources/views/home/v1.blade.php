@@ -24,8 +24,8 @@
     .has-admin-bar .pac-nav { top:36px; }
 
     /* ── HERO ── */
-    .hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:120px 56px 80px; position:relative; overflow:hidden; }
-    .has-admin-bar .hero { padding-top:160px; }
+    .hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:124px 56px 80px; position:relative; overflow:hidden; }
+    .has-admin-bar .hero { padding-top:164px; }
     .hero-glow { position:absolute; top:20%; right:10%; width:600px; height:600px; background:radial-gradient(circle, rgba(229,173,22,0.07) 0%, transparent 70%); pointer-events:none; }
     .hero-grid-lines { position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px); background-size:80px 80px; }
     .hero-eyebrow { font-size:11px; font-weight:700; letter-spacing:5px; text-transform:uppercase; color:var(--pac-yellow); margin-bottom:20px; }

@@ -49,18 +49,18 @@
 
     {{-- 사용자 아바타 + 이름 (데스크탑) --}}
     <div class="hidden lg:flex items-center gap-2.5">
-      <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
+      <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
            style="background:{{ $avatarBg }};">
-        <span class="font-display text-sm leading-none"
+        <span class="font-display text-base leading-none"
               style="color:{{ $avatarTxt }};">{{ $initial }}</span>
       </div>
-      <span class="font-body text-xs text-pac-black-400 max-w-[88px] truncate">
+      <span class="font-body text-sm text-pac-black-400 max-w-[96px] truncate">
         {{ $nick }}
       </span>
       <form method="POST" action="{{ route('logout') }}" class="inline">
         @csrf
         <button type="submit"
-                class="font-display text-[10px] tracking-widest uppercase
+                class="font-display text-[12px] tracking-widest uppercase
                        text-pac-black-500 hover:text-pac-pink-400 transition-colors duration-150">
           OUT
         </button>
@@ -120,7 +120,7 @@
         </div>
         <div>
           <p class="font-body text-sm font-semibold text-white leading-tight">{{ $nick }}</p>
-          <p class="font-display text-[9px] tracking-widest uppercase"
+          <p class="font-display text-[13px] tracking-widest uppercase"
              style="color:rgba(255,255,255,.3);">
             {{ match($role) {
               'super_admin'  => 'SUPER ADMIN',
@@ -145,7 +145,7 @@
       @foreach($navItems as $item)
         @php $isActive = request()->routeIs($item['match']); @endphp
         <a href="{{ route($item['route']) }}"
-           class="flex items-center px-4 py-3.5 mb-0.5 font-display text-[11px] tracking-widest uppercase
+           class="flex items-center px-4 py-3.5 mb-0.5 font-display text-[13px] tracking-widest uppercase
                   text-decoration-none transition-colors duration-150"
            style="text-decoration:none;
                   {{ $isActive
@@ -164,7 +164,7 @@
         + 기록 추가
       </a>
       <a href="{{ route('profile.edit') }}"
-         class="flex items-center px-4 py-3 font-display text-[11px] tracking-widest uppercase
+         class="flex items-center px-4 py-3 font-display text-[13px] tracking-widest uppercase
                 transition-colors duration-150"
          style="text-decoration:none;color:rgba(255,255,255,.3);">
         내 정보
@@ -172,7 +172,7 @@
       <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit"
-                class="w-full flex items-center px-4 py-3 font-display text-[11px] tracking-widest uppercase
+                class="w-full flex items-center px-4 py-3 font-display text-[13px] tracking-widest uppercase
                        transition-colors duration-150"
                 style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.25);">
           로그아웃
