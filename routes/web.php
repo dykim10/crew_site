@@ -30,6 +30,7 @@ use App\Http\Controllers\ApplyController;
 use App\Http\Controllers\BugReportController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\PhotoGalleryController;
 use App\Http\Controllers\ProfileController;
@@ -40,9 +41,13 @@ use App\Http\Controllers\PlanningFeedbackController;
 use App\Http\Controllers\SmsWebhookController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return redirect()->route('login');
-});
+// 메인 페이지 (crew.settings.active_theme 에 따라 v1/v2 렌더링)
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// 테마 전환 (super_admin / region_admin 전용)
+Route::post('/theme/switch', [HomeController::class, 'switchTheme'])
+    ->middleware(['auth'])
+    ->name('theme.switch');
 
 // 프로젝트 가이드 (공개)
 Route::get('/preview', function () {
