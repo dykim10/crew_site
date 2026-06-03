@@ -35,6 +35,7 @@ class Event extends Model
         'event_type', 'score_type', 'score_config',
         'parent_event_id', 'target_scope', 'generation',
         'form_schema', 'score_rules', 'max_participants', 'is_registration_open',
+        'thumbnail_url', 'location', 'recruit_start_at', 'recruit_end_at',
     ];
 
     protected function casts(): array
@@ -42,6 +43,8 @@ class Event extends Model
         return [
             'start_date'           => 'date',
             'end_date'             => 'date',
+            'recruit_start_at'     => 'datetime',
+            'recruit_end_at'       => 'datetime',
             'form_schema'          => 'array',
             'score_rules'          => 'array',
             'score_config'         => 'array',
@@ -74,10 +77,34 @@ class Event extends Model
 
     public function isActive(): bool
     {
-        $now = now()->toDateString();
-        return $this->status === 'active'
-            && $this->start_date->toDateString() <= $now
-            && $this->end_date->toDateString() >= $now;
+        return $this->status === 'active';
+    }
+
+    public function isUpcoming(): bool
+    {
+        return $this->status === 'upcoming';
+    }
+
+    public function isEnded(): bool
+    {
+        return $this->status === 'ended';
+    }
+
+    // 모집 중 여부 (recruit 기간 기준)
+    public function isRecruitOpen(): bool
+    {
+        if (!$this->is_registration_open) return false;
+        $now = now();
+        if ($this->recruit_start_at && $now->lt($this->recruit_start_at)) return false;
+        if ($this->recruit_end_at   && $now->gt($this->recruit_end_at))   return false;
+        return $this->status === 'active';
+    }
+
+    // 참가 정원 초과 여부
+    public function isCapacityFull(): bool
+    {
+        if (!$this->max_participants || $this->max_participants === 0) return false;
+        return $this->registrations()->count() >= $this->max_participants;
     }
 
     // form_schema 배열에서 필드 한 개 찾기
@@ -87,5 +114,26 @@ class Event extends Model
             if (($field['key'] ?? '') === $key) return $field;
         }
         return null;
+    }
+
+    // 기본 form_schema (성명+휴대폰 자동 포함) 생성 헬퍼
+    public static function defaultFormSchema(): array
+    {
+        return [
+            [
+                'key'      => 'name',
+                'label'    => '성명',
+                'type'     => 'text',
+                'required' => true,
+                'data'     => ['encrypted' => false],
+            ],
+            [
+                'key'      => 'phone',
+                'label'    => '휴대폰번호',
+                'type'     => 'text',
+                'required' => true,
+                'data'     => ['encrypted' => true, 'column' => 'phone_enc'],
+            ],
+        ];
     }
 }
