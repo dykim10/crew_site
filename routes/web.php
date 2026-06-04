@@ -41,11 +41,25 @@ use App\Http\Controllers\RunningLogController;
 use App\Http\Controllers\Admin\EventGroupController;
 use App\Http\Controllers\AdminPasswordConfirmController;
 use App\Http\Controllers\PlanningFeedbackController;
+use App\Http\Controllers\BranchController;
+use App\Http\Controllers\IntroduceController;
+use App\Http\Controllers\SkinController;
 use App\Http\Controllers\SmsWebhookController;
 use Illuminate\Support\Facades\Route;
 
-// 메인 페이지 (crew.settings.active_theme 에 따라 v1/v2 렌더링)
+// 메인 페이지
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// PAC 소개 (공개)
+Route::get('/introduce', [IntroduceController::class, 'index'])->name('introduce');
+
+// 지부 소개 (공개)
+Route::get('/branch', [BranchController::class, 'index'])->name('branch');
+
+// 게시판 (공개 — 비로그인 접근 가능, 현재 준비중)
+Route::get('/boards/free',  fn() => view('boards.coming-soon', ['board' => '자유게시판']))->name('boards.free');
+Route::get('/boards/photo', fn() => view('boards.coming-soon', ['board' => '포토 게시판']))->name('boards.photo');
+Route::get('/boards/qna',   fn() => view('boards.coming-soon', ['board' => '문의 게시판']))->name('boards.qna');
 
 // 테마 전환 (super_admin / region_admin 전용)
 Route::post('/theme/switch', [HomeController::class, 'switchTheme'])
@@ -86,6 +100,9 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
+    // 스킨 변경 (사용자별 per-user)
+    Route::post('/skin/change', [SkinController::class, 'change'])->name('skin.change');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

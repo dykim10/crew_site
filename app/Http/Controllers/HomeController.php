@@ -10,7 +10,15 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $activeTheme = Setting::get('active_theme', 'v1');
+        // 스킨: 로그인 사용자 DB → 기본값 _skin_v1
+        $skinClass = '_skin_v1';
+        if (auth()->check()) {
+            $detail = auth()->user()->detail;
+            if ($detail && $detail->skin_select) {
+                $skinClass = $detail->skin_select;
+            }
+        }
+        $activeTheme = ($skinClass === '_skin_v2') ? 'v2' : 'v1';
 
         // 메인 노출용 B타입 이벤트: active → upcoming 순, 최대 4개
         $events = Event::where('event_type', 'B')
@@ -20,7 +28,7 @@ class HomeController extends Controller
             ->limit(4)
             ->get();
 
-        return view("home.{$activeTheme}", compact('activeTheme', 'events'));
+        return view("home.{$activeTheme}", compact('skinClass', 'activeTheme', 'events'));
     }
 
     public function switchTheme(Request $request)

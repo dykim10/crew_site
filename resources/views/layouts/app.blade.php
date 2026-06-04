@@ -1,5 +1,16 @@
+@php
+    // 스킨값 결정: 1순위 로그인 사용자 DB, 2순위 기본값 _skin_v1
+    $skinClass = '_skin_v1';
+    if (auth()->check()) {
+        $userDetail = auth()->user()->detail;
+        if ($userDetail && $userDetail->skin_select) {
+            $skinClass = $userDetail->skin_select;
+        }
+    }
+    $activeTheme = ($skinClass === '_skin_v2') ? 'v2' : 'v1';
+@endphp
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="{{ $activeTheme ?? 'v1' }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-theme="{{ $activeTheme }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,11 +24,15 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+        {{-- 스킨별 CSS 변수 (id 필수 — Ajax 교체용) --}}
+        <link id="skin-css" rel="stylesheet"
+              href="{{ asset('css/skin/' . $skinClass . '.css') }}">
+
         {{-- ═══════════════════════════════════════════════
              V1 THEME — DARK EDITORIAL
              #0D0D0D 배경 / Bebas Neue / pac-yellow
         ═══════════════════════════════════════════════ --}}
-        @if(($activeTheme ?? 'v1') === 'v1')
+        {{-- 항상 두 테마 모두 렌더링 — JS 스킨 전환 시 data-theme 변경으로 즉시 적용 --}}
         <style>
         :root {
             --v1-bg:      #0D0D0D;
@@ -130,13 +145,11 @@
         html[data-theme="v1"] .prose strong  { color: var(--v1-text)         !important; }
         html[data-theme="v1"] .prose hr      { border-color: var(--v1-border) !important; }
         </style>
-        @endif
 
         {{-- ═══════════════════════════════════════════════
              V2 THEME — ENERGY BURST
              크림 배경 / pac-yellow 히어로
         ═══════════════════════════════════════════════ --}}
-        @if(($activeTheme ?? 'v1') === 'v2')
         <style>
         :root {
             --v2-bg:     #F5F3EE;
@@ -172,38 +185,10 @@
         html[data-theme="v2"] .border-pac-black-50  { border-color: var(--v2-border) !important; }
         html[data-theme="v2"] .divide-pac-black-100 > * + * { border-color: var(--v2-border) !important; }
         </style>
-        @endif
     </head>
 
-    <body class="font-body antialiased bg-pac-black-50 text-pac-black-900 min-h-screen">
+    <body class="{{ $skinClass }} font-body antialiased bg-pac-black-50 text-pac-black-900 min-h-screen">
 
-        {{-- 어드민 테마 스위처 바 --}}
-        @auth
-        @if(in_array(auth()->user()->role, ['super_admin', 'region_admin']))
-        <div class="pac-admin-bar">
-            <span class="pac-admin-bar-label">THEME</span>
-            <div class="pac-admin-bar-actions">
-                <form method="POST" action="{{ route('theme.switch') }}" style="display:inline;">
-                    @csrf
-                    <input type="hidden" name="theme" value="v1">
-                    <button type="submit"
-                            class="pac-theme-btn {{ ($activeTheme ?? 'v1') === 'v1' ? 'active' : '' }}">
-                        V1 DARK
-                    </button>
-                </form>
-                <form method="POST" action="{{ route('theme.switch') }}" style="display:inline;">
-                    @csrf
-                    <input type="hidden" name="theme" value="v2">
-                    <button type="submit"
-                            class="pac-theme-btn {{ ($activeTheme ?? 'v1') === 'v2' ? 'active' : '' }}">
-                        V2 ENERGY
-                    </button>
-                </form>
-                <a href="/admin/theme-settings" class="pac-admin-bar-link">설정 →</a>
-            </div>
-        </div>
-        @endif
-        @endauth
 
         @include('layouts.navigation')
 
@@ -255,4 +240,42 @@
         </main>
 
     </body>
+
+    {{-- 스킨 전환 Ajax 스크립트 --}}
+    <script>
+    function changeSkin(skin) {
+        fetch('{{ route("skin.change") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            },
+            body: JSON.stringify({ skin: skin }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // body 클래스 교체
+                document.body.className = document.body.className
+                    .replace(/_skin_v1|_skin_v2/g, '').trim();
+                document.body.classList.add(data.skin);
+
+                // data-theme 속성 교체 (기존 테마 스타일 호환)
+                document.documentElement.setAttribute('data-theme',
+                    data.skin === '_skin_v2' ? 'v2' : 'v1');
+
+                // 스킨 CSS link 교체
+                document.getElementById('skin-css').href
+                    = '/css/skin/' + data.skin + '.css';
+
+                // nav 스킨 버튼 active 상태 갱신
+                document.querySelectorAll('.pac-btn-skin').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.dataset.skin === data.skin) btn.classList.add('active');
+                });
+            }
+        })
+        .catch(error => console.error('스킨 변경 실패:', error));
+    }
+    </script>
 </html>

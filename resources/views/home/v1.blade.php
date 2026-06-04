@@ -1,10 +1,13 @@
+@php $skinClass = $skinClass ?? '_skin_v1'; @endphp
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="v1">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>PAC-RUN CREW</title>
+  {{-- 스킨별 CSS 변수 (id 필수 — Ajax 교체용) --}}
+  <link id="skin-css" rel="stylesheet" href="{{ asset('css/skin/' . $skinClass . '.css') }}">
 
   {{-- Swiper (홈 전용 슬라이더) --}}
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
@@ -18,14 +21,8 @@
     html { scroll-behavior:smooth; }
     body { background:var(--pac-bg); color:var(--pac-white); font-family:'Barlow','Noto Sans KR',sans-serif; overflow-x:hidden; }
 
-    /* 홈: nav/admin-bar는 fixed (hero 위에 오버레이) */
-    .pac-admin-bar { position:fixed; top:0; left:0; right:0; z-index:200; }
-    .pac-nav { position:fixed; }
-    .has-admin-bar .pac-nav { top:36px; }
-
     /* ── HERO ── */
-    .hero { min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:124px 56px 80px; position:relative; overflow:hidden; }
-    .has-admin-bar .hero { padding-top:164px; }
+    .hero { min-height:calc(100vh - 72px); display:flex; flex-direction:column; justify-content:center; padding:80px 56px 80px; position:relative; overflow:hidden; }
     .hero-glow { position:absolute; top:20%; right:10%; width:600px; height:600px; background:radial-gradient(circle, rgba(229,173,22,0.07) 0%, transparent 70%); pointer-events:none; }
     .hero-grid-lines { position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.02) 1px,transparent 1px); background-size:80px 80px; }
     .hero-eyebrow { font-size:11px; font-weight:700; letter-spacing:5px; text-transform:uppercase; color:var(--pac-yellow); margin-bottom:20px; }
@@ -144,52 +141,16 @@
     .footer-bottom a { color:var(--pac-yellow); text-decoration:none; }
   </style>
 </head>
-<body class="{{ auth()->check() && in_array(auth()->user()->role, ['super_admin','region_admin']) ? 'has-admin-bar' : '' }}">
+<body class="{{ $skinClass }}">
 
-{{-- 어드민 테마 스위처 바 (공용 .pac-admin-bar 사용) --}}
-@auth
-  @if(in_array(auth()->user()->role, ['super_admin', 'region_admin']))
-  <div class="pac-admin-bar">
-    <span class="pac-admin-bar-label">THEME · 관리자 전용</span>
-    <div class="pac-admin-bar-actions">
-      <form method="POST" action="{{ route('theme.switch') }}" style="display:inline;">
-        @csrf
-        <input type="hidden" name="theme" value="v1">
-        <button type="submit" class="pac-theme-btn active">V1 Dark</button>
-      </form>
-      <form method="POST" action="{{ route('theme.switch') }}" style="display:inline;">
-        @csrf
-        <input type="hidden" name="theme" value="v2">
-        <button type="submit" class="pac-theme-btn">V2 Energy</button>
-      </form>
-      <a href="/admin/theme-settings" class="pac-admin-bar-link">설정 →</a>
-    </div>
-  </div>
-  @endif
-@endauth
-
-{{-- NAV (공용 .pac-nav 사용) --}}
-<nav class="pac-nav">
-  <a href="{{ route('home') }}" class="pac-nav-logo">PAC<span class="logo-suffix">-RUN</span></a>
-  <ul class="pac-nav-links">
-    <li><a href="#">소개</a></li>
-    <li><a href="#">지부</a></li>
-    <li><a href="#">이벤트</a></li>
-    <li><a href="#">커뮤니티</a></li>
-    <li><a href="#">기록</a></li>
-  </ul>
-  @auth
-    <a href="{{ route('dashboard') }}" class="pac-nav-cta">대시보드</a>
-  @else
-    <a href="{{ route('login') }}" class="pac-nav-cta">로그인</a>
-  @endauth
-</nav>
+{{-- GNB (공용 navigation 컴포넌트) --}}
+@include('layouts.navigation')
 
 <!-- HERO -->
 <section class="hero">
   <div class="hero-glow"></div>
   <div class="hero-grid-lines"></div>
-  <div class="hero-eyebrow">Seoul Running Crew · Since 2024</div>
+  <div class="hero-eyebrow">High Intensity Interval Training · Partnership Activation Crew · Since 2024</div>
   <div class="hero-title">
     <div>PAC<span class="accent">-</span></div>
     <div>RUN</div>
@@ -227,116 +188,11 @@
   </div>
 </section>
 
-<!-- 지부 소개 -->
-<section class="branch-section">
-  <div class="pac-section-label">지부 소개</div>
-  <div class="pac-section-heading">우리 지부를 만나세요</div>
-  <div class="swiper swiper-branches">
-    <div class="swiper-wrapper">
-      <div class="swiper-slide" style="width:340px">
-        <div class="branch-card">
-          <div class="branch-bg branch-banpo"></div>
-          <div class="branch-overlay"></div>
-          <div class="branch-number">01</div>
-          <div class="branch-arrow">→</div>
-          <div class="branch-content">
-            <div class="branch-region-tag">BANPO · 반포</div>
-            <div class="branch-name">반포 지부</div>
-            <div class="branch-slogan">한강변을 달리며 자유를 느끼는 반포 러너들</div>
-          </div>
-        </div>
-      </div>
-      <div class="swiper-slide" style="width:340px">
-        <div class="branch-card">
-          <div class="branch-bg branch-yonsei"></div>
-          <div class="branch-overlay"></div>
-          <div class="branch-number">02</div>
-          <div class="branch-arrow">→</div>
-          <div class="branch-content">
-            <div class="branch-region-tag">YONSEI · 연대</div>
-            <div class="branch-name">연대 지부</div>
-            <div class="branch-slogan">캠퍼스와 도심을 누비는 연대 러닝팀</div>
-          </div>
-        </div>
-      </div>
-      <div class="swiper-slide" style="width:340px">
-        <div class="branch-card">
-          <div class="branch-bg branch-gunpo"></div>
-          <div class="branch-overlay"></div>
-          <div class="branch-number">03</div>
-          <div class="branch-arrow">→</div>
-          <div class="branch-content">
-            <div class="branch-region-tag">GUNPO · 군포</div>
-            <div class="branch-name">군포 지부</div>
-            <div class="branch-slogan">수리산 트레일과 함께하는 군포 러너들</div>
-          </div>
-        </div>
-      </div>
-      <div class="swiper-slide" style="width:340px">
-        <div class="branch-card">
-          <div class="branch-bg branch-incheon"></div>
-          <div class="branch-overlay"></div>
-          <div class="branch-number">04</div>
-          <div class="branch-arrow">→</div>
-          <div class="branch-content">
-            <div class="branch-region-tag">INCHEON · 인천</div>
-            <div class="branch-name">인천 지부</div>
-            <div class="branch-slogan">바다 내음과 함께 달리는 인천 러닝 패밀리</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+{{-- 지부 섹션 v1 --}}
+@include('sections.branch-v1')
 
-<!-- 이벤트 -->
-<section class="event-section">
-  <div class="pac-section-label">Events</div>
-  <div class="pac-section-heading">다가오는 이벤트</div>
-  @if($events->isNotEmpty())
-  <div class="event-grid">
-    @foreach($events as $ev)
-    @php
-      $thumb = $ev->thumbnail_url
-        ? (str_starts_with($ev->thumbnail_url,'http') ? $ev->thumbnail_url : \Storage::disk('s3')->url($ev->thumbnail_url))
-        : null;
-    @endphp
-    <a href="{{ route('events.show', $ev) }}" class="event-card" style="text-decoration:none;color:inherit;">
-      <div class="event-thumb" style="{{ $thumb ? 'background:url('.e($thumb).') center/cover no-repeat;' : 'background:linear-gradient(135deg,#2d1a00,#0d0d0d);' }}">
-        <div class="event-date-tag">{{ $ev->start_date->format('Y.m.d') }}</div>
-        @if($ev->status === 'active')
-          <div style="position:absolute;top:14px;right:14px;background:#E80043;color:white;font-size:9px;font-weight:700;padding:3px 8px;letter-spacing:2px;">LIVE</div>
-        @endif
-      </div>
-      <div class="event-info">
-        <div class="event-type-tag">B Type · {{ $ev->target_scope === 'all' ? '전체' : ($ev->target_scope === 'generation' ? $ev->generation.'기' : '지부') }}</div>
-        <div class="event-title">{{ Str::limit($ev->name, 28) }}</div>
-        <div class="event-meta">
-          @if($ev->location) <span>📍 {{ $ev->location }}</span> @endif
-          <span>📅 {{ $ev->start_date->format('m.d') }}@if($ev->start_date->ne($ev->end_date))~{{ $ev->end_date->format('m.d') }}@endif</span>
-        </div>
-      </div>
-    </a>
-    @endforeach
-    @if($events->count() < 4)
-    <a href="{{ route('events.index') }}" class="event-card" style="text-decoration:none;color:inherit;display:flex;align-items:center;justify-content:center;min-height:200px;">
-      <div style="text-align:center;opacity:.4;">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:4px;">MORE</div>
-        <div style="font-size:11px;letter-spacing:2px;margin-top:4px;">전체 이벤트 →</div>
-      </div>
-    </a>
-    @endif
-  </div>
-  @else
-  <div style="text-align:center;padding:60px 0;opacity:.4;">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:4px;">진행 중인 이벤트가 없습니다</div>
-    <a href="{{ route('events.index') }}" style="color:var(--pac-yellow);font-size:12px;letter-spacing:2px;text-decoration:none;margin-top:12px;display:block;">전체 이벤트 보기 →</a>
-  </div>
-  @endif
-  <div style="text-align:right;margin-top:20px;">
-    <a href="{{ route('events.index') }}" class="pac-btn-outline">전체 이벤트 →</a>
-  </div>
-</section>
+{{-- 이벤트 섹션 v1 --}}
+@include('sections.event-v1')
 
 <!-- 커뮤니티 -->
 <section class="community-section">
@@ -393,21 +249,8 @@
   </div>
 </section>
 
-<!-- Instagram -->
-<section class="insta-section">
-  <div class="pac-section-label">Instagram</div>
-  <div class="pac-section-heading">@pac.run.crew</div>
-  <div class="swiper swiper-insta">
-    <div class="swiper-wrapper">
-      <div class="swiper-slide" style="width:220px"><div class="insta-card ic-1"><div class="insta-hover"><div class="insta-hover-icon">📸</div><div class="insta-hover-text">보기</div></div><div class="insta-watermark">#pacrun</div></div></div>
-      <div class="swiper-slide" style="width:220px"><div class="insta-card ic-2"><div class="insta-hover"><div class="insta-hover-icon">📸</div><div class="insta-hover-text">보기</div></div><div class="insta-watermark">#running</div></div></div>
-      <div class="swiper-slide" style="width:220px"><div class="insta-card ic-3"><div class="insta-hover"><div class="insta-hover-icon">📸</div><div class="insta-hover-text">보기</div></div><div class="insta-watermark">#crew</div></div></div>
-      <div class="swiper-slide" style="width:220px"><div class="insta-card ic-4"><div class="insta-hover"><div class="insta-hover-icon">📸</div><div class="insta-hover-text">보기</div></div><div class="insta-watermark">#pacrun</div></div></div>
-      <div class="swiper-slide" style="width:220px"><div class="insta-card ic-5"><div class="insta-hover"><div class="insta-hover-icon">📸</div><div class="insta-hover-text">보기</div></div><div class="insta-watermark">#runner</div></div></div>
-      <div class="swiper-slide" style="width:220px"><div class="insta-card ic-6"><div class="insta-hover"><div class="insta-hover-icon">📸</div><div class="insta-hover-text">보기</div></div><div class="insta-watermark">#seoul</div></div></div>
-    </div>
-  </div>
-</section>
+{{-- 인스타그램 섹션 v1 --}}
+@include('sections.instagram-v1')
 
 <!-- Footer -->
 <footer>
@@ -430,6 +273,24 @@
   function selectTab(el) {
     el.closest('.notice-tabs').querySelectorAll('.ntab').forEach(t => t.classList.remove('on'));
     el.classList.add('on');
+  }
+  function changeSkin(skin) {
+    fetch('{{ route("skin.change") }}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      },
+      body: JSON.stringify({ skin: skin }),
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        // v1→v2 이동 시 페이지 새로고침 (홈 페이지는 완전히 다른 구조)
+        window.location.reload();
+      }
+    })
+    .catch(err => console.error('스킨 변경 실패:', err));
   }
 </script>
 </body>

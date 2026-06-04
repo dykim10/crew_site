@@ -115,6 +115,12 @@ class User extends Authenticatable implements FilamentUser, HasName
         return in_array($this->role, ['super_admin', 'region_admin', 'operator']);
     }
 
+    // crew.users_detail 1:1 관계
+    public function detail(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(UsersDetail::class, 'user_id');
+    }
+
     // 참여한 모든 기수 이력
     public function userGenerations()
     {

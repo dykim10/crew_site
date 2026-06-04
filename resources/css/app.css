@@ -49,6 +49,7 @@
 
 .pac-nav-links {
   display: flex;
+  align-items: center; /* 모든 li를 수직 중앙 정렬 */
   gap: 36px;
   list-style: none;
   margin: 0;
@@ -221,6 +222,127 @@
   width: fit-content;
 }
 .pac-btn-outline:hover { background: var(--pac-yellow); color: var(--pac-black); }
+
+/* ── DROPDOWN ────────────────────────────────────────── */
+.pac-dropdown-wrap {
+  position: relative;
+  /* <li>는 pac-nav-links의 flex item으로만 동작 — display:flex 제거 */
+}
+.pac-dropdown-trigger {
+  display: inline-flex; /* flex → inline-flex: 인라인 맥락 유지, 다른 nav 링크와 높이 동일 */
+  align-items: center;
+  gap: 5px;
+}
+.pac-dropdown-caret {
+  transition: transform .18s;
+  opacity: .55;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.pac-dropdown-wrap:hover .pac-dropdown-caret { opacity: 1; }
+.pac-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 196px;
+  background: #111111;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-top: 2px solid var(--pac-yellow);
+  padding: 6px;
+  z-index: 200;
+  box-shadow: 0 20px 48px rgba(0,0,0,0.7);
+}
+.pac-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom-color: var(--pac-yellow);
+}
+.pac-user-dropdown {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+.pac-user-dropdown::before {
+  left: auto;
+  right: 18px;
+  transform: none;
+}
+.pac-dropdown-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 9px 13px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .12s;
+}
+.pac-dropdown-item:hover,
+.pac-dropdown-item.active { background: rgba(229,173,22,0.06); }
+.pac-dropdown-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,.75);
+  transition: color .15s;
+  text-transform: uppercase;
+}
+.pac-dropdown-item:hover .pac-dropdown-label,
+.pac-dropdown-item.active .pac-dropdown-label { color: var(--pac-yellow); }
+.pac-dropdown-sub {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 11px;
+  color: rgba(255,255,255,.28);
+  font-weight: 300;
+}
+.pac-dropdown-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+  margin: 4px 6px;
+}
+.pac-dropdown-logout {
+  cursor: pointer;
+}
+.pac-user-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 3px 6px;
+  transition: background .15s;
+}
+.pac-user-btn:hover { background: rgba(255,255,255,0.05); }
+
+/* ── SKIN SWITCHER ──────────────────────────────────── */
+.skin-switcher {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.pac-btn-skin {
+  padding: 4px 10px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: transparent;
+  color: rgba(255,255,255,.4);
+  cursor: pointer;
+  transition: all .15s;
+  line-height: 1;
+}
+.pac-btn-skin.active {
+  background: var(--pac-yellow);
+  border-color: var(--pac-yellow);
+  color: var(--pac-black);
+}
+.pac-btn-skin:not(.active):hover {
+  border-color: rgba(255,255,255,.4);
+  color: rgba(255,255,255,.7);
+}
 
 /* ── RESPONSIVE ─────────────────────────────────────── */
 @media (max-width: 767px) {

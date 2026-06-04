@@ -1,45 +1,25 @@
+@php $skinClass = $skinClass ?? '_skin_v2'; @endphp
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" data-theme="v2">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>PAC-RUN CREW</title>
+  {{-- 스킨별 CSS 변수 (id 필수 — Ajax 교체용) --}}
+  <link id="skin-css" rel="stylesheet" href="{{ asset('css/skin/' . $skinClass . '.css') }}">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@300;400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  {{-- Bebas Neue (공용 GNB), Anton + Barlow Condensed (v2 홈 전용) --}}
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Anton&family=Barlow+Condensed:wght@300;400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
   <style>
     :root { --yellow:#E5AD16; --black:#1A1212; --pink:#E80043; --white:#FFFFFF; --light:#F5F3EE; --mid:#E8E5DF; }
     * { margin:0; padding:0; box-sizing:border-box; }
     html { scroll-behavior:smooth; }
     body { background:var(--light); color:var(--black); font-family:'Barlow Condensed','Noto Sans KR',sans-serif; overflow-x:hidden; }
 
-    /* ===== 어드민 테마 스위처 바 ===== */
-    .admin-theme-bar {
-      position:fixed; top:0; left:0; right:0; z-index:200;
-      background:var(--yellow); border-bottom:2px solid var(--black);
-      display:flex; align-items:center; justify-content:space-between;
-      padding:0 56px; height:40px; font-size:11px;
-    }
-    .admin-theme-bar-label { color:var(--black); letter-spacing:2px; text-transform:uppercase; font-weight:700; }
-    .theme-switch-btns { display:flex; gap:6px; align-items:center; }
-    .theme-btn { padding:4px 16px; font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; border:2px solid var(--black); background:transparent; color:var(--black); cursor:pointer; transition:all .2s; font-family:'Barlow Condensed',sans-serif; }
-    .theme-btn.active { background:var(--black); color:var(--yellow); }
-    .theme-btn:not(.active):hover { background:rgba(26,18,18,.1); }
-    .admin-bar-link { color:rgba(26,18,18,.6); text-decoration:none; font-size:10px; letter-spacing:1px; margin-left:20px; font-weight:700; }
-    .admin-bar-link:hover { color:var(--black); }
-
-    /* NAV */
-    .has-admin-bar nav { top:40px; }
-    nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:0 56px; height:64px; background:var(--black); }
-    .nav-logo { font-family:'Anton',sans-serif; font-size:22px; letter-spacing:3px; color:var(--yellow); text-decoration:none; display:flex; align-items:center; gap:6px; }
-    .nav-logo-dot { width:8px; height:8px; background:var(--pink); border-radius:50%; }
-    .nav-links { display:flex; gap:32px; list-style:none; }
-    .nav-links a { color:rgba(255,255,255,.6); text-decoration:none; font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase; transition:color .2s; }
-    .nav-links a:hover { color:var(--yellow); }
-    .nav-btn { background:var(--yellow); color:var(--black); padding:8px 20px; font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; text-decoration:none; font-family:'Barlow Condensed',sans-serif; }
-
     /* HERO */
-    .hero { min-height:100vh; position:relative; overflow:hidden; background:var(--yellow); display:flex; flex-direction:column; justify-content:flex-end; padding:0 56px 0; padding-top:64px; }
-    .has-admin-bar .hero { padding-top:104px; }
+    .hero { min-height:calc(100vh - 72px); position:relative; overflow:hidden; background:var(--yellow); display:flex; flex-direction:column; justify-content:flex-end; padding:0 56px 0; padding-top:40px; }
     .hero-diagonal { position:absolute; bottom:0; right:0; width:55%; height:100%; background:var(--black); clip-path:polygon(15% 0, 100% 0, 100% 100%, 0% 100%); }
     .hero-diagonal-inner { position:absolute; bottom:0; right:0; width:55%; height:100%; clip-path:polygon(15% 0, 100% 0, 100% 100%, 0% 100%); display:flex; align-items:center; justify-content:center; }
     .hero-diagonal-text { font-family:'Anton',sans-serif; font-size:clamp(60px,10vw,140px); letter-spacing:5px; color:rgba(229,173,22,0.08); writing-mode:vertical-rl; }
@@ -166,55 +146,17 @@
     .footer-insta { color:var(--yellow); text-decoration:none; font-size:12px; font-weight:700; }
   </style>
 </head>
-<body class="{{ auth()->check() && in_array(auth()->user()->role, ['super_admin','region_admin']) ? 'has-admin-bar' : '' }}">
+<body class="{{ $skinClass }}">
 
-{{-- 어드민 전용 테마 스위처 바 --}}
-@auth
-  @if(in_array(auth()->user()->role, ['super_admin', 'region_admin']))
-  <div class="admin-theme-bar">
-    <span class="admin-theme-bar-label">🎨 Theme · 관리자 전용</span>
-    <div style="display:flex;align-items:center;gap:12px;">
-      <div class="theme-switch-btns">
-        <form method="POST" action="{{ route('theme.switch') }}" style="display:inline;">
-          @csrf
-          <input type="hidden" name="theme" value="v1">
-          <button type="submit" class="theme-btn">V1 Dark</button>
-        </form>
-        <form method="POST" action="{{ route('theme.switch') }}" style="display:inline;">
-          @csrf
-          <input type="hidden" name="theme" value="v2">
-          <button type="submit" class="theme-btn active">V2 Energy</button>
-        </form>
-      </div>
-      <a href="/admin/theme-settings" class="admin-bar-link">어드민 설정 →</a>
-    </div>
-  </div>
-  @endif
-@endauth
-
-<!-- NAV -->
-<nav>
-  <a href="{{ route('home') }}" class="nav-logo">PAC-RUN<div class="nav-logo-dot"></div></a>
-  <ul class="nav-links">
-    <li><a href="#">소개</a></li>
-    <li><a href="#">지부</a></li>
-    <li><a href="#">이벤트</a></li>
-    <li><a href="#">커뮤니티</a></li>
-    <li><a href="#">기록</a></li>
-  </ul>
-  @auth
-    <a href="{{ route('dashboard') }}" class="nav-btn">대시보드</a>
-  @else
-    <a href="{{ route('login') }}" class="nav-btn">로그인</a>
-  @endauth
-</nav>
+{{-- GNB (공용 navigation 컴포넌트) --}}
+@include('layouts.navigation')
 
 <!-- HERO -->
 <section class="hero">
   <div class="hero-diagonal">
     <div class="hero-diagonal-text">RUNNING</div>
   </div>
-  <div class="hero-eyebrow">Seoul Running Crew · Est. 2024</div>
+  <div class="hero-eyebrow">High Intensity Interval Training · Partnership Activation Crew · Since 2024</div>
   <div class="hero-title">
     <div>PAC<span class="white">-</span></div>
     <div><span class="white">RUN</span></div>
@@ -255,69 +197,11 @@
   </div>
 </section>
 
-<!-- 지부 소개 -->
-<section class="branch-section">
-  <div class="section-eyebrow">지부 소개</div>
-  <div class="section-heading">4개 지부,<br><em>하나의</em> 크루</div>
-  <div class="swiper swiper-branches">
-    <div class="swiper-wrapper">
-      <div class="swiper-slide" style="width:300px"><div class="branch-card"><div class="branch-top branch-banpo-color"><div class="branch-top-num">01</div><div class="branch-top-region">BANPO · 반포</div><div class="branch-top-name">반포 지부</div></div><div class="branch-bottom"><div class="branch-slogan">한강변을 달리며 자유를 느끼는 반포 러너들</div><a href="#" class="branch-arrow-btn">지부 보기</a></div></div></div>
-      <div class="swiper-slide" style="width:300px"><div class="branch-card"><div class="branch-top branch-yonsei-color"><div class="branch-top-num">02</div><div class="branch-top-region">YONSEI · 연대</div><div class="branch-top-name">연대 지부</div></div><div class="branch-bottom"><div class="branch-slogan">캠퍼스와 도심을 누비는 연대 러닝팀</div><a href="#" class="branch-arrow-btn">지부 보기</a></div></div></div>
-      <div class="swiper-slide" style="width:300px"><div class="branch-card"><div class="branch-top branch-gunpo-color"><div class="branch-top-num">03</div><div class="branch-top-region">GUNPO · 군포</div><div class="branch-top-name">군포 지부</div></div><div class="branch-bottom"><div class="branch-slogan">수리산 트레일과 함께하는 군포 러너들</div><a href="#" class="branch-arrow-btn">지부 보기</a></div></div></div>
-      <div class="swiper-slide" style="width:300px"><div class="branch-card"><div class="branch-top branch-incheon-color"><div class="branch-top-num">04</div><div class="branch-top-region">INCHEON · 인천</div><div class="branch-top-name">인천 지부</div></div><div class="branch-bottom"><div class="branch-slogan">바다 내음과 함께 달리는 인천 러닝 패밀리</div><a href="#" class="branch-arrow-btn">지부 보기</a></div></div></div>
-    </div>
-  </div>
-</section>
+{{-- 지부 섹션 v2 --}}
+@include('sections.branch-v2')
 
-<!-- 이벤트 -->
-<section class="event-section">
-  <div class="section-eyebrow" style="color:var(--yellow)">Events</div>
-  <div class="section-heading">다가오는<br>이벤트</div>
-  @if($events->isNotEmpty())
-  <div class="event-grid">
-    @foreach($events as $idx => $ev)
-    @php
-      $thumb = $ev->thumbnail_url
-        ? (str_starts_with($ev->thumbnail_url,'http') ? $ev->thumbnail_url : \Storage::disk('s3')->url($ev->thumbnail_url))
-        : null;
-      $gradients = ['et-1','et-2','et-3','et-4'];
-      $grad = $gradients[$idx % 4];
-    @endphp
-    <a href="{{ route('events.show', $ev) }}" class="event-card" style="text-decoration:none;color:inherit;">
-      <div class="event-thumb {{ $grad }}" style="{{ $thumb ? 'background:url('.e($thumb).') center/cover no-repeat;' : '' }}">
-        <div class="event-thumb-num">{{ str_pad($idx+1,2,'0',STR_PAD_LEFT) }}</div>
-        <div class="event-date-badge">{{ $ev->start_date->format('Y.m.d') }}</div>
-        @if($ev->status === 'active')
-          <div style="position:absolute;top:0;right:0;background:#E80043;color:white;font-size:9px;font-weight:700;padding:4px 10px;letter-spacing:2px;">LIVE</div>
-        @endif
-      </div>
-      <div class="event-body">
-        <div class="event-region-tag">{{ $ev->target_scope === 'all' ? '전체' : ($ev->target_scope === 'generation' ? $ev->generation.'기' : '지부') }} · B Type</div>
-        <div class="event-title">{{ Str::limit($ev->name, 24) }}</div>
-        @if($ev->location) <div class="event-meta-line">📍 {{ $ev->location }}</div> @endif
-        <div class="event-meta-line">📅 {{ $ev->start_date->format('m.d') }}@if($ev->start_date->ne($ev->end_date))~{{ $ev->end_date->format('m.d') }}@endif</div>
-        <a href="{{ route('events.show', $ev) }}" class="event-link">
-          {{ $ev->isRecruitOpen() ? '신청하기 →' : '상세보기 →' }}
-        </a>
-      </div>
-    </a>
-    @endforeach
-    @if($events->count() < 4)
-    <a href="{{ route('events.index') }}" class="event-card" style="text-decoration:none;display:flex;align-items:center;justify-content:center;">
-      <div style="text-align:center;color:rgba(255,255,255,.3);">
-        <div style="font-family:'Anton',sans-serif;font-size:28px;letter-spacing:4px;">MORE</div>
-        <div style="font-size:11px;letter-spacing:2px;margin-top:4px;">전체 이벤트 →</div>
-      </div>
-    </a>
-    @endif
-  </div>
-  @else
-  <div style="text-align:center;padding:60px 0;color:rgba(255,255,255,.3);">
-    <p style="font-family:'Anton',sans-serif;font-size:20px;letter-spacing:4px;">진행 중인 이벤트가 없습니다</p>
-    <a href="{{ route('events.index') }}" style="color:var(--yellow);font-size:12px;letter-spacing:2px;text-decoration:none;margin-top:12px;display:block;">전체 이벤트 보기 →</a>
-  </div>
-  @endif
-</section>
+{{-- 이벤트 섹션 v2 --}}
+@include('sections.event-v2')
 
 <!-- 커뮤니티 -->
 <section class="community-section">
@@ -374,21 +258,8 @@
   </div>
 </section>
 
-<!-- Instagram -->
-<section class="insta-section">
-  <div class="section-eyebrow">Instagram</div>
-  <div class="section-heading">@pac.run<em style="color:var(--yellow)">.crew</em></div>
-  <div class="swiper swiper-insta">
-    <div class="swiper-wrapper">
-      <div class="swiper-slide" style="width:220px"><div class="insta-card ic-1"><div class="insta-inner"><div class="insta-icon-big">RUN</div></div><div class="insta-hover"><div class="insta-hover-label">인스타 보기 →</div></div><div class="insta-tag">#pacrun</div></div></div>
-      <div class="swiper-slide" style="width:220px"><div class="insta-card ic-2"><div class="insta-inner"><div class="insta-icon-big">PAC</div></div><div class="insta-hover"><div class="insta-hover-label">인스타 보기 →</div></div><div class="insta-tag">#running</div></div></div>
-      <div class="swiper-slide" style="width:220px"><div class="insta-card ic-3"><div class="insta-inner"><div class="insta-icon-big">5K</div></div><div class="insta-hover"><div class="insta-hover-label">인스타 보기 →</div></div><div class="insta-tag">#crew</div></div></div>
-      <div class="swiper-slide" style="width:220px"><div class="insta-card ic-4"><div class="insta-inner"><div class="insta-icon-big">GO!</div></div><div class="insta-hover"><div class="insta-hover-label">인스타 보기 →</div></div><div class="insta-tag">#pacrun</div></div></div>
-      <div class="swiper-slide" style="width:220px"><div class="insta-card ic-5"><div class="insta-inner"><div class="insta-icon-big">KM</div></div><div class="insta-hover"><div class="insta-hover-label">인스타 보기 →</div></div><div class="insta-tag">#runner</div></div></div>
-      <div class="swiper-slide" style="width:220px"><div class="insta-card ic-6"><div class="insta-inner"><div class="insta-icon-big">FIT</div></div><div class="insta-hover"><div class="insta-hover-label">인스타 보기 →</div></div><div class="insta-tag">#seoul</div></div></div>
-    </div>
-  </div>
-</section>
+{{-- 인스타그램 섹션 v2 --}}
+@include('sections.instagram-v2')
 
 <!-- Footer -->
 <footer>
@@ -411,6 +282,24 @@
   function selectTab(el) {
     el.closest('.notice-tabs').querySelectorAll('.ntab').forEach(t => t.classList.remove('on'));
     el.classList.add('on');
+  }
+  function changeSkin(skin) {
+    fetch('{{ route("skin.change") }}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+      },
+      body: JSON.stringify({ skin: skin }),
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        // v1↔v2 전환 시 페이지 새로고침 (홈 페이지는 완전히 다른 구조)
+        window.location.reload();
+      }
+    })
+    .catch(err => console.error('스킨 변경 실패:', err));
   }
 </script>
 </body>

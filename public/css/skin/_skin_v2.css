@@ -1,0 +1,16 @@
+/* PAC-RUN Skin v2 — Energy Burst
+   body._skin_v2 에 CSS 변수 정의 (충돌 방지)
+   app.css / 컴포넌트는 var() 로만 색상 참조 */
+
+body._skin_v2 {
+    --body-bg:     #0D0D0D;
+    --surface:     #141414;
+    --card-bg:     #1A1A1A;
+    --text-main:   #FFFFFF;
+    --text-muted:  #AAAAAA;
+    --btn-bg:      #E80043;
+    --btn-text:    #FFFFFF;
+    --border:      #2A2A2A;
+    --accent:      #E80043;
+    --accent-alt:  #E5AD16;
+}

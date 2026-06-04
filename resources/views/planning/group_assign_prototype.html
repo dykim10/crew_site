@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>조 편성 팝업 — PAC-RUN CREW</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --yellow:  #E5AD16;
+  --yellow2: #c99510;
+  --pink:    #E80043;
+  --black:   #1A1212;
+  --bg:      #0D0D0D;
+  --bg2:     #111111;
+  --bg3:     #161616;
+  --bg4:     #1C1C1C;
+  --border:  rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --muted:   rgba(255,255,255,0.40);
+  --muted2:  rgba(255,255,255,0.20);
+  --white:   #FFFFFF;
+  --green:   #16a34a;
+}
+
+body {
+  font-family: 'Noto Sans KR', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--white);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* ── MODAL OVERLAY ─────────────────────────────────── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.82);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+
+/* ── MODAL SHELL ───────────────────────────────────── */
+.modal {
+  width: min(1180px, calc(100vw - 32px));
+  height: min(780px, calc(100vh - 40px));
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* corner cuts — tactical aesthetic */
+.modal::before {
+  content: '';
+  position: absolute; top: 0; right: 0;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 0 28px 28px 0;
+  border-color: transparent var(--bg) transparent transparent;
+  z-index: 10;
+}
+.modal::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0;
+  width: 14px; height: 14px;
+  background: var(--bg);
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+  z-index: 10;
+}
+
+/* ── HEADER ────────────────────────────────────────── */
+.modal-head {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 56px;
+  border-bottom: 1px solid var(--border2);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.head-label {
+  height: 100%;
+  padding: 0 24px;
+  display: flex; align-items: center;
+  background: var(--yellow);
+  gap: 10px;
+  flex-shrink: 0;
+}
+.head-label-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 3px;
+  color: var(--black);
+}
+.head-label-dot {
+  width: 6px; height: 6px;
+  background: var(--black);
+  border-radius: 50%;
+  opacity: 0.4;
+}
+
+.head-meta {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 24px;
+}
+.head-event-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 15px;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.6);
+}
+.head-event-status {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  background: rgba(22,163,74,0.15);
+  border: 1px solid rgba(22,163,74,0.4);
+  color: #4ade80;
+}
+.head-sep { height: 20px; width: 1px; background: var(--border2); }
+.head-gen {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+
+.modal-close {
+  height: 100%;
+  width: 56px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  border-left: 1px solid var(--border);
+  color: var(--muted);
+  transition: all 0.15s;
+  flex-shrink: 0;
+  background: transparent; border-top: none; border-right: none; border-bottom: none;
+}
+.modal-close:hover { color: var(--white); background: rgba(255,255,255,0.04); }
+.modal-close svg { width: 16px; height: 16px; }
+
+/* ── BRANCH TABS ───────────────────────────────────── */
+.branch-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border2);
+  flex-shrink: 0;
+  background: var(--bg);
+}
+
+.branch-tab {
+  padding: 0 28px;
+  height: 44px;
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  position: relative;
+  bottom: -1px;
+}
+.branch-tab:hover { color: rgba(255,255,255,0.7); }
+.branch-tab.active {
+  color: var(--yellow);
+  border-bottom-color: var(--yellow);
+  background: rgba(229,173,22,0.04);
+}
+.branch-tab-count {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  padding: 1px 6px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 10px;
+  min-width: 22px;
+  text-align: center;
+}
+.branch-tab.active .branch-tab-count {
+  background: rgba(229,173,22,0.15);
+  color: var(--yellow);
+}
+
+/* ── MAIN BODY ─────────────────────────────────────── */
+.modal-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── LEFT: MEMBER POOL ─────────────────────────────── */
+.pool-panel {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--bg);
+  border-right: 1px solid var(--border2);
+  display: flex;
+  flex-direction: column;
+}
+
+.pool-head {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.pool-head-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.pool-search {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--white);
+  padding: 6px 10px;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.pool-search::placeholder { color: var(--muted2); }
+.pool-search:focus { border-color: rgba(229,173,22,0.5); }
+
+.pool-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pool-list::-webkit-scrollbar { width: 3px; }
+.pool-list::-webkit-scrollbar-track { background: transparent; }
+.pool-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ── MEMBER CHIP ───────────────────────────────────── */
+.member-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  cursor: grab;
+  transition: all 0.15s;
+  user-select: none;
+  position: relative;
+}
+.member-chip:hover {
+  border-color: rgba(229,173,22,0.4);
+  background: var(--bg4);
+}
+.member-chip:active { cursor: grabbing; }
+.member-chip.sortable-ghost {
+  opacity: 0.3;
+  background: rgba(229,173,22,0.08);
+  border-color: rgba(229,173,22,0.3);
+}
+.member-chip.sortable-chosen {
+  opacity: 0.9;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6), 0 0 0 1px rgba(229,173,22,0.5);
+  transform: rotate(-1deg) scale(1.02);
+  z-index: 999;
+}
+
+.member-id {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--muted2);
+  min-width: 22px;
+  letter-spacing: 0.5px;
+}
+.member-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--white);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.member-grade {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 2px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+.grade-A { background: rgba(232,0,67,0.15); color: #ff6b8a; border: 1px solid rgba(232,0,67,0.3); }
+.grade-B { background: rgba(229,173,22,0.12); color: var(--yellow); border: 1px solid rgba(229,173,22,0.3); }
+.grade-C { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.15); }
+
+.drag-icon {
+  display: flex; flex-direction: column; gap: 2px; flex-shrink: 0;
+}
+.drag-icon span {
+  width: 12px; height: 1px;
+  background: var(--muted2);
+  display: block;
+}
+.member-chip:hover .drag-icon span { background: rgba(229,173,22,0.5); }
+
+.pool-empty {
+  text-align: center;
+  padding: 32px 16px;
+  font-size: 11px;
+  color: var(--muted2);
+  line-height: 1.7;
+}
+.pool-empty span {
+  display: block;
+  font-size: 22px;
+  margin-bottom: 8px;
+  opacity: 0.4;
+}
+
+/* ── RIGHT: GROUPS BOARD ───────────────────────────── */
+.groups-board {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.groups-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  gap: 12px;
+}
+.groups-toolbar-left {
+  display: flex; align-items: center; gap: 8px;
+}
+.toolbar-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.toolbar-stat {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  padding: 2px 8px;
+  background: rgba(229,173,22,0.08);
+  border: 1px solid rgba(229,173,22,0.2);
+  color: rgba(229,173,22,0.8);
+}
+
+.btn-add-group {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid rgba(229,173,22,0.4);
+  background: transparent;
+  color: var(--yellow);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-add-group:hover {
+  background: rgba(229,173,22,0.1);
+  border-color: var(--yellow);
+}
+.btn-add-group svg { width: 12px; height: 12px; }
+
+.groups-scroll {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.groups-scroll::-webkit-scrollbar { height: 4px; }
+.groups-scroll::-webkit-scrollbar-track { background: transparent; }
+.groups-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ── GROUP COLUMN ──────────────────────────────────── */
+.group-col {
+  width: 180px;
+  flex-shrink: 0;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s;
+  position: relative;
+}
+.group-col.drag-over {
+  border-color: rgba(229,173,22,0.6);
+  background: rgba(229,173,22,0.04);
+}
+.group-col.full {
+  border-color: rgba(232,0,67,0.3);
+}
+
+.group-col-head {
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.group-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: var(--yellow);
+  line-height: 1;
+  flex: 1;
+}
+.group-count-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 10px;
+  color: var(--muted);
+}
+.group-col.full .group-count-badge {
+  background: rgba(232,0,67,0.12);
+  color: #ff6b8a;
+}
+
+.group-col-actions {
+  display: flex; gap: 4px;
+}
+.group-action-btn {
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  padding: 0;
+}
+.group-action-btn:hover { color: var(--white); border-color: var(--border2); }
+.group-action-btn.danger:hover { color: var(--pink); border-color: rgba(232,0,67,0.4); }
+.group-action-btn svg { width: 10px; height: 10px; }
+
+.group-leader-tag {
+  font-size: 9px;
+  color: var(--muted2);
+  padding: 2px 8px 4px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 4px;
+  flex-shrink: 0;
+  font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: 0.5px;
+}
+.group-leader-tag svg { width: 8px; height: 8px; color: var(--yellow); flex-shrink: 0; }
+.group-leader-name { color: rgba(229,173,22,0.7); font-weight: 600; }
+
+.group-drop-zone {
+  flex: 1;
+  min-height: 120px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: background 0.15s;
+}
+.group-drop-zone.empty-hint {
+  align-items: center;
+  justify-content: center;
+}
+.drop-hint-text {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted2);
+  text-align: center;
+  pointer-events: none;
+}
+.drop-hint-border {
+  width: 100%; height: 100%;
+  border: 1px dashed rgba(255,255,255,0.12);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 6px;
+  padding: 16px 8px;
+}
+.drop-hint-icon {
+  width: 24px; height: 24px;
+  color: rgba(255,255,255,0.1);
+}
+
+/* member chip inside group (smaller) */
+.group-drop-zone .member-chip {
+  padding: 5px 8px;
+}
+.group-drop-zone .member-name { font-size: 11px; }
+.group-drop-zone .member-id { font-size: 8px; min-width: 18px; }
+
+.group-col.collapsed .group-drop-zone { display: none; }
+.group-col.collapsed .group-leader-tag { display: none; }
+.group-col.collapsed {
+  width: 56px;
+  cursor: pointer;
+}
+.group-col.collapsed .group-col-head {
+  flex-direction: column;
+  height: auto;
+  padding: 12px 8px;
+  gap: 8px;
+}
+.group-col.collapsed .group-num {
+  writing-mode: vertical-rl;
+  font-size: 14px;
+}
+.group-col.collapsed .group-col-actions { flex-direction: column; }
+.group-col.collapsed .group-action-btn.danger { display: none; }
+
+/* ── FOOTER ────────────────────────────────────────── */
+.modal-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border2);
+  flex-shrink: 0;
+  background: var(--bg);
+  gap: 16px;
+}
+
+.foot-status {
+  display: flex; align-items: center; gap: 16px;
+}
+.foot-stat-item {
+  display: flex; align-items: center; gap: 6px;
+}
+.foot-stat-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+}
+.dot-assigned { background: var(--green); }
+.dot-unassigned { background: rgba(255,255,255,0.2); }
+.dot-conflict { background: var(--pink); }
+.foot-stat-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+}
+.foot-stat-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.foot-actions {
+  display: flex; align-items: center; gap: 8px;
+}
+.btn-reset {
+  padding: 8px 18px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-reset:hover { color: var(--white); border-color: var(--border2); }
+
+.btn-save {
+  padding: 8px 28px;
+  background: var(--yellow);
+  color: var(--black);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 17px;
+  letter-spacing: 2px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  display: flex; align-items: center; gap: 8px;
+}
+.btn-save:hover { opacity: 0.88; }
+.btn-save svg { width: 14px; height: 14px; }
+
+/* ── TOAST ─────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--bg3);
+  border: 1px solid rgba(229,173,22,0.4);
+  padding: 10px 18px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--yellow);
+  font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: 1px;
+  z-index: 9999;
+  transform: translateY(60px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* ── SCROLLBAR ─────────────────────────────────────── */
+.groups-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+.pool-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+
+/* ── OPEN MODAL BUTTON (demo page) ────────────────── */
+.demo-bg {
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse at 30% 40%, rgba(229,173,22,0.06) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 70%, rgba(232,0,67,0.04) 0%, transparent 50%),
+              var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 20px;
+}
+.demo-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 6px;
+  color: var(--muted2);
+  text-transform: uppercase;
+}
+.demo-open-btn {
+  padding: 14px 40px;
+  background: var(--yellow);
+  color: var(--black);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 3px;
+  border: none;
+  cursor: pointer;
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  transition: opacity 0.15s;
+}
+.demo-open-btn:hover { opacity: 0.88; }
+
+</style>
+</head>
+<body>
+
+<!-- ── DEMO BG ─────────────────────────────────────── -->
+<div class="demo-bg" id="demoBg">
+  <div class="demo-title">PAC-RUN CREW · Admin</div>
+  <button class="demo-open-btn" onclick="openModal()">조 편성 팝업 열기</button>
+</div>
+
+<!-- ── MODAL OVERLAY ───────────────────────────────── -->
+<div class="overlay" id="overlay" style="display:none;" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+
+    <!-- HEAD -->
+    <div class="modal-head">
+      <div class="head-label">
+        <div class="head-label-dot"></div>
+        <span class="head-label-text">조 편성</span>
+        <div class="head-label-dot"></div>
+      </div>
+      <div class="head-meta">
+        <span class="head-event-name">1기 마라톤 도전 이벤트</span>
+        <div class="head-sep"></div>
+        <span class="head-event-status">ACTIVE</span>
+        <div class="head-sep"></div>
+        <span class="head-gen">GEN 01 · 2026.04.01 ~ 06.30</span>
+      </div>
+      <button class="modal-close" onclick="closeModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- BRANCH TABS -->
+    <div class="branch-tabs" id="branchTabs"></div>
+
+    <!-- BODY -->
+    <div class="modal-body">
+
+      <!-- LEFT: POOL -->
+      <div class="pool-panel">
+        <div class="pool-head">
+          <div class="pool-head-label">미배정 인원</div>
+          <input class="pool-search" type="text" placeholder="이름 검색" id="poolSearch" oninput="filterPool()">
+        </div>
+        <div class="pool-list" id="poolList"></div>
+      </div>
+
+      <!-- RIGHT: GROUPS -->
+      <div class="groups-board">
+        <div class="groups-toolbar">
+          <div class="groups-toolbar-left">
+            <span class="toolbar-label">조 편성</span>
+            <span class="toolbar-stat" id="toolbarStat">0조 편성 중</span>
+          </div>
+          <button class="btn-add-group" onclick="addGroup()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            조 추가
+          </button>
+        </div>
+
+        <div class="groups-scroll" id="groupsScroll"></div>
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="modal-foot">
+      <div class="foot-status" id="footStatus"></div>
+      <div class="foot-actions">
+        <button class="btn-reset" onclick="resetBranch()">초기화</button>
+        <button class="btn-save" onclick="saveGroups()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+          </svg>
+          편성 저장
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── DATA ──────────────────────────────────────────── */
+const BRANCHES = [
+  { id: 1, name: '반포', members: [
+    {id: 101, name: '김민준', grade: 'A'},
+    {id: 102, name: '이서연', grade: 'B'},
+    {id: 103, name: '박지훈', grade: 'A'},
+    {id: 104, name: '최수아', grade: 'C'},
+    {id: 105, name: '정도현', grade: 'B'},
+    {id: 106, name: '강하늘', grade: 'A'},
+    {id: 107, name: '오지민', grade: 'C'},
+    {id: 108, name: '한예은', grade: 'B'},
+    {id: 109, name: '신준서', grade: 'A'},
+    {id: 110, name: '임채원', grade: 'C'},
+    {id: 111, name: '류성현', grade: 'B'},
+    {id: 112, name: '문지아', grade: 'A'},
+  ]},
+  { id: 2, name: '연대', members: [
+    {id: 201, name: '송우진', grade: 'A'},
+    {id: 202, name: '황나연', grade: 'B'},
+    {id: 203, name: '조현우', grade: 'A'},
+    {id: 204, name: '백서희', grade: 'C'},
+    {id: 205, name: '전민재', grade: 'B'},
+    {id: 206, name: '노지수', grade: 'A'},
+    {id: 207, name: '홍예린', grade: 'B'},
+    {id: 208, name: '구태양', grade: 'C'},
+    {id: 209, name: '방은채', grade: 'A'},
+  ]},
+  { id: 3, name: '인천', members: [
+    {id: 301, name: '안성민', grade: 'A'},
+    {id: 302, name: '유서진', grade: 'B'},
+    {id: 303, name: '남도경', grade: 'A'},
+    {id: 304, name: '심하은', grade: 'C'},
+    {id: 305, name: '탁재원', grade: 'B'},
+    {id: 306, name: '배윤아', grade: 'A'},
+    {id: 307, name: '원세훈', grade: 'C'},
+    {id: 308, name: '지한결', grade: 'B'},
+    {id: 309, name: '차소연', grade: 'A'},
+    {id: 310, name: '주민혁', grade: 'B'},
+    {id: 311, name: '마유진', grade: 'C'},
+    {id: 312, name: '제이한', grade: 'A'},
+    {id: 313, name: '권태현', grade: 'B'},
+    {id: 314, name: '황진아', grade: 'C'},
+  ]},
+  { id: 4, name: '군포', members: [
+    {id: 401, name: '엄기준', grade: 'A'},
+    {id: 402, name: '고나영', grade: 'B'},
+    {id: 403, name: '우성훈', grade: 'A'},
+    {id: 404, name: '서채린', grade: 'C'},
+    {id: 405, name: '이태양', grade: 'B'},
+    {id: 406, name: '김하랑', grade: 'A'},
+  ]},
+];
+
+/* ── STATE ─────────────────────────────────────────── */
+let currentBranchIdx = 0;
+let branchState = {};   // { branchId: { groups: [{id, name, members: [memberId]}], pool: [memberId] } }
+
+function getMemById(branchId, memberId) {
+  const br = BRANCHES.find(b => b.id === branchId);
+  return br ? br.members.find(m => m.id === memberId) : null;
+}
+
+function initBranchState(branch) {
+  if (!branchState[branch.id]) {
+    branchState[branch.id] = {
+      groups: [],
+      pool: branch.members.map(m => m.id),
+    };
+  }
+}
+
+/* ── OPEN / CLOSE ──────────────────────────────────── */
+function openModal() {
+  document.getElementById('overlay').style.display = 'flex';
+  BRANCHES.forEach(b => initBranchState(b));
+  renderTabs();
+  switchBranch(0);
+}
+
+function closeModal() {
+  document.getElementById('overlay').style.display = 'none';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('overlay')) closeModal();
+}
+
+/* ── TABS ──────────────────────────────────────────── */
+function renderTabs() {
+  const tabs = document.getElementById('branchTabs');
+  tabs.innerHTML = '';
+  BRANCHES.forEach((br, idx) => {
+    const s = branchState[br.id];
+    const assigned = s ? br.members.length - s.pool.length : 0;
+    const btn = document.createElement('button');
+    btn.className = 'branch-tab' + (idx === currentBranchIdx ? ' active' : '');
+    btn.onclick = () => switchBranch(idx);
+    btn.innerHTML = `
+      ${br.name}
+      <span class="branch-tab-count">${assigned}/${br.members.length}</span>
+    `;
+    tabs.appendChild(btn);
+  });
+}
+
+function switchBranch(idx) {
+  currentBranchIdx = idx;
+  renderTabs();
+  renderPool();
+  renderGroups();
+  updateFooter();
+}
+
+/* ── POOL ──────────────────────────────────────────── */
+function renderPool() {
+  const branch = BRANCHES[currentBranchIdx];
+  const state = branchState[branch.id];
+  const query = document.getElementById('poolSearch').value.trim().toLowerCase();
+  const list = document.getElementById('poolList');
+  list.innerHTML = '';
+
+  const filtered = state.pool.filter(id => {
+    const m = getMemById(branch.id, id);
+    return !query || m.name.includes(query);
+  });
+
+  if (filtered.length === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'pool-empty';
+    empty.innerHTML = state.pool.length === 0
+      ? `<span>✓</span>전원 배정 완료`
+      : `<span>🔍</span>검색 결과 없음`;
+    list.appendChild(empty);
+    return;
+  }
+
+  filtered.forEach(id => {
+    const m = getMemById(branch.id, id);
+    list.appendChild(createChip(m, 'pool'));
+  });
+
+  // Sortable for pool
+  initPoolSortable();
+}
+
+function createChip(m, context) {
+  const el = document.createElement('div');
+  el.className = 'member-chip';
+  el.dataset.memberId = m.id;
+  el.innerHTML = `
+    <div class="drag-icon"><span></span><span></span><span></span></div>
+    <span class="member-id">#${String(m.id).slice(-2)}</span>
+    <span class="member-name">${m.name}</span>
+    <span class="member-grade grade-${m.grade}">${m.grade}</span>
+  `;
+  return el;
+}
+
+function filterPool() { renderPool(); }
+
+/* ── GROUPS ────────────────────────────────────────── */
+function renderGroups() {
+  const branch = BRANCHES[currentBranchIdx];
+  const state = branchState[branch.id];
+  const scroll = document.getElementById('groupsScroll');
+  scroll.innerHTML = '';
+
+  state.groups.forEach((group, gIdx) => {
+    scroll.appendChild(createGroupCol(branch, state, group, gIdx));
+  });
+
+  updateToolbar();
+}
+
+function createGroupCol(branch, state, group, gIdx) {
+  const col = document.createElement('div');
+  col.className = 'group-col';
+  col.dataset.groupId = group.id;
+
+  const memberCount = group.members.length;
+  const isFull = memberCount >= 8;
+  if (isFull) col.classList.add('full');
+
+  // leader = first member
+  const leaderId = group.members[0];
+  const leaderMem = leaderId ? getMemById(branch.id, leaderId) : null;
+
+  col.innerHTML = `
+    <div class="group-col-head">
+      <span class="group-num">${group.name}</span>
+      <span class="group-count-badge">${memberCount}명</span>
+      <div class="group-col-actions">
+        <button class="group-action-btn" title="접기/펴기" onclick="toggleCollapse(this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 15l7-7 7 7"/>
+          </svg>
+        </button>
+        <button class="group-action-btn danger" title="조 삭제" onclick="removeGroup(${gIdx})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6 6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    ${leaderMem ? `<div class="group-leader-tag">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01z"/></svg>
+      <span>대장</span>
+      <span class="group-leader-name">${leaderMem.name}</span>
+    </div>` : ''}
+    <div class="group-drop-zone ${memberCount === 0 ? 'empty-hint' : ''}" id="group-${group.id}">
+      ${memberCount === 0 ? `
+        <div class="drop-hint-border">
+          <svg class="drop-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <span class="drop-hint-text">드래그하여<br>배정</span>
+        </div>` : ''}
+    </div>
+  `;
+
+  // render existing members in group
+  const zone = col.querySelector(`#group-${group.id}`);
+  group.members.forEach(mid => {
+    const mem = getMemById(branch.id, mid);
+    if (mem) zone.appendChild(createChip(mem, 'group'));
+  });
+
+  return col;
+}
+
+function toggleCollapse(btn) {
+  const col = btn.closest('.group-col');
+  col.classList.toggle('collapsed');
+  const icon = btn.querySelector('svg path');
+  if (col.classList.contains('collapsed')) {
+    icon.setAttribute('d', 'M19 9l-7 7-7-7');
+  } else {
+    icon.setAttribute('d', 'M5 15l7-7 7 7');
+  }
+}
+
+/* ── ADD / REMOVE GROUP ────────────────────────────── */
+let groupCounter = {};
+
+function addGroup() {
+  const branch = BRANCHES[currentBranchIdx];
+  const state = branchState[branch.id];
+  if (!groupCounter[branch.id]) groupCounter[branch.id] = state.groups.length;
+  groupCounter[branch.id]++;
+  const no = groupCounter[branch.id];
+  state.groups.push({ id: `g${branch.id}_${no}`, name: `${no}조`, members: [] });
+  renderGroups();
+  // scroll to end
+  setTimeout(() => {
+    const s = document.getElementById('groupsScroll');
+    s.scrollLeft = s.scrollWidth;
+  }, 50);
+}
+
+function removeGroup(gIdx) {
+  const branch = BRANCHES[currentBranchIdx];
+  const state = branchState[branch.id];
+  const group = state.groups[gIdx];
+  // return members to pool
+  group.members.forEach(mid => {
+    if (!state.pool.includes(mid)) state.pool.push(mid);
+  });
+  state.groups.splice(gIdx, 1);
+  renderPool();
+  renderGroups();
+  updateFooter();
+  renderTabs();
+}
+
+function resetBranch() {
+  if (!confirm('이 지부의 조 편성을 초기화하시겠습니까?')) return;
+  const branch = BRANCHES[currentBranchIdx];
+  branchState[branch.id] = {
+    groups: [],
+    pool: branch.members.map(m => m.id),
+  };
+  groupCounter[branch.id] = 0;
+  renderPool();
+  renderGroups();
+  updateFooter();
+  renderTabs();
+  showToast('초기화 완료');
+}
+
+/* ── SORTABLE SETUP ────────────────────────────────── */
+let poolSortable = null;
+let groupSortables = {};
+
+function initPoolSortable() {
+  const poolEl = document.getElementById('poolList');
+  if (poolSortable) { poolSortable.destroy(); poolSortable = null; }
+
+  poolSortable = Sortable.create(poolEl, {
+    group: { name: 'members', pull: true, put: true },
+    animation: 150,
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
+    onAdd(evt) {
+      // member dropped back to pool
+      const memberId = parseInt(evt.item.dataset.memberId);
+      const branch = BRANCHES[currentBranchIdx];
+      const state = branchState[branch.id];
+      // remove from all groups
+      state.groups.forEach(g => {
+        const i = g.members.indexOf(memberId);
+        if (i !== -1) g.members.splice(i, 1);
+      });
+      if (!state.pool.includes(memberId)) state.pool.push(memberId);
+      // Re-render fully to update leader tags and counts
+      renderPool();
+      renderGroups();
+      updateFooter();
+      renderTabs();
+    },
+    onRemove(evt) {
+      const memberId = parseInt(evt.item.dataset.memberId);
+      const branch = BRANCHES[currentBranchIdx];
+      const state = branchState[branch.id];
+      const i = state.pool.indexOf(memberId);
+      if (i !== -1) state.pool.splice(i, 1);
+      updateFooter();
+      renderTabs();
+    },
+  });
+}
+
+function initGroupSortables() {
+  const branch = BRANCHES[currentBranchIdx];
+  const state = branchState[branch.id];
+
+  state.groups.forEach(group => {
+    const el = document.getElementById(`group-${group.id}`);
+    if (!el) return;
+    if (groupSortables[group.id]) { groupSortables[group.id].destroy(); }
+
+    groupSortables[group.id] = Sortable.create(el, {
+      group: { name: 'members', pull: true, put: true },
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
+      filter: '.drop-hint-border',
+      onAdd(evt) {
+        const memberId = parseInt(evt.item.dataset.memberId);
+        // ensure no duplicate across groups
+        state.groups.forEach(g => {
+          if (g.id !== group.id) {
+            const i = g.members.indexOf(memberId);
+            if (i !== -1) g.members.splice(i, 1);
+          }
+        });
+        if (!group.members.includes(memberId)) {
+          // insert at correct position based on DOM
+          const chips = Array.from(el.querySelectorAll('.member-chip'));
+          const pos = chips.findIndex(c => parseInt(c.dataset.memberId) === memberId);
+          if (pos !== -1) {
+            group.members.splice(pos, 0, memberId);
+          } else {
+            group.members.push(memberId);
+          }
+        }
+        renderPool();
+        renderGroups();
+        updateFooter();
+        renderTabs();
+      },
+      onUpdate(evt) {
+        // reorder within group
+        const ids = Array.from(el.querySelectorAll('.member-chip'))
+          .map(c => parseInt(c.dataset.memberId));
+        group.members = ids;
+        // re-render to update leader
+        renderGroups();
+      },
+      onRemove(evt) {
+        const memberId = parseInt(evt.item.dataset.memberId);
+        const i = group.members.indexOf(memberId);
+        if (i !== -1) group.members.splice(i, 1);
+        updateFooter();
+        renderTabs();
+      },
+    });
+  });
+}
+
+/* ── OBSERVERS to init sortables after render ──────── */
+const origRenderGroups = renderGroups;
+window.renderGroups = function() {
+  origRenderGroups();
+  setTimeout(initGroupSortables, 0);
+};
+
+/* ── FOOTER / TOOLBAR ──────────────────────────────── */
+function updateFooter() {
+  const branch = BRANCHES[currentBranchIdx];
+  const state = branchState[branch.id];
+  const total = branch.members.length;
+  const unassigned = state.pool.length;
+  const assigned = total - unassigned;
+
+  const status = document.getElementById('footStatus');
+  status.innerHTML = `
+    <div class="foot-stat-item">
+      <div class="foot-stat-dot dot-assigned"></div>
+      <span class="foot-stat-label">배정</span>
+      <span class="foot-stat-num">${assigned}</span>
+    </div>
+    <div class="foot-stat-item">
+      <div class="foot-stat-dot dot-unassigned"></div>
+      <span class="foot-stat-label">미배정</span>
+      <span class="foot-stat-num">${unassigned}</span>
+    </div>
+    <div class="foot-stat-item">
+      <div class="foot-stat-dot" style="background:var(--yellow)"></div>
+      <span class="foot-stat-label">전체</span>
+      <span class="foot-stat-num">${total}</span>
+    </div>
+  `;
+}
+
+function updateToolbar() {
+  const branch = BRANCHES[currentBranchIdx];
+  const state = branchState[branch.id];
+  document.getElementById('toolbarStat').textContent = `${state.groups.length}조 편성 중`;
+}
+
+/* ── SAVE ──────────────────────────────────────────── */
+function saveGroups() {
+  const branch = BRANCHES[currentBranchIdx];
+  const state = branchState[branch.id];
+
+  if (state.groups.length === 0) {
+    showToast('⚠ 편성된 조가 없습니다', true);
+    return;
+  }
+
+  // build payload
+  const payload = {
+    branch_id: branch.id,
+    groups: state.groups.map(g => ({
+      group_name: g.name,
+      members: g.members,
+    })),
+  };
+
+  console.log('SAVE PAYLOAD:', JSON.stringify(payload, null, 2));
+  showToast(`${branch.name} 지부 편성 저장 완료`);
+}
+
+/* ── TOAST ─────────────────────────────────────────── */
+function showToast(msg, isWarn = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.borderColor = isWarn ? 'rgba(232,0,67,0.5)' : 'rgba(229,173,22,0.4)';
+  t.style.color = isWarn ? '#ff6b8a' : 'var(--yellow)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+/* ── KEYBOARD ──────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+</script>
+</body>
+</html>

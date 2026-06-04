@@ -1,0 +1,16 @@
+/* PAC-RUN Skin v1 — Dark Editorial
+   body._skin_v1 에 CSS 변수 정의 (충돌 방지)
+   app.css / 컴포넌트는 var() 로만 색상 참조 */
+
+body._skin_v1 {
+    --body-bg:     #1A1212;
+    --surface:     #201818;
+    --card-bg:     #2A2020;
+    --text-main:   #F5F5F0;
+    --text-muted:  #999999;
+    --btn-bg:      #E5AD16;
+    --btn-text:    #1A1212;
+    --border:      #333333;
+    --accent:      #E5AD16;
+    --accent-alt:  #E80043;
+}

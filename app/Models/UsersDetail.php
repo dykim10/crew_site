@@ -15,10 +15,15 @@ class UsersDetail extends Model
         'group_id',
         'grade',
         'training_group',
+        'skin_select',
         'join_date',
         'memo',
         'gender',
         'shirt_size',
+    ];
+
+    protected $attributes = [
+        'skin_select' => '_skin_v1',
     ];
 
     protected function casts(): array
