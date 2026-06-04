@@ -41,6 +41,7 @@ use App\Http\Controllers\RunningLogController;
 use App\Http\Controllers\Admin\EventGroupController;
 use App\Http\Controllers\AdminPasswordConfirmController;
 use App\Http\Controllers\PlanningFeedbackController;
+use App\Http\Controllers\BoardController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\IntroduceController;
 use App\Http\Controllers\SkinController;
@@ -56,10 +57,21 @@ Route::get('/introduce', [IntroduceController::class, 'index'])->name('introduce
 // 지부 소개 (공개)
 Route::get('/branch', [BranchController::class, 'index'])->name('branch');
 
-// 게시판 (공개 — 비로그인 접근 가능, 현재 준비중)
-Route::get('/boards/free',  fn() => view('boards.coming-soon', ['board' => '자유게시판']))->name('boards.free');
-Route::get('/boards/photo', fn() => view('boards.coming-soon', ['board' => '포토 게시판']))->name('boards.photo');
-Route::get('/boards/qna',   fn() => view('boards.coming-soon', ['board' => '문의 게시판']))->name('boards.qna');
+// 게시판 (자유·포토·문의) — 목록/상세는 auth, 작성/수정/삭제도 auth
+Route::middleware(['auth'])->prefix('boards')->name('boards.')->group(function () {
+    Route::get('/{type}',            [BoardController::class, 'index'])->name('index');
+    Route::get('/{type}/create',     [BoardController::class, 'create'])->name('create');
+    Route::post('/{type}',           [BoardController::class, 'store'])->name('store');
+    Route::get('/{type}/{board}',    [BoardController::class, 'show'])->name('show');
+    Route::get('/{type}/{board}/edit',   [BoardController::class, 'edit'])->name('edit');
+    Route::put('/{type}/{board}',        [BoardController::class, 'update'])->name('update');
+    Route::delete('/{type}/{board}',     [BoardController::class, 'destroy'])->name('destroy');
+});
+
+// boards.free / boards.photo / boards.qna 단축 별칭 (GNB 드롭다운용)
+Route::get('/boards/free',  fn() => redirect()->route('boards.index', 'free'))->name('boards.free');
+Route::get('/boards/photo', fn() => redirect()->route('boards.index', 'photo'))->name('boards.photo');
+Route::get('/boards/qna',   fn() => redirect()->route('boards.index', 'qna'))->name('boards.qna');
 
 // 테마 전환 (super_admin / region_admin 전용)
 Route::post('/theme/switch', [HomeController::class, 'switchTheme'])
@@ -130,7 +142,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/events/{event}/my-submissions', [EventFixedSubmissionController::class, 'mySubmissions'])->name('events.my-submissions');
 
     // 공지사항
-    Route::get('/notices', [NoticeController::class, 'index'])->name('notices.index');
+    Route::get('/notices',      [NoticeController::class, 'index'])->name('notices.index');
+    Route::get('/notices/{notice}', [NoticeController::class, 'show'])->name('notices.show');
 
     // 순위
     Route::get('/ranking', [RankingController::class, 'index'])->name('ranking.index');
