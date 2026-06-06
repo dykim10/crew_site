@@ -41,13 +41,6 @@
                         name="password_confirmation" required autocomplete="new-password" />
                     <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                 </div>
-
-                <div>
-                    <x-input-label for="invite_code" value="초대 코드" />
-                    <x-text-input id="invite_code" type="text" name="invite_code"
-                        :value="old('invite_code')" required placeholder="초대 코드를 입력하세요" />
-                    <x-input-error :messages="$errors->get('invite_code')" class="mt-2" />
-                </div>
             </div>
 
             <div class="mt-6">

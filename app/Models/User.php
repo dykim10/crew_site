@@ -6,6 +6,7 @@ use App\Services\CryptoService;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -33,7 +34,7 @@ use Illuminate\Notifications\Notifiable;
  *   FilamentUser / HasName 인터페이스 구현
  *   canAccessPanel(): super_admin / region_admin / operator 만 관리자 패널 접근 허용
  */
-class User extends Authenticatable implements FilamentUser, HasName
+class User extends Authenticatable implements FilamentUser, HasName, MustVerifyEmail
 {
     use HasFactory, Notifiable;
 

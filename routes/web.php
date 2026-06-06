@@ -59,7 +59,7 @@ Route::get('/introduce', [IntroduceController::class, 'index'])->name('introduce
 Route::get('/branch', [BranchController::class, 'index'])->name('branch');
 
 // 게시판 (자유·포토·문의) — 목록/상세는 auth, 작성/수정/삭제도 auth
-Route::middleware(['auth'])->prefix('boards')->name('boards.')->group(function () {
+Route::middleware(['auth', 'verified'])->prefix('boards')->name('boards.')->group(function () {
     Route::get('/{type}',            [BoardController::class, 'index'])->name('index');
     Route::get('/{type}/create',     [BoardController::class, 'create'])->name('create');
     Route::post('/{type}',           [BoardController::class, 'store'])->name('store');
@@ -109,10 +109,10 @@ Route::post('/apply', [ApplyController::class, 'store'])->name('apply.store');
 Route::get('/apply/done', [ApplyController::class, 'done'])->name('apply.done');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth'])
+    ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     // 스킨 변경 (사용자별 per-user)
     Route::post('/skin/change', [SkinController::class, 'change'])->name('skin.change');
 
@@ -171,7 +171,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 // A타입 이벤트 조 편성 (관리자 전용)
-Route::middleware(['auth'])->prefix('admin/events')->name('admin.events.')->group(function () {
+Route::middleware(['auth', 'verified'])->prefix('admin/events')->name('admin.events.')->group(function () {
     Route::get('/{event}/groups', [EventGroupController::class, 'index'])->name('groups.index');
     Route::get('/{event}/groups/data', [EventGroupController::class, 'data'])->name('groups.data');
     Route::post('/{event}/groups/save', [EventGroupController::class, 'save'])->name('groups.save');

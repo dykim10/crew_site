@@ -7,7 +7,7 @@
  * web.php 에서 require 로 포함되어 동작한다.
  *
  * [비로그인 전용 - middleware: guest]
- *   GET/POST  /register              → 회원가입 (초대 코드 기반 클로즈 베타)
+ *   GET/POST  /register              → 회원가입 (이메일 인증 기반 — 가입 후 이메일 클릭으로 완료)
  *   GET/POST  /login                 → 로그인
  *   GET/POST  /forgot-password       → 비밀번호 재설정 링크 요청
  *   GET/POST  /reset-password/{token}→ 비밀번호 재설정

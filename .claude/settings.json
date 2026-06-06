@@ -1,0 +1,18 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import json,sys; d=json.load(sys.stdin); cmd=d.get('tool_input',{}).get('command',''); exit(0 if ('git push' in cmd and 'main' in cmd) else 1)\" && bash C:/src/projects/crew/.claude/scripts/deploy-ec2.sh || true",
+            "shell": "bash",
+            "timeout": 360,
+            "statusMessage": "EC2 자동 배포 중..."
+          }
+        ]
+      }
+    ]
+  }
+}
