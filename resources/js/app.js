@@ -8,10 +8,15 @@ import Placeholder from '@tiptap/extension-placeholder';
 window.Alpine = Alpine;
 
 // TipTap 에디터 Alpine 컴포넌트
-// Alpine v3: init() 은 자동 호출 (x-init 불필요)
 Alpine.data('tiptap', (opts = {}) => ({
-    editor: null,
+    editor:  null,
     content: opts.content ?? '',
+
+    // 툴바 active 상태 — 반응형 객체로 추적 (isActive() 메서드 스코프 문제 방지)
+    formats: {
+        bold: false, italic: false, strike: false,
+        bulletList: false, orderedList: false, blockquote: false,
+    },
 
     init() {
         const self = this;
@@ -26,15 +31,29 @@ Alpine.data('tiptap', (opts = {}) => ({
             content: opts.content ?? '',
             onUpdate({ editor }) {
                 self.content = editor.getHTML();
+                self._syncFormats(editor);
+            },
+            onSelectionUpdate({ editor }) {
+                self._syncFormats(editor);
             },
         });
 
-        // 페이지 이탈 시 에디터 정리
         window.addEventListener('beforeunload', () => this.editor?.destroy(), { once: true });
     },
 
     destroy() {
         this.editor?.destroy();
+    },
+
+    _syncFormats(editor) {
+        this.formats = {
+            bold:         editor.isActive('bold'),
+            italic:       editor.isActive('italic'),
+            strike:       editor.isActive('strike'),
+            bulletList:   editor.isActive('bulletList'),
+            orderedList:  editor.isActive('orderedList'),
+            blockquote:   editor.isActive('blockquote'),
+        };
     },
 
     toggleBold()        { this.editor?.chain().focus().toggleBold().run(); },
@@ -43,10 +62,6 @@ Alpine.data('tiptap', (opts = {}) => ({
     toggleBulletList()  { this.editor?.chain().focus().toggleBulletList().run(); },
     toggleOrderedList() { this.editor?.chain().focus().toggleOrderedList().run(); },
     toggleBlockquote()  { this.editor?.chain().focus().toggleBlockquote().run(); },
-
-    isActive(type) {
-        return this.editor?.isActive(type) ?? false;
-    },
 }));
 
 Alpine.start();

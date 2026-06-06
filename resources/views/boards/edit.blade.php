@@ -65,31 +65,31 @@
           {{-- 툴바 --}}
           <div class="flex flex-wrap gap-1 px-3 py-2 bg-pac-black-800 border border-pac-black-100 border-b-0">
             <button type="button" @click="toggleBold()"
-                    :class="isActive('bold') ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
+                    :class="formats.bold ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
                     class="w-7 h-7 flex items-center justify-center font-display font-bold text-sm transition-colors rounded">B</button>
             <button type="button" @click="toggleItalic()"
-                    :class="isActive('italic') ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
+                    :class="formats.italic ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
                     class="w-7 h-7 flex items-center justify-center font-display italic text-sm transition-colors rounded">I</button>
             <button type="button" @click="toggleStrike()"
-                    :class="isActive('strike') ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
+                    :class="formats.strike ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
                     class="w-7 h-7 flex items-center justify-center font-display text-sm line-through transition-colors rounded">S</button>
             <span class="w-px bg-pac-black-700 mx-1"></span>
             <button type="button" @click="toggleBulletList()"
-                    :class="isActive('bulletList') ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
+                    :class="formats.bulletList ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
                     class="w-7 h-7 flex items-center justify-center text-sm transition-colors rounded" title="목록">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
               </svg>
             </button>
             <button type="button" @click="toggleOrderedList()"
-                    :class="isActive('orderedList') ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
+                    :class="formats.orderedList ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
                     class="w-7 h-7 flex items-center justify-center text-sm transition-colors rounded" title="번호목록">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h13M7 12h13M7 16h13M3 8h.01M3 12h.01M3 16h.01"/>
               </svg>
             </button>
             <button type="button" @click="toggleBlockquote()"
-                    :class="isActive('blockquote') ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
+                    :class="formats.blockquote ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
                     class="w-7 h-7 flex items-center justify-center text-sm transition-colors rounded" title="인용">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
