@@ -370,7 +370,12 @@
 }
 .tiptap-editor .ProseMirror strong { font-weight: 700; }
 .tiptap-editor .ProseMirror em     { font-style: italic; }
+.tiptap-editor .ProseMirror u      { text-decoration: underline; }
 .tiptap-editor .ProseMirror s      { text-decoration: line-through; }
+.tiptap-editor .ProseMirror h2     { font-size: 1.2em; font-weight: 700; margin: 1em 0 0.3em; }
+.tiptap-editor .ProseMirror h3     { font-size: 1.05em; font-weight: 700; margin: 0.8em 0 0.25em; }
+.tiptap-editor .ProseMirror hr     { border: none; border-top: 1px solid #333; margin: 1em 0; }
+.tiptap-editor .ProseMirror img    { max-width: 100%; border-radius: 2px; margin: 0.5em 0; display: block; }
 
 /* TipTap 출력 HTML 스타일 (show 페이지) */
 .tiptap-output p          { margin-bottom: 0.75em; }
@@ -380,9 +385,13 @@
 .tiptap-output blockquote { border-left: 3px solid #E5AD16; padding-left: 1em; color: #888; margin: 0.75em 0; }
 .tiptap-output strong     { font-weight: 700; color: inherit; }
 .tiptap-output em         { font-style: italic; }
+.tiptap-output u          { text-decoration: underline; }
 .tiptap-output s          { text-decoration: line-through; }
+.tiptap-output h2         { font-size: 1.15em; font-weight: 700; margin: 1em 0 0.3em; }
+.tiptap-output h3         { font-size: 1.05em; font-weight: 700; margin: 0.8em 0 0.25em; }
+.tiptap-output hr         { border: none; border-top: 1px solid #333; margin: 1em 0; }
 .tiptap-output a          { color: #E5AD16; text-decoration: underline; }
-.tiptap-output img        { max-width: 100%; border-radius: 2px; margin: 0.5em 0; }
+.tiptap-output img        { max-width: 100%; border-radius: 2px; margin: 0.5em 0; display: block; }
 
 /* ── RESPONSIVE ─────────────────────────────────────── */
 @media (max-width: 767px) {

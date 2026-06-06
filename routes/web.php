@@ -60,6 +60,7 @@ Route::get('/branch', [BranchController::class, 'index'])->name('branch');
 
 // 게시판 (자유·포토·문의) — 목록/상세는 auth, 작성/수정/삭제도 auth
 Route::middleware(['auth', 'verified'])->prefix('boards')->name('boards.')->group(function () {
+    Route::post('/images/upload',    [BoardController::class, 'uploadImage'])->name('images.upload');
     Route::get('/{type}',            [BoardController::class, 'index'])->name('index');
     Route::get('/{type}/create',     [BoardController::class, 'create'])->name('create');
     Route::post('/{type}',           [BoardController::class, 'store'])->name('store');

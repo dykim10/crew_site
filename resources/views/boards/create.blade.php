@@ -16,8 +16,7 @@
       새 게시글 <span class="text-pac-yellow-500 text-lg">— {{ $meta['label'] }}</span>
     </h1>
 
-    <form method="POST" action="{{ route('boards.store', $type) }}"
-          x-data="tiptap({ content: @json(old('content', '')) })">
+    <form method="POST" action="{{ route('boards.store', $type) }}">
       @csrf
 
       <div class="space-y-5">
@@ -55,54 +54,7 @@
           <label class="font-display text-[10px] tracking-[3px] uppercase text-pac-black-500 mb-2 block">
             내용 <span class="text-pac-pink-500">*</span>
           </label>
-
-          {{-- 툴바 --}}
-          <div class="flex flex-wrap gap-1 px-3 py-2 bg-pac-black-800 border border-pac-black-100 border-b-0">
-            <button type="button" @click="toggleBold()"
-                    :class="formats.bold ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
-                    class="w-7 h-7 flex items-center justify-center font-display font-bold text-sm transition-colors rounded">B</button>
-            <button type="button" @click="toggleItalic()"
-                    :class="formats.italic ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
-                    class="w-7 h-7 flex items-center justify-center font-display italic text-sm transition-colors rounded">I</button>
-            <button type="button" @click="toggleStrike()"
-                    :class="formats.strike ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
-                    class="w-7 h-7 flex items-center justify-center font-display text-sm line-through transition-colors rounded">S</button>
-            <span class="w-px bg-pac-black-700 mx-1"></span>
-            <button type="button" @click="toggleBulletList()"
-                    :class="formats.bulletList ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
-                    class="w-7 h-7 flex items-center justify-center text-sm transition-colors rounded" title="목록">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-              </svg>
-            </button>
-            <button type="button" @click="toggleOrderedList()"
-                    :class="formats.orderedList ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
-                    class="w-7 h-7 flex items-center justify-center text-sm transition-colors rounded" title="번호목록">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h13M7 12h13M7 16h13M3 8h.01M3 12h.01M3 16h.01"/>
-              </svg>
-            </button>
-            <button type="button" @click="toggleBlockquote()"
-                    :class="formats.blockquote ? 'text-pac-yellow-400 bg-pac-black-700' : 'text-pac-black-500 hover:text-pac-black-200'"
-                    class="w-7 h-7 flex items-center justify-center text-sm transition-colors rounded" title="인용">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-              </svg>
-            </button>
-          </div>
-
-          {{-- 에디터 본체 --}}
-          <div x-ref="editorEl"
-               class="tiptap-editor min-h-[240px] bg-pac-black-800 border border-pac-black-100
-                      focus-within:border-pac-yellow-500 px-4 py-3 transition-colors
-                      text-pac-black-200 font-body text-sm">
-          </div>
-
-          {{-- 숨김 textarea — 폼 제출용 --}}
-          <textarea name="content" class="hidden" x-model="content"></textarea>
-          @error('content')
-            <p class="font-body text-xs text-pac-pink-500 mt-1">{{ $message }}</p>
-          @enderror
+          <x-tiptap-editor :value="old('content', '')" />
         </div>
 
       </div>

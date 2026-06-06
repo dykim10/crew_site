@@ -4,8 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Board;
 use App\Services\BoardService;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class BoardController extends Controller
@@ -83,6 +89,47 @@ class BoardController extends Controller
         return redirect()
             ->route('boards.show', [$type, $board])
             ->with('success', '게시글이 수정되었습니다.');
+    }
+
+    public function uploadImage(Request $request): JsonResponse
+    {
+        $request->validate([
+            'image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:10240'],
+        ], [
+            'image.required' => '이미지를 선택해주세요.',
+            'image.image'    => '이미지 파일만 업로드 가능합니다.',
+            'image.mimes'    => 'JPG, PNG, WEBP, GIF 파일만 가능합니다.',
+            'image.max'      => '파일 크기는 10MB 이하여야 합니다.',
+        ]);
+
+        $user    = auth()->user();
+        $file    = $request->file('image');
+        $coreUrl = rtrim(config('services.core_api.url', 'http://localhost:8100'), '/');
+        $folder  = 'boards/' . $user->id;
+
+        try {
+            $url = null;
+            try {
+                $response = Http::timeout(30)
+                    ->attach('file', $file->get(), $file->getClientOriginalName())
+                    ->post("{$coreUrl}/api/photo/resize-webp", ['folder' => $folder]);
+
+                if ($response->successful()) {
+                    $url = $response->json('thumbnail_url');
+                }
+            } catch (ConnectionException) {}
+
+            if (!$url) {
+                $path = $folder . '/' . Str::uuid() . '.' . $file->extension();
+                Storage::disk('s3')->put($path, $file->get(), 'public');
+                $url = Storage::disk('s3')->url($path);
+            }
+
+            return response()->json(['url' => $url]);
+        } catch (\Exception $e) {
+            Log::error('게시판 이미지 업로드 실패', ['user_id' => $user->id, 'error' => $e->getMessage()]);
+            return response()->json(['error' => '이미지 업로드에 실패했습니다.'], 500);
+        }
     }
 
     public function destroy(string $type, Board $board): RedirectResponse

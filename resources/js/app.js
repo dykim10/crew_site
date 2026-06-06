@@ -3,20 +3,24 @@ import './bootstrap';
 import Alpine from 'alpinejs';
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
+import Underline from '@tiptap/extension-underline';
+import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 
 window.Alpine = Alpine;
 
-// TipTap 에디터 Alpine 컴포넌트
 Alpine.data('tiptap', (opts = {}) => ({
-    editor:  null,
-    content: opts.content ?? '',
-
-    // 툴바 active 상태 — 반응형 객체로 추적 (isActive() 메서드 스코프 문제 방지)
+    editor:    null,
+    content:   opts.content ?? '',
     formats: {
-        bold: false, italic: false, strike: false,
+        bold: false, italic: false, underline: false, strike: false,
+        h2: false, h3: false,
         bulletList: false, orderedList: false, blockquote: false,
     },
+    charCount:  0,
+    images:     [],
+    maxImages:  opts.maxImages ?? 0,
+    uploadUrl:  opts.uploadUrl ?? '/boards/images/upload',
 
     init() {
         const self = this;
@@ -24,44 +28,94 @@ Alpine.data('tiptap', (opts = {}) => ({
             element: this.$refs.editorEl,
             extensions: [
                 StarterKit,
-                Placeholder.configure({
-                    placeholder: opts.placeholder ?? '내용을 입력하세요...',
-                }),
+                Underline,
+                Image.configure({ inline: false }),
+                Placeholder.configure({ placeholder: opts.placeholder ?? '내용을 입력하세요...' }),
             ],
             content: opts.content ?? '',
             onUpdate({ editor }) {
-                self.content = editor.getHTML();
+                self.content   = editor.getHTML();
+                self.charCount = editor.getText().length;
                 self._syncFormats(editor);
             },
             onSelectionUpdate({ editor }) {
                 self._syncFormats(editor);
             },
         });
-
+        this.charCount = this.editor.getText().length;
         window.addEventListener('beforeunload', () => this.editor?.destroy(), { once: true });
     },
 
-    destroy() {
-        this.editor?.destroy();
-    },
+    destroy() { this.editor?.destroy(); },
 
     _syncFormats(editor) {
         this.formats = {
-            bold:         editor.isActive('bold'),
-            italic:       editor.isActive('italic'),
-            strike:       editor.isActive('strike'),
-            bulletList:   editor.isActive('bulletList'),
-            orderedList:  editor.isActive('orderedList'),
-            blockquote:   editor.isActive('blockquote'),
+            bold:        editor.isActive('bold'),
+            italic:      editor.isActive('italic'),
+            underline:   editor.isActive('underline'),
+            strike:      editor.isActive('strike'),
+            h2:          editor.isActive('heading', { level: 2 }),
+            h3:          editor.isActive('heading', { level: 3 }),
+            bulletList:  editor.isActive('bulletList'),
+            orderedList: editor.isActive('orderedList'),
+            blockquote:  editor.isActive('blockquote'),
         };
     },
 
     toggleBold()        { this.editor?.chain().focus().toggleBold().run(); },
     toggleItalic()      { this.editor?.chain().focus().toggleItalic().run(); },
+    toggleUnderline()   { this.editor?.chain().focus().toggleUnderline().run(); },
     toggleStrike()      { this.editor?.chain().focus().toggleStrike().run(); },
+    toggleH2()          { this.editor?.chain().focus().toggleHeading({ level: 2 }).run(); },
+    toggleH3()          { this.editor?.chain().focus().toggleHeading({ level: 3 }).run(); },
     toggleBulletList()  { this.editor?.chain().focus().toggleBulletList().run(); },
     toggleOrderedList() { this.editor?.chain().focus().toggleOrderedList().run(); },
     toggleBlockquote()  { this.editor?.chain().focus().toggleBlockquote().run(); },
+    insertHR()          { this.editor?.chain().focus().setHorizontalRule().run(); },
+    insertImageUrl(url) { this.editor?.chain().focus().setImage({ src: url }).run(); },
+
+    // ── 이미지 슬롯 관리 ─────────────────────────────────────────
+    addImages(files) {
+        Array.from(files).forEach(file => {
+            if (this.images.length >= this.maxImages) return;
+            if (!file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.images.push({ file, previewUrl: e.target.result, s3Url: null, uploading: false });
+            };
+            reader.readAsDataURL(file);
+        });
+    },
+
+    removeImage(idx) {
+        this.images.splice(idx, 1);
+    },
+
+    async insertImageToEditor(idx) {
+        const img = this.images[idx];
+        if (!img) return;
+        if (img.s3Url) { this.insertImageUrl(img.s3Url); return; }
+
+        img.uploading = true;
+        try {
+            const fd    = new FormData();
+            fd.append('image', img.file);
+            const token = document.head.querySelector('meta[name="csrf-token"]')?.content ?? '';
+            const res   = await fetch(this.uploadUrl, {
+                method:  'POST',
+                headers: { 'X-CSRF-TOKEN': token },
+                body:    fd,
+            });
+            if (!res.ok) throw new Error();
+            const { url } = await res.json();
+            img.s3Url = url;
+            this.insertImageUrl(url);
+        } catch {
+            alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+        } finally {
+            img.uploading = false;
+        }
+    },
 }));
 
 Alpine.start();
