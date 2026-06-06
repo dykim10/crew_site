@@ -101,7 +101,7 @@
 
     {{-- 버그제보 --}}
     <li>
-      <a href="{{ route('bug-reports.index') }}"
+      <a href="{{ route('bug-reports.create') }}"
          class="{{ request()->routeIs('bug-reports*') ? 'pac-active' : '' }}">
         버그제보
       </a>
@@ -282,7 +282,7 @@
           ['route' => 'introduce',         'label' => 'PAC 소개',  'match' => 'introduce'],
           ['route' => 'branch',            'label' => '지부',      'match' => 'branch'],
           ['route' => 'events.index',      'label' => '이벤트',    'match' => 'events*'],
-          ['route' => 'bug-reports.index', 'label' => '버그제보',  'match' => 'bug-reports*'],
+          ['route' => 'bug-reports.create', 'label' => '버그제보',  'match' => 'bug-reports*'],
         ];
       @endphp
       @foreach($mobileNav as $item)
