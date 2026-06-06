@@ -3,16 +3,16 @@
 namespace App\Services;
 
 use App\Models\Board;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class BoardService
 {
-    public function list(string $type, int $perPage = 20)
+    public function list(string $boardType, int $perPage = 20): LengthAwarePaginator
     {
-        return Board::where('type', $type)
+        return Board::where('board_type', $boardType)
             ->with('author')
-            ->orderByDesc('is_pinned')
             ->orderByDesc('created_at')
             ->paginate($perPage);
     }
@@ -20,60 +20,51 @@ class BoardService
     public function show(Board $board): Board
     {
         $board->increment('view_count');
-        $board->load('author');
+        $board->load(['author', 'comments']);
         return $board;
     }
 
-    public function store(Request $request, string $type, int $authorId): Board
+    public function store(Request $request, string $boardType, int $userId): Board
     {
-        $data = [
-            'type'      => $type,
-            'title'     => $request->title,
-            'content'   => $request->content,
-            'author_id' => $authorId,
-        ];
-
-        if ($type === 'photo' && $request->hasFile('thumbnail')) {
-            $path = $request->file('thumbnail')->store("boards/{$type}", 's3');
-            $data['thumbnail_url'] = Storage::disk('s3')->url($path);
-        }
-
-        return Board::create($data);
+        return Board::create([
+            'board_type' => $boardType,
+            'user_id'    => $userId,
+            'title'      => $request->title,
+            'content'    => clean($request->content, 'boards'),
+            'is_secret'  => (bool) $request->boolean('is_secret'),
+        ]);
     }
 
     public function update(Request $request, Board $board): Board
     {
-        $data = [
-            'title'   => $request->title,
-            'content' => $request->content,
-        ];
+        $board->update([
+            'title'     => $request->title,
+            'content'   => clean($request->content, 'boards'),
+            'is_secret' => (bool) $request->boolean('is_secret'),
+        ]);
 
-        if ($board->type === 'photo' && $request->hasFile('thumbnail')) {
-            if ($board->thumbnail_url) {
-                $this->deleteS3Image($board->thumbnail_url);
-            }
-            $path = $request->file('thumbnail')->store("boards/{$board->type}", 's3');
-            $data['thumbnail_url'] = Storage::disk('s3')->url($path);
-        }
-
-        $board->update($data);
         return $board;
     }
 
     public function destroy(Board $board): void
     {
-        if ($board->thumbnail_url) {
-            $this->deleteS3Image($board->thumbnail_url);
-        }
+        $this->deleteOrphanImages($board->content);
         $board->delete();
     }
 
-    private function deleteS3Image(string $url): void
+    /**
+     * content HTML에서 <img src="..."> URL을 추출해 S3에서 삭제.
+     * Board Observer의 updating/deleting 이벤트에서도 호출 가능.
+     */
+    public function deleteOrphanImages(string $html): void
     {
-        $key = ltrim(parse_url($url, PHP_URL_PATH), '/');
-        try {
-            Storage::disk('s3')->delete($key);
-        } catch (\Throwable) {
+        preg_match_all('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', $html, $matches);
+        foreach ($matches[1] as $url) {
+            $key = ltrim(parse_url($url, PHP_URL_PATH), '/');
+            try {
+                Storage::disk('s3')->delete($key);
+            } catch (\Throwable) {
+            }
         }
     }
 }

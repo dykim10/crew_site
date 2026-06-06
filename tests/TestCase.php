@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace Tests;
 
@@ -8,3 +8,4 @@ abstract class TestCase extends BaseTestCase
 {
     //
 }
+

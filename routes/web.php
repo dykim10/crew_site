@@ -27,6 +27,7 @@
  */
 
 use App\Http\Controllers\ApplyController;
+use App\Http\Controllers\BoardCommentController;
 use App\Http\Controllers\BugReportController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventBoardController;
@@ -125,8 +126,23 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/running-logs/{runningLog}/confirm', [RunningLogController::class, 'confirm'])->name('running-logs.confirm');
     Route::resource('running-logs', RunningLogController::class);
 
-    // 버그 제보
-    Route::resource('bug-reports', BugReportController::class)->only(['index', 'create', 'store', 'show']);
+    // 버그 제보 (제출 전용 — 목록·상세 없음)
+    Route::get('/bug-reports',  [BugReportController::class, 'create'])->name('bug-reports.create');
+    Route::post('/bug-reports', [BugReportController::class, 'store'])->name('bug-reports.store');
+
+    // 자유게시판 댓글 (2depth 지원)
+    Route::prefix('boards/free/{board}/comments')->name('boards.free.comments.')->group(function () {
+        Route::post('/',            [BoardCommentController::class, 'store'])->name('store');
+        Route::put('/{comment}',    [BoardCommentController::class, 'update'])->name('update');
+        Route::delete('/{comment}', [BoardCommentController::class, 'destroy'])->name('destroy');
+    });
+
+    // 문의게시판 댓글 (2depth 지원)
+    Route::prefix('boards/qna/{board}/comments')->name('boards.qna.comments.')->group(function () {
+        Route::post('/',            [BoardCommentController::class, 'store'])->name('store');
+        Route::put('/{comment}',    [BoardCommentController::class, 'update'])->name('update');
+        Route::delete('/{comment}', [BoardCommentController::class, 'destroy'])->name('destroy');
+    });
 
     // 이벤트 (신청·취소는 로그인 필요)
     Route::post('/events/{event}/register', [EventController::class, 'register'])->name('events.register');

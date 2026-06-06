@@ -9,6 +9,11 @@ return new class extends Migration
     {
         DB::statement("CREATE SCHEMA IF NOT EXISTS crew");
 
+        // Supabase PostgREST 접근 권한 (신규 프로젝트 또는 권한 초기화 후 복구)
+        DB::statement("GRANT USAGE ON SCHEMA crew TO anon, authenticated, service_role");
+        DB::statement("ALTER DEFAULT PRIVILEGES IN SCHEMA crew GRANT ALL ON TABLES TO anon, authenticated, service_role");
+        DB::statement("ALTER DEFAULT PRIVILEGES IN SCHEMA crew GRANT ALL ON SEQUENCES TO anon, authenticated, service_role");
+
         // 이전 부분 실행으로 잘못된 구조의 테이블이 있을 수 있으므로 먼저 제거
         DB::statement("DROP TABLE IF EXISTS crew.event_scores CASCADE");
         DB::statement("DROP TABLE IF EXISTS crew.events CASCADE");

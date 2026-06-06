@@ -3,43 +3,69 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Board extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'crew.boards';
 
     protected $fillable = [
-        'type', 'title', 'content',
-        'author_id', 'thumbnail_url', 'image_urls',
-        'view_count', 'is_pinned',
+        'crew_id',
+        'board_type',
+        'user_id',
+        'title',
+        'content',
+        'view_count',
+        'is_secret',
     ];
 
     protected function casts(): array
     {
         return [
-            'is_pinned'   => 'boolean',
-            'image_urls'  => 'array',
+            'is_secret'  => 'boolean',
+            'deleted_at' => 'datetime',
         ];
     }
 
     public static array $types = [
-        'free'  => ['label' => '자유게시판',  'desc' => '크루 멤버들의 자유로운 이야기', 'layout' => 'list'],
-        'photo' => ['label' => '포토 게시판', 'desc' => '러닝 사진 공유 갤러리',        'layout' => 'grid'],
-        'qna'   => ['label' => '문의 게시판', 'desc' => '질문 & 답변',                  'layout' => 'list'],
+        'free' => ['label' => '자유게시판', 'desc' => '크루 멤버들의 자유로운 이야기'],
+        'qna'  => ['label' => '문의게시판', 'desc' => '질문 & 답변'],
     ];
 
     public static function meta(string $type): array
     {
-        return self::$types[$type] ?? ['label' => '게시판', 'desc' => '', 'layout' => 'list'];
+        return self::$types[$type] ?? ['label' => '게시판', 'desc' => ''];
     }
 
-    public function author()
+    public function author(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'author_id');
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * 최상위 댓글 목록 (parent_id = null).
+     * 각 댓글에 대댓글(replies)과 작성자를 eager-load.
+     */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(BoardComment::class)
+            ->whereNull('parent_id')
+            ->whereNull('deleted_at')
+            ->with([
+                'author',
+                'replies' => fn ($q) => $q->whereNull('deleted_at')
+                    ->with('author')
+                    ->orderBy('created_at'),
+            ])
+            ->orderBy('created_at');
     }
 
     public function isWrittenBy(?int $userId): bool
     {
-        return $userId && $this->author_id === $userId;
+        return $userId !== null && $this->user_id === $userId;
     }
 }

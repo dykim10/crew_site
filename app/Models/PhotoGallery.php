@@ -10,20 +10,27 @@ class PhotoGallery extends Model
     protected $table = 'crew.photo_galleries';
 
     protected $fillable = [
-        'user_id', 'session_number', 'title', 'description',
-        'taken_at', 'cover_image_url', 'album_url', 'photo_urls',
+        'crew_id',
+        'admin_id',
+        'title',
+        'description',
+        'image_url',
+        'thumbnail_url',
+        'taken_at',
+        'view_count',
+        'sort_order',
     ];
 
     protected function casts(): array
     {
         return [
-            'taken_at'   => 'date',
-            'photo_urls' => 'array',
+            'taken_at' => 'date',
         ];
     }
 
-    public function author(): BelongsTo
+    /** 등록한 관리자 */
+    public function admin(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'admin_id');
     }
 }

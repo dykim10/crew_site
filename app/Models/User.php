@@ -115,6 +115,24 @@ class User extends Authenticatable implements FilamentUser, HasName
         return in_array($this->role, ['super_admin', 'region_admin', 'operator']);
     }
 
+    /** 게시판 모더레이터: 타인 글·댓글 삭제, 비밀글 열람 */
+    public function isModerator(): bool
+    {
+        return in_array($this->role, ['super_admin', 'region_admin', 'operator']);
+    }
+
+    /** 공지사항 관리: super_admin · region_admin만 C/U/D 가능 */
+    public function canManageNotice(): bool
+    {
+        return in_array($this->role, ['super_admin', 'region_admin']);
+    }
+
+    /** 포토게시판 관리: super_admin · region_admin · operator 업로드 가능 */
+    public function canManagePhoto(): bool
+    {
+        return in_array($this->role, ['super_admin', 'region_admin', 'operator']);
+    }
+
     // crew.users_detail 1:1 관계
     public function detail(): \Illuminate\Database\Eloquent\Relations\HasOne
     {

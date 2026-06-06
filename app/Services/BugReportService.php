@@ -6,28 +6,28 @@ use App\Models\BugReport;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class BugReportService
 {
-    public function create(array $validated, User $user, ?UploadedFile $file = null): BugReport
+    public function create(array $validated, User $user, ?UploadedFile $screenshot = null): BugReport
     {
-        $attachmentUrl  = null;
-        $attachmentName = null;
+        $screenshotUrl = null;
 
-        if ($file) {
-            $path           = $file->store('bug-reports', 'public');
-            $attachmentUrl  = Storage::url($path);
-            $attachmentName = $file->getClientOriginalName();
+        if ($screenshot) {
+            $path          = 'bug-reports/' . date('Y/m') . '/' . Str::uuid() . '.' . $screenshot->extension();
+            Storage::disk('s3')->put($path, $screenshot->get());
+            $screenshotUrl = Storage::disk('s3')->url($path);
         }
 
         return BugReport::create([
-            'user_id'         => $user->id,
-            'title'           => $validated['title'],
-            'description'     => $validated['description'],
-            'priority'        => $validated['priority'] ?? 'medium',
-            'status'          => 'pending',
-            'attachment_url'  => $attachmentUrl,
-            'attachment_name' => $attachmentName,
+            'user_id'        => $user->id,
+            'title'          => $validated['title'],
+            'path'           => $validated['path'],
+            'description'    => $validated['description'],
+            'severity'       => $validated['severity'] ?? 'medium',
+            'status'         => 'open',
+            'screenshot_url' => $screenshotUrl,
         ]);
     }
 
@@ -38,7 +38,7 @@ class BugReportService
             'admin_note' => $data['admin_note'] ?? null,
         ];
 
-        if (in_array($data['status'], ['resolved', 'closed']) && !$report->resolved_at) {
+        if ($data['status'] === 'resolved' && !$report->resolved_at) {
             $updates['resolved_by'] = $admin->id;
             $updates['resolved_at'] = now();
         }

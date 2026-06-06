@@ -4,12 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\BugReportResource\Pages;
 use App\Models\BugReport;
-use App\Services\BugReportService;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -34,71 +33,69 @@ class BugReportResource extends Resource
     }
 
     public static function canCreate(): bool { return false; }
+
     public static function canDelete(Model $record): bool
     {
-        return auth()->user()->role === 'super_admin';
+        return auth()->user()->isSuperAdmin();
     }
 
     public static function form(Schema $schema): Schema
     {
         return $schema->columns(1)->components([
 
-            // 제보 내용 (읽기 전용)
-            Section::make('제보 내용')
+            Section::make('제보 내용')->schema([
+                TextInput::make('title')
+                    ->label('제목')
+                    ->disabled(),
+
+                TextInput::make('path')
+                    ->label('발생 경로')
+                    ->disabled(),
+
+                Textarea::make('description')
+                    ->label('재현 방법')
+                    ->disabled()
+                    ->rows(6),
+
+                TextInput::make('user.nickname')
+                    ->label('제보자')
+                    ->disabled(),
+
+                TextInput::make('severity')
+                    ->label('심각도')
+                    ->disabled()
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        'low'    => '낮음',
+                        'medium' => '보통',
+                        'high'   => '높음',
+                        default  => $state,
+                    }),
+            ]),
+
+            Section::make('스크린샷')
                 ->schema([
-                    \Filament\Forms\Components\TextInput::make('title')
-                        ->label('제목')
-                        ->disabled(),
-
-                    Textarea::make('description')
-                        ->label('상세 내용')
+                    TextInput::make('screenshot_url')
+                        ->label('이미지 URL')
                         ->disabled()
-                        ->rows(6),
-
-                    \Filament\Forms\Components\TextInput::make('user.nickname')
-                        ->label('제보자')
-                        ->disabled(),
-
-                    \Filament\Forms\Components\TextInput::make('priority')
-                        ->label('심각도')
-                        ->disabled()
-                        ->formatStateUsing(fn ($state) => match($state) {
-                            'low'      => '낮음',
-                            'medium'   => '보통',
-                            'high'     => '높음',
-                            'critical' => '긴급',
-                            default    => $state,
-                        }),
-                ]),
-
-            // 첨부파일 링크 (있을 때만)
-            Section::make('첨부파일')
-                ->schema([
-                    \Filament\Forms\Components\TextInput::make('attachment_url')
-                        ->label('파일 URL')
-                        ->disabled(),
+                        ->url(),
                 ])
-                ->visible(fn ($record) => filled($record?->attachment_url))
+                ->visible(fn ($record) => filled($record?->screenshot_url))
                 ->collapsed(),
 
-            // 관리자 처리 영역
-            Section::make('처리 내용')
-                ->schema([
-                    Select::make('status')
-                        ->label('처리 상태')
-                        ->options([
-                            'pending'     => '접수 대기',
-                            'in_progress' => '처리 중',
-                            'resolved'    => '처리 완료',
-                            'closed'      => '종료',
-                        ])
-                        ->required(),
+            Section::make('처리')->schema([
+                Select::make('status')
+                    ->label('처리 상태')
+                    ->options([
+                        'open'        => '접수 대기',
+                        'in_progress' => '처리 중',
+                        'resolved'    => '처리 완료',
+                    ])
+                    ->required(),
 
-                    Textarea::make('admin_note')
-                        ->label('관리자 답변')
-                        ->helperText('작성한 내용이 제보자에게 표시됩니다.')
-                        ->rows(5),
-                ]),
+                Textarea::make('admin_note')
+                    ->label('관리자 답변')
+                    ->rows(5),
+            ]),
         ]);
     }
 
@@ -106,10 +103,7 @@ class BugReportResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')
-                    ->label('#')
-                    ->sortable()
-                    ->width(60),
+                TextColumn::make('id')->label('#')->sortable()->width(60),
 
                 TextColumn::make('title')
                     ->label('제목')
@@ -120,39 +114,35 @@ class BugReportResource extends Resource
                     ->label('제보자')
                     ->default('-'),
 
-                TextColumn::make('priority')
+                TextColumn::make('severity')
                     ->label('심각도')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'critical' => 'danger',
-                        'high'     => 'warning',
-                        'medium'   => 'info',
-                        'low'      => 'gray',
-                        default    => 'gray',
+                        'high'   => 'warning',
+                        'medium' => 'info',
+                        'low'    => 'gray',
+                        default  => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'low'      => '낮음',
-                        'medium'   => '보통',
-                        'high'     => '높음',
-                        'critical' => '긴급',
-                        default    => $state,
+                        'low'    => '낮음',
+                        'medium' => '보통',
+                        'high'   => '높음',
+                        default  => $state,
                     }),
 
                 TextColumn::make('status')
                     ->label('상태')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'pending'     => 'warning',
+                        'open'        => 'warning',
                         'in_progress' => 'info',
                         'resolved'    => 'success',
-                        'closed'      => 'gray',
                         default       => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'pending'     => '접수 대기',
+                        'open'        => '접수 대기',
                         'in_progress' => '처리 중',
                         'resolved'    => '처리 완료',
-                        'closed'      => '종료',
                         default       => $state,
                     }),
 
@@ -165,25 +155,19 @@ class BugReportResource extends Resource
                 SelectFilter::make('status')
                     ->label('처리 상태')
                     ->options([
-                        'pending'     => '접수 대기',
+                        'open'        => '접수 대기',
                         'in_progress' => '처리 중',
                         'resolved'    => '처리 완료',
-                        'closed'      => '종료',
                     ]),
 
-                SelectFilter::make('priority')
+                SelectFilter::make('severity')
                     ->label('심각도')
-                    ->options([
-                        'critical' => '긴급',
-                        'high'     => '높음',
-                        'medium'   => '보통',
-                        'low'      => '낮음',
-                    ]),
+                    ->options(['high' => '높음', 'medium' => '보통', 'low' => '낮음']),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->visible(fn () => auth()->user()->role === 'super_admin'),
+                        ->visible(fn () => auth()->user()->isSuperAdmin()),
                 ]),
             ])
             ->defaultSort('created_at', 'desc')
