@@ -12,6 +12,6 @@ trait HasSkin
     {
         $skin = auth()->user()?->detail?->skin_select ?? '_skin_v1';
 
-        return str_replace('_', '', $skin);
+        return ltrim($skin, '_'); // '_skin_v1' → 'skin_v1'
     }
 }
