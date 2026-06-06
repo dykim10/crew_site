@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\VerifyEmailNotification;
 use App\Services\CryptoService;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
@@ -132,6 +133,11 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
     public function canManagePhoto(): bool
     {
         return in_array($this->role, ['super_admin', 'region_admin', 'operator']);
+    }
+
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new VerifyEmailNotification());
     }
 
     // crew.users_detail 1:1 관계
