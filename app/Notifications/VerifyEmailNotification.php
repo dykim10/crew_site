@@ -7,13 +7,15 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 class VerifyEmailNotification extends VerifyEmail
 {
-    protected function buildMailMessage($url): MailMessage
+    public function toMail($notifiable): MailMessage
     {
+        $url = $this->verificationUrl($notifiable);
+
         return (new MailMessage)
             ->subject('[PAC RUN CREW] 이메일 인증을 완료해주세요')
             ->view('emails.verify-email', [
                 'url'  => $url,
-                'user' => $this->notifiable,
+                'user' => $notifiable,
             ]);
     }
 }
