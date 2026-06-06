@@ -3,7 +3,29 @@
 
         <h2 class="font-display text-2xl font-bold text-pac-black-900 uppercase tracking-tight mb-6">로그인</h2>
 
-        <x-auth-session-status class="mb-4" :status="session('status')" />
+        @if (session('status') === 'email-verified')
+            <div class="mb-6 flex items-start gap-3 rounded border-l-4 border-pac-yellow-500 bg-pac-yellow-50 px-4 py-3">
+                <svg class="mt-0.5 h-5 w-5 shrink-0 text-pac-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div>
+                    <p class="font-semibold text-sm text-pac-yellow-800">이메일 인증이 완료되었습니다.</p>
+                    <p class="text-xs text-pac-yellow-700 mt-0.5">아래에서 로그인해 주세요.</p>
+                </div>
+            </div>
+        @elseif (session('status') === 'already-verified')
+            <div class="mb-6 flex items-start gap-3 rounded border-l-4 border-blue-400 bg-blue-50 px-4 py-3">
+                <svg class="mt-0.5 h-5 w-5 shrink-0 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div>
+                    <p class="font-semibold text-sm text-blue-800">이미 인증된 계정입니다.</p>
+                    <p class="text-xs text-blue-700 mt-0.5">로그인해 주세요.</p>
+                </div>
+            </div>
+        @else
+            <x-auth-session-status class="mb-4" :status="session('status')" />
+        @endif
 
         <form method="POST" action="{{ route('login') }}">
             @csrf
