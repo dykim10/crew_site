@@ -8,6 +8,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 window.Alpine = Alpine;
 
 // TipTap 에디터 Alpine 컴포넌트
+// Alpine v3: init() 은 자동 호출 (x-init 불필요)
 Alpine.data('tiptap', (opts = {}) => ({
     editor: null,
     content: opts.content ?? '',
@@ -27,6 +28,9 @@ Alpine.data('tiptap', (opts = {}) => ({
                 self.content = editor.getHTML();
             },
         });
+
+        // 페이지 이탈 시 에디터 정리
+        window.addEventListener('beforeunload', () => this.editor?.destroy(), { once: true });
     },
 
     destroy() {

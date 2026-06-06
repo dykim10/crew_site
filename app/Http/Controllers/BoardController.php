@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Traits\HasSkin;
 use App\Models\Board;
 use App\Services\BoardService;
 use Illuminate\Http\RedirectResponse;
@@ -11,8 +10,6 @@ use Illuminate\View\View;
 
 class BoardController extends Controller
 {
-    use HasSkin;
-
     public function __construct(private BoardService $service) {}
 
     public function index(string $type): View
@@ -20,7 +17,7 @@ class BoardController extends Controller
         abort_unless(array_key_exists($type, Board::$types), 404);
         $posts = $this->service->list($type);
         $meta  = Board::meta($type);
-        return view("boards._common.{$this->skinDir()}.list", compact('type', 'posts', 'meta'));
+        return view('boards.index', compact('type', 'posts', 'meta'));
     }
 
     public function show(string $type, Board $board): View
@@ -30,14 +27,14 @@ class BoardController extends Controller
 
         $board = $this->service->show($board);
         $meta  = Board::meta($type);
-        return view("boards._common.{$this->skinDir()}.show", compact('type', 'board', 'meta'));
+        return view('boards.show', compact('type', 'board', 'meta'));
     }
 
     public function create(string $type): View
     {
         abort_unless(array_key_exists($type, Board::$types), 404);
         $meta = Board::meta($type);
-        return view("boards._common.{$this->skinDir()}.form", compact('type', 'meta'));
+        return view('boards.create', compact('type', 'meta'));
     }
 
     public function store(Request $request, string $type): RedirectResponse
@@ -65,7 +62,7 @@ class BoardController extends Controller
         $this->authorize('update', $board);
 
         $meta = Board::meta($type);
-        return view("boards._common.{$this->skinDir()}.form", compact('type', 'board', 'meta'));
+        return view('boards.edit', compact('type', 'board', 'meta'));
     }
 
     public function update(Request $request, string $type, Board $board): RedirectResponse

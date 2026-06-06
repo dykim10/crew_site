@@ -1,6 +1,5 @@
 {{-- PAC-RUN Unified GNB — 메인/서브 공용 --}}
 @php
-  $skinClass   = $skinClass ?? '_skin_v1';
   $authed      = auth()->check();
   $nick        = $authed ? (auth()->user()->nickname ?? auth()->user()->name ?? '?') : '게스트';
   $initial     = mb_strtoupper(mb_substr($nick, 0, 1));
@@ -114,20 +113,6 @@
 
   {{-- ── 우측 영역 ── --}}
   <div class="flex items-center gap-2">
-
-    {{-- 스킨 스위처 (로그인 사용자 · 데스크탑) --}}
-    @if($authed)
-    <div class="skin-switcher hidden lg:flex">
-      <button onclick="changeSkin('_skin_v1')"
-              data-skin="_skin_v1"
-              class="pac-btn-skin {{ $skinClass === '_skin_v1' ? 'active' : '' }}"
-              title="V1 Dark Editorial">V1</button>
-      <button onclick="changeSkin('_skin_v2')"
-              data-skin="_skin_v2"
-              class="pac-btn-skin {{ $skinClass === '_skin_v2' ? 'active' : '' }}"
-              title="V2 Energy Burst">V2</button>
-    </div>
-    @endif
 
     {{-- 사용자 영역 --}}
     @if($authed)
@@ -361,17 +346,7 @@
     {{-- 드로어 하단 --}}
     <div class="px-2 py-3" style="border-top:1px solid rgba(255,255,255,0.06);">
 
-      {{-- 스킨 스위처 (로그인 사용자) --}}
       @if($authed)
-      <div class="flex items-center gap-2 px-4 py-2 mb-2">
-        <span class="font-display text-[10px] tracking-widest uppercase"
-              style="color:rgba(255,255,255,.3);">SKIN</span>
-        <button onclick="changeSkin('_skin_v1')" data-skin="_skin_v1"
-                class="pac-btn-skin {{ $skinClass === '_skin_v1' ? 'active' : '' }}">V1</button>
-        <button onclick="changeSkin('_skin_v2')" data-skin="_skin_v2"
-                class="pac-btn-skin {{ $skinClass === '_skin_v2' ? 'active' : '' }}">V2</button>
-      </div>
-
       <a href="{{ route('running-logs.create') }}"
          class="pac-nav-cta flex items-center justify-center w-full mb-2"
          style="clip-path:none;text-decoration:none;">

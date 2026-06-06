@@ -262,7 +262,7 @@
   </div>
   <div class="footer-bottom">
     <span>© 2026 PAC-RUN. All rights reserved.</span>
-    <a href="#">Instagram @pac.run.crew</a>
+    <a href="#">Instagram @pac_run</a>
   </div>
 </footer>
 

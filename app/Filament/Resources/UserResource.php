@@ -25,6 +25,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
+use App\Services\AdminLogService;
 use Illuminate\Support\Facades\Password;
 
 class UserResource extends Resource
@@ -183,6 +184,8 @@ class UserResource extends Resource
                     ->visible(fn ($record) => is_null($record->email_verified_at))
                     ->action(function ($record) {
                         $record->sendEmailVerificationNotification();
+                        AdminLogService::log('email_sent', 'User', $record->id,
+                            "인증 이메일 발송 → {$record->name} ({$record->email})");
                         Notification::make()
                             ->title('발송 완료')
                             ->body($record->nickname . ' 회원에게 인증 이메일을 발송했습니다.')
@@ -200,6 +203,8 @@ class UserResource extends Resource
                     ->action(function ($record) {
                         $token = Password::createToken($record);
                         $record->sendPasswordResetNotification($token);
+                        AdminLogService::log('email_sent', 'User', $record->id,
+                            "비밀번호 재설정 이메일 발송 → {$record->name} ({$record->email})");
                         Notification::make()
                             ->title('발송 완료')
                             ->body($record->nickname . ' 회원에게 재설정 이메일을 발송했습니다.')

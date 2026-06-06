@@ -1,7 +1,7 @@
 {{-- 인스타그램 섹션 v1 — Dark Editorial: 📸 아이콘 + 보기 텍스트 --}}
 <section class="insta-section">
   <div class="pac-section-label">Instagram</div>
-  <div class="pac-section-heading">@pac.run.crew</div>
+  <div class="pac-section-heading">@pac_run</div>
   <div class="swiper swiper-insta">
     <div class="swiper-wrapper">
       <div class="swiper-slide" style="width:220px"><div class="insta-card ic-1"><div class="insta-hover"><div class="insta-hover-icon">📸</div><div class="insta-hover-text">보기</div></div><div class="insta-watermark">#pacrun</div></div></div>

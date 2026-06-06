@@ -76,16 +76,23 @@
     </div>
     @endif
 
-    {{-- 본문 --}}
+    {{-- 본문 (purifier 통과한 TipTap HTML) --}}
     <div class="px-6 py-6 min-h-[200px]">
       @if($board->content)
-        <div class="font-body text-sm text-pac-black-400 leading-relaxed whitespace-pre-wrap">{{ $board->content }}</div>
+        <div class="tiptap-output font-body text-sm text-pac-black-400 leading-relaxed">
+          {!! $board->content !!}
+        </div>
       @else
         <p class="font-body text-sm text-pac-black-700 italic">내용 없음</p>
       @endif
     </div>
 
   </article>
+
+  {{-- ── 댓글 섹션 (자유/문의 게시판만) ── --}}
+  @if(in_array($type, ['free', 'qna']))
+    @include('boards._common.skin_v1.comment-section')
+  @endif
 
   {{-- ── 하단 네비 ── --}}
   <div class="flex items-center justify-between mt-6">

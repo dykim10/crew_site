@@ -4,6 +4,7 @@ namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
 use App\Models\UsersDetail;
+use App\Services\AdminLogService;
 use Filament\Resources\Pages\EditRecord;
 
 class EditUser extends EditRecord
@@ -31,9 +32,13 @@ class EditUser extends EditRecord
         return $data;
     }
 
+    private string $roleBefore = '';
+
     // 저장 전 detail_* 필드를 User 모델 데이터에서 분리
     protected function mutateFormDataBeforeSave(array $data): array
     {
+        $this->roleBefore = $this->record->role ?? '';
+
         $this->pendingDetail = [
             'grade'          => $data['detail_grade'] ?? null,
             'training_group' => $data['detail_training_group'] ?? null,
@@ -51,13 +56,31 @@ class EditUser extends EditRecord
         return $data;
     }
 
-    // User 저장 완료 후 users_detail upsert
+    // User 저장 완료 후 users_detail upsert + 권한 변경 로깅
     protected function afterSave(): void
     {
         UsersDetail::updateOrCreate(
             ['user_id' => $this->record->id],
             $this->pendingDetail
         );
+
+        $roleAfter = $this->record->fresh()->role ?? '';
+        if ($this->roleBefore !== '' && $this->roleBefore !== $roleAfter) {
+            $labels = [
+                'super_admin'  => '슈퍼관리자',
+                'region_admin' => '지역관리자',
+                'operator'     => '운영자',
+                'member'       => '일반멤버',
+            ];
+            $before = $labels[$this->roleBefore] ?? $this->roleBefore;
+            $after  = $labels[$roleAfter] ?? $roleAfter;
+            AdminLogService::log(
+                'role_changed',
+                'User',
+                $this->record->id,
+                "사용자 {$this->record->name} 권한 변경: {$before} → {$after}"
+            );
+        }
     }
 
     protected function getRedirectUrl(): string

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\RunningLogResource\Pages;
 use App\Models\RunningLog;
+use App\Services\AdminLogService;
 use App\Services\RunningLogService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
@@ -277,9 +278,15 @@ class RunningLogResource extends Resource
                         : '확인 시 유저의 마일리지에 즉시 반영됩니다.')
                     ->action(function (RunningLog $record): void {
                         $service = app(RunningLogService::class);
-                        $record->is_confirmed
-                            ? $service->adminUnconfirm($record)
-                            : $service->adminConfirm($record);
+                        if ($record->is_confirmed) {
+                            $service->adminUnconfirm($record);
+                            AdminLogService::log('confirm_canceled', 'RunningLog', $record->id,
+                                "러닝 기록 #{$record->id} 검수 취소 (사용자: {$record->user?->name})");
+                        } else {
+                            $service->adminConfirm($record);
+                            AdminLogService::log('confirmed', 'RunningLog', $record->id,
+                                "러닝 기록 #{$record->id} 검수 확인 (사용자: {$record->user?->name}, {$record->distance_km}km)");
+                        }
                     }),
 
                 EditAction::make()->label('수정'),
@@ -299,6 +306,8 @@ class RunningLogResource extends Resource
                             $service = app(RunningLogService::class);
                             foreach ($records as $record) {
                                 $service->adminConfirm($record);
+                                AdminLogService::log('confirmed', 'RunningLog', $record->id,
+                                    "러닝 기록 #{$record->id} 일괄 검수 확인 (사용자: {$record->user?->name}, {$record->distance_km}km)");
                             }
                         })
                         ->deselectRecordsAfterCompletion(),
@@ -315,6 +324,8 @@ class RunningLogResource extends Resource
                             $service = app(RunningLogService::class);
                             foreach ($records as $record) {
                                 $service->adminUnconfirm($record);
+                                AdminLogService::log('confirm_canceled', 'RunningLog', $record->id,
+                                    "러닝 기록 #{$record->id} 일괄 검수 취소 (사용자: {$record->user?->name})");
                             }
                         })
                         ->deselectRecordsAfterCompletion(),

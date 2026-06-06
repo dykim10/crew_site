@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\EventFixedSubmissionResource\Pages;
 use App\Models\EventFixedSubmission;
+use App\Services\AdminLogService;
 use App\Services\EventFixedSubmissionService;
 use Filament\Actions\Action as TableAction;
 use Filament\Actions\DeleteAction;
@@ -205,6 +206,8 @@ class EventFixedSubmissionResource extends Resource
                     ->action(function (EventFixedSubmission $record) {
                         $service = new EventFixedSubmissionService();
                         $service->approve($record, auth()->id());
+                        AdminLogService::log('approved', 'EventFixedSubmission', $record->id,
+                            "고정점수 제출물 #{$record->id} 승인 (사용자: {$record->user?->name}, 이벤트: {$record->event?->name})");
                     })
                     ->successNotification(
                         notification: \Filament\Notifications\Notification::make()
@@ -228,6 +231,8 @@ class EventFixedSubmissionResource extends Resource
                     ->action(function (EventFixedSubmission $record, array $data) {
                         $service = new EventFixedSubmissionService();
                         $service->reject($record, auth()->id(), $data['note']);
+                        AdminLogService::log('rejected', 'EventFixedSubmission', $record->id,
+                            "고정점수 제출물 #{$record->id} 반려 (사용자: {$record->user?->name}, 사유: {$data['note']})");
                     })
                     ->successNotification(
                         notification: \Filament\Notifications\Notification::make()
