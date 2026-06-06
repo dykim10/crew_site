@@ -344,6 +344,44 @@
   color: rgba(255,255,255,.7);
 }
 
+/* ── TIPTAP 에디터 ──────────────────────────────────── */
+.tiptap-editor .ProseMirror {
+  outline: none;
+  min-height: 200px;
+  padding: 2px 0;
+}
+.tiptap-editor .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: #4a4a4a;
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+.tiptap-editor .ProseMirror > * + * { margin-top: 0.75em; }
+.tiptap-editor .ProseMirror ul     { list-style: disc; padding-left: 1.5em; }
+.tiptap-editor .ProseMirror ol     { list-style: decimal; padding-left: 1.5em; }
+.tiptap-editor .ProseMirror blockquote {
+  border-left: 3px solid #E5AD16;
+  padding-left: 1em;
+  color: #888;
+  margin: 0.75em 0;
+}
+.tiptap-editor .ProseMirror strong { font-weight: 700; }
+.tiptap-editor .ProseMirror em     { font-style: italic; }
+.tiptap-editor .ProseMirror s      { text-decoration: line-through; }
+
+/* TipTap 출력 HTML 스타일 (show 페이지) */
+.tiptap-output p          { margin-bottom: 0.75em; }
+.tiptap-output ul         { list-style: disc; padding-left: 1.5em; margin-bottom: 0.75em; }
+.tiptap-output ol         { list-style: decimal; padding-left: 1.5em; margin-bottom: 0.75em; }
+.tiptap-output li         { margin-bottom: 0.25em; }
+.tiptap-output blockquote { border-left: 3px solid #E5AD16; padding-left: 1em; color: #888; margin: 0.75em 0; }
+.tiptap-output strong     { font-weight: 700; color: inherit; }
+.tiptap-output em         { font-style: italic; }
+.tiptap-output s          { text-decoration: line-through; }
+.tiptap-output a          { color: #E5AD16; text-decoration: underline; }
+.tiptap-output img        { max-width: 100%; border-radius: 2px; margin: 0.5em 0; }
+
 /* ── RESPONSIVE ─────────────────────────────────────── */
 @media (max-width: 767px) {
   /* Tailwind hidden/md:inline-flex보다 늦게 선언되므로 명시적으로 숨김 */
