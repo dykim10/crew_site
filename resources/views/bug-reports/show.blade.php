@@ -3,7 +3,7 @@
 
     {{-- 헤더 --}}
     <div class="flex items-center gap-3">
-        <a href="{{ route('bug-reports.index') }}"
+        <a href="{{ route('bug-reports.create') }}"
            class="p-2 text-pac-black-400 hover:text-pac-black-700 transition-colors duration-150">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
