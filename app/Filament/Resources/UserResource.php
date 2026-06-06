@@ -171,6 +171,23 @@ class UserResource extends Resource
             ])
             ->actions([
                 EditAction::make()->label('수정'),
+                Action::make('send_verification_email')
+                    ->label('인증 이메일 발송')
+                    ->icon('heroicon-o-envelope')
+                    ->color('info')
+                    ->requiresConfirmation()
+                    ->modalHeading('인증 이메일 발송')
+                    ->modalDescription(fn ($record) => $record->nickname . ' (' . $record->email . ') 에게 이메일 인증 링크를 발송합니다.')
+                    ->modalSubmitActionLabel('발송')
+                    ->visible(fn ($record) => is_null($record->email_verified_at))
+                    ->action(function ($record) {
+                        $record->sendEmailVerificationNotification();
+                        Notification::make()
+                            ->title('발송 완료')
+                            ->body($record->nickname . ' 회원에게 인증 이메일을 발송했습니다.')
+                            ->success()
+                            ->send();
+                    }),
                 Action::make('reset_password')
                     ->label('비밀번호 초기화')
                     ->icon('heroicon-o-key')
