@@ -7,6 +7,12 @@
 
         <title>{{ config('app.name', 'PAC-RUN CREW') }}</title>
 
+        <!-- Favicon -->
+        <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicon-32.png') }}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/favicon-16.png') }}">
+        <link rel="apple-touch-icon" sizes="192x192" href="{{ asset('images/favicon-192.webp') }}">
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,10 +26,11 @@
         <div class="min-h-screen flex flex-col items-center justify-center px-4 py-12">
 
             <!-- 로고 -->
-            <a href="/" class="flex items-center gap-1 mb-8">
-                <span class="font-display text-3xl font-bold text-pac-yellow-500 uppercase tracking-tight">PAC</span>
-                <span class="font-display text-3xl font-bold text-white uppercase tracking-tight">RUN</span>
-                <span class="font-display text-sm text-pac-black-400 ml-2 uppercase tracking-widest">CREW</span>
+            <a href="/" class="mb-8 block">
+                <img src="{{ asset('images/logo.webp') }}"
+                     alt="PAC RUN CREW"
+                     class="h-12 w-auto"
+                     loading="eager">
             </a>
 
             <!-- 폼 카드 -->

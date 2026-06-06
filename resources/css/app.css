@@ -37,15 +37,17 @@
 }
 
 .pac-nav-logo {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 28px;
-  letter-spacing: 5px;
-  color: var(--pac-yellow);
   text-decoration: none;
   line-height: 1;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
-.pac-nav-logo .logo-suffix { color: var(--pac-white); }
+.pac-nav-logo img {
+  height: 36px;
+  width: auto;
+  display: block;
+}
 
 .pac-nav-links {
   display: flex;

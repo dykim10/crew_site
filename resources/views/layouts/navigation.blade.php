@@ -24,7 +24,10 @@
 
   {{-- LOGO --}}
   <a href="{{ route('home') }}" class="pac-nav-logo">
-    PAC<span class="logo-suffix">-RUN</span>
+    <img src="{{ asset('images/logo.webp') }}"
+         alt="PAC RUN CREW"
+         class="h-9 w-auto"
+         loading="eager">
   </a>
 
   {{-- ── Desktop Navigation ── --}}

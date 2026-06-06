@@ -255,7 +255,7 @@
 <!-- Footer -->
 <footer>
   <div class="footer-main">
-    <div><div class="footer-brand-name">PAC<span>-RUN</span></div><div class="footer-desc">함께 달리고, 함께 성장하는<br>서울 러닝 크루 PAC-RUN.<br>반포 · 연대 · 군포 · 인천</div></div>
+    <div><img src="{{ asset('images/logo-footer.webp') }}" alt="PAC RUN" style="height:36px;width:auto;margin-bottom:14px;"><div class="footer-desc">함께 달리고, 함께 성장하는<br>서울 러닝 크루 PAC-RUN.<br>반포 · 연대 · 군포 · 인천</div></div>
     <div><div class="footer-col-title">소개</div><ul class="footer-links"><li><a href="#">PAC-RUN 소개</a></li><li><a href="#">지부 안내</a></li><li><a href="#">운영진</a></li><li><a href="{{ route('apply') }}">가입 안내</a></li></ul></div>
     <div><div class="footer-col-title">활동</div><ul class="footer-links"><li><a href="#">이벤트</a></li><li><a href="#">기록 관리</a></li><li><a href="#">포토 갤러리</a></li><li><a href="#">랭킹</a></li></ul></div>
     <div><div class="footer-col-title">고객지원</div><ul class="footer-links"><li><a href="#">공지사항</a></li><li><a href="#">문의하기</a></li><li><a href="#">버그 제보</a></li><li><a href="#">개인정보처리방침</a></li></ul></div>
