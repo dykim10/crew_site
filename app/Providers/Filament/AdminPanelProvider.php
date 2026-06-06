@@ -11,6 +11,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Navigation\NavigationGroup;
 use Filament\View\PanelsRenderHook;
 use App\Filament\Widgets\StatsOverview;
 use Filament\Widgets\AccountWidget;
@@ -39,6 +40,14 @@ class AdminPanelProvider extends PanelProvider
                 'info'    => Color::Blue,
             ])
             ->darkMode(false)
+            ->navigationGroups([
+                NavigationGroup::make('크루 관리'),
+                NavigationGroup::make('이벤트 관리'),
+                NavigationGroup::make('기수 모집'),
+                NavigationGroup::make('게시판 관리'),
+                NavigationGroup::make('알림 / 설문'),
+                NavigationGroup::make('시스템'),
+            ])
             // viteTheme 대신 renderHook으로 직접 주입 — Vite 빌드 의존성 제거
             ->renderHook(
                 PanelsRenderHook::HEAD_END,

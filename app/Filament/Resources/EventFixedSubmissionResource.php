@@ -19,6 +19,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Support\HtmlString;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
@@ -35,7 +36,7 @@ class EventFixedSubmissionResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return '러닝 기록';
+        return '이벤트 관리';
     }
 
     public static function canCreate(): bool
@@ -52,46 +53,44 @@ class EventFixedSubmissionResource extends Resource
     {
         return $schema->columns(1)->components([
 
-            // 제출 정보 (읽기 전용)
             Section::make('제출 정보')
                 ->schema([
-                    TextInput::make('user.name')
+                    Placeholder::make('submitter')
                         ->label('제출자')
-                        ->disabled(),
+                        ->content(fn ($record) => $record?->user?->name ?? '—'),
 
-                    TextInput::make('event.name')
+                    Placeholder::make('event_name')
                         ->label('이벤트명')
-                        ->disabled(),
+                        ->content(fn ($record) => $record?->event?->name ?? '—'),
 
-                    TextInput::make('status')
+                    Placeholder::make('status_label')
                         ->label('상태')
-                        ->disabled()
-                        ->formatStateUsing(fn ($state) => match($state) {
+                        ->content(fn ($record) => match($record?->status) {
                             'pending'  => '검토 중',
                             'approved' => '승인',
                             'rejected' => '반려',
-                            default    => $state,
+                            default    => $record?->status ?? '—',
                         }),
 
-                    TextInput::make('created_at')
+                    Placeholder::make('submitted_at')
                         ->label('제출일시')
-                        ->disabled()
-                        ->formatStateUsing(fn ($state) => $state?->format('Y.m.d H:i')),
-                ]),
+                        ->content(fn ($record) => $record?->created_at?->format('Y.m.d H:i') ?? '—'),
+                ])
+                ->columns(2),
 
-            // 제출 이미지
             Section::make('제출물 이미지')
                 ->schema([
-                    ImageColumn::make('image_url')
-                        ->label('이미지')
-                        ->disk('s3')
-                        ->visibility('public'),
+                    Placeholder::make('image_preview')
+                        ->label('')
+                        ->content(fn ($record) => filled($record?->image_url)
+                            ? new HtmlString('<img src="'.e($record->image_url).'" class="max-w-sm rounded-lg shadow" style="max-height:400px;object-fit:contain;">')
+                            : new HtmlString('<span class="text-gray-400 text-sm">이미지가 없습니다.</span>')
+                        ),
                 ])
                 ->visible(fn ($record) => filled($record?->image_url))
-                ->collapsed(),
+                ->collapsed(false),
 
-            // 관리자 처리
-            Section::make('관리자 처리')
+            Section::make('관리자 처리 이력')
                 ->schema([
                     Placeholder::make('confirmed_info')
                         ->label('승인/반려 정보')
@@ -100,19 +99,17 @@ class EventFixedSubmissionResource extends Resource
                                 return '아직 처리되지 않음';
                             }
                             $status = match($record->status) {
-                                'approved' => '✅ 승인',
-                                'rejected' => '❌ 반려',
+                                'approved' => '승인',
+                                'rejected' => '반려',
                                 default    => $record->status,
                             };
                             $by = $record->confirmedBy?->name ?? '(삭제됨)';
                             return "{$status} · {$by} · {$record->confirmed_at->format('Y.m.d H:i')}";
-                        })
-                        ->visible(fn ($record) => filled($record?->confirmed_at)),
+                        }),
 
-                    Textarea::make('admin_note')
+                    Placeholder::make('admin_note_view')
                         ->label('관리자 메모')
-                        ->disabled()
-                        ->rows(3)
+                        ->content(fn ($record) => $record?->admin_note ?? '—')
                         ->visible(fn ($record) => filled($record?->admin_note)),
                 ]),
 

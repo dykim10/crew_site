@@ -30,11 +30,11 @@ class GoogleFormResource extends Resource
     protected static ?string $navigationLabel = '구글 폼 연동';
     protected static ?string $modelLabel = '구글 폼';
     protected static ?string $pluralModelLabel = '구글 폼 목록';
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 2;
 
     public static function getNavigationGroup(): ?string
     {
-        return '설문 관리';
+        return '알림 / 설문';
     }
 
     public static function form(Schema $schema): Schema

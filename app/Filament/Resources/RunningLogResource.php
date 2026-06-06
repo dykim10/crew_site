@@ -40,11 +40,11 @@ class RunningLogResource extends Resource
     protected static ?string $navigationLabel = '러닝 기록';
     protected static ?string $modelLabel = '러닝 기록';
     protected static ?string $pluralModelLabel = '러닝 기록 목록';
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     public static function getNavigationGroup(): ?string
     {
-        return '러닝 기록';
+        return '이벤트 관리';
     }
 
     // 관리자는 조회·확인만, 수정/삭제는 super_admin

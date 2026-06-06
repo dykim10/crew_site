@@ -14,6 +14,12 @@
 
 <div class="max-w-7xl mx-auto px-4 py-6 md:px-6 lg:px-8 space-y-5">
 
+  {{-- ── 페이지 overline (introduce 스타일 동기화) ── --}}
+  <div class="mb-1">
+    <p class="font-display text-[11px] tracking-[5px] uppercase text-pac-yellow-500">Dashboard</p>
+    <div class="w-12 h-0.5 bg-pac-yellow-500 mt-2"></div>
+  </div>
+
   {{-- ══════════════════════════════════════════════
        HERO: 마이페이지 프로필 헤더
        ══════════════════════════════════════════════ --}}

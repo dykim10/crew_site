@@ -29,11 +29,11 @@ class PhotoGalleryResource extends Resource
     protected static ?string $navigationLabel = '포토 갤러리';
     protected static ?string $modelLabel = '포토';
     protected static ?string $pluralModelLabel = '포토 갤러리';
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
 
     public static function getNavigationGroup(): ?string
     {
-        return '게시판';
+        return '게시판 관리';
     }
 
     public static function canCreate(): bool

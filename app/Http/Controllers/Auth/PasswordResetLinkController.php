@@ -3,56 +3,52 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
-/**
- * 비밀번호 재설정 링크 요청 컨트롤러 (Auth/PasswordResetLinkController.php)
- *
- * Laravel Breeze 자동 생성. 비밀번호를 잊어버린 사용자에게 재설정 이메일을 발송한다.
- *
- * create() GET  /forgot-password → 이메일 입력 폼 표시
- * store()  POST /forgot-password → 이메일 검증 후 Password::sendResetLink() 호출
- *                                   발송 성공: back() + status 플래시 메시지
- *                                   발송 실패: back() + email 에러 메시지
- *
- * 실제 토큰 생성·저장·메일 발송은 Laravel 내장 Password 파사드가 처리한다.
- * 비밀번호 재설정 후 새 비밀번호 저장은 NewPasswordController 가 담당한다.
- */
 class PasswordResetLinkController extends Controller
 {
-    /**
-     * Display the password reset link request view.
-     */
     public function create(): View
     {
         return view('auth.forgot-password');
     }
 
-    /**
-     * Handle an incoming password reset link request.
-     *
-     * @throws ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
             'email' => ['required', 'email'],
         ]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
+        // DB 에 email 컬럼이 없으므로 email_hash 로 사용자를 찾는다.
+        $emailHash = hash('sha256', strtolower(trim($request->email)));
+        $user = User::where('email_hash', $emailHash)->first();
 
-        return $status == Password::RESET_LINK_SENT
-                    ? back()->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+        // 계정 존재 여부를 노출하지 않기 위해 항상 성공 응답을 반환한다.
+        if (!$user) {
+            return back()->with('status', __('passwords.sent'));
+        }
+
+        try {
+            // 토큰을 email_hash 키로 생성하여 password_reset_tokens 에 저장
+            $token = Password::broker()->getRepository()->create($user);
+
+            // 복호화된 실제 이메일로 재설정 링크 발송
+            $user->sendPasswordResetNotification($token);
+        } catch (\Exception $e) {
+            Log::error('비밀번호 재설정 이메일 발송 실패', [
+                'user_id' => $user->id,
+                'error'   => $e->getMessage(),
+            ]);
+
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => '이메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.']);
+        }
+
+        return back()->with('status', __('passwords.sent'));
     }
 }

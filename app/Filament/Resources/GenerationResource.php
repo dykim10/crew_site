@@ -10,11 +10,13 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Illuminate\Support\HtmlString;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -32,7 +34,7 @@ class GenerationResource extends Resource
     protected static ?string $navigationLabel = '기수 관리';
     protected static ?string $modelLabel = '기수';
     protected static ?string $pluralModelLabel = '기수 목록';
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     public static function getNavigationGroup(): ?string
     {
@@ -140,28 +142,35 @@ class GenerationResource extends Resource
 
             Section::make('메인 대회')
                 ->description('대회 목록은 CORE API (review.races)에서 불러옵니다.')
-                ->schema([
-                    Select::make('main_race_id')
+                ->schema(array_filter([
+                    $raceOptions ? null : Placeholder::make('api_warning')
+                        ->label('')
+                        ->content(new HtmlString(
+                            '<div class="rounded-md bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">'
+                            . '⚠ CORE API에 연결할 수 없습니다. 아래 직접 입력란에 대회명을 입력하세요.'
+                            . '<br><span class="text-xs text-amber-600 mt-1 block">EC2: <code>sudo supervisorctl status fastapi</code> 확인</span>'
+                            . '</div>'
+                        )),
+
+                    $raceOptions ? Select::make('main_race_id')
                         ->label('메인 대회 선택')
-                        ->options($raceOptions ?: ['없음'])
+                        ->options($raceOptions)
                         ->searchable()
-                        ->placeholder($raceOptions ? '대회를 검색하세요' : 'CORE API 연결 필요')
-                        ->helperText($raceOptions ? count($raceOptions) . '개 대회 로드됨' : 'CORE API가 응답하지 않습니다. 직접 입력란을 사용하세요.')
+                        ->placeholder('대회를 검색하세요')
+                        ->helperText(count($raceOptions) . '개 대회 로드됨')
                         ->live()
                         ->afterStateUpdated(function ($state, callable $set) use ($raceOptions) {
                             if ($state && isset($raceOptions[$state])) {
-                                // 날짜 접두어 제거 후 순수 대회명 저장
                                 $name = preg_replace('/^\[\d{4}-\d{2}-\d{2}\]\s*/', '', $raceOptions[$state]);
                                 $set('main_race_name', $name);
                             }
-                        }),
+                        }) : null,
 
                     TextInput::make('main_race_name')
-                        ->label('대회명 (직접 입력 또는 자동 채워짐)')
+                        ->label($raceOptions ? '대회명 (자동 채워짐 또는 직접 입력)' : '대회명 (직접 입력)')
                         ->maxLength(200)
-                        ->placeholder('대회 선택 시 자동 입력, 또는 직접 입력'),
-                ])
-                ->columns(2),
+                        ->placeholder($raceOptions ? '대회 선택 시 자동 입력' : '대회명을 직접 입력하세요'),
+                ])),
 
             Section::make('활성화 지부')
                 ->description('이 기수에 참여하는 지부를 선택하세요.')
@@ -172,6 +181,8 @@ class GenerationResource extends Resource
                         ->multiple()
                         ->searchable()
                         ->placeholder('지부 선택')
+                        ->noSearchResultsMessage('검색된 지부가 없습니다.')
+                        ->noOptionsMessage('등록된 지부가 없습니다.')
                         ->helperText('복수 선택 가능'),
                 ]),
 

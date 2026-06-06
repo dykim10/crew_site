@@ -32,13 +32,13 @@ class Board extends Model
     }
 
     public static array $types = [
-        'free' => ['label' => '자유게시판', 'desc' => '크루 멤버들의 자유로운 이야기'],
-        'qna'  => ['label' => '문의게시판', 'desc' => '질문 & 답변'],
+        'free' => ['label' => '자유게시판', 'desc' => '크루 멤버들의 자유로운 이야기', 'layout' => 'list'],
+        'qna'  => ['label' => '문의게시판', 'desc' => '질문 & 답변',                   'layout' => 'list'],
     ];
 
     public static function meta(string $type): array
     {
-        return self::$types[$type] ?? ['label' => '게시판', 'desc' => ''];
+        return self::$types[$type] ?? ['label' => '게시판', 'desc' => '', 'layout' => 'list'];
     }
 
     public function author(): BelongsTo

@@ -3,7 +3,7 @@
 
     {{-- 헤더 --}}
     <div class="flex items-center gap-3">
-        <a href="{{ route('bug-reports.create') }}"
+        <a href="{{ url()->previous('/') }}"
            class="p-2 text-pac-black-400 hover:text-pac-black-700 transition-colors duration-150">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -14,6 +14,15 @@
             <h1 class="font-display text-2xl font-bold text-pac-black-900 uppercase tracking-tight">버그 제보</h1>
         </div>
     </div>
+
+    @if (session('success'))
+        <div class="flex items-start gap-3 rounded border-l-4 border-pac-yellow-500 bg-pac-yellow-50 px-4 py-3">
+            <svg class="mt-0.5 h-5 w-5 shrink-0 text-pac-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p class="font-body text-sm text-pac-yellow-800">{{ session('success') }}</p>
+        </div>
+    @endif
 
     <form method="POST" action="{{ route('bug-reports.store') }}"
           enctype="multipart/form-data"
@@ -42,29 +51,46 @@
                 @enderror
             </div>
 
-            {{-- 우선순위 --}}
+            {{-- 발생 경로 --}}
+            <div>
+                <label class="block font-body text-sm font-semibold text-pac-black-700 mb-1.5">
+                    발생 경로 <span class="font-normal text-pac-black-400">(선택 — 버그가 발생한 페이지 URL)</span>
+                </label>
+                <input type="text" name="path" value="{{ old('path', $previousPath) }}"
+                       placeholder="/dashboard, /events/3 등"
+                       class="w-full px-4 py-2.5 border border-pac-black-200 rounded-xl font-body text-sm text-pac-black-900
+                              focus:outline-none focus:ring-2 focus:ring-pac-yellow-400 focus:border-pac-yellow-400">
+            </div>
+
+            {{-- 심각도 — Alpine.js 기반 선택 (peer-checked CSS 없이 동작 보장) --}}
             <div>
                 <label class="block font-body text-sm font-semibold text-pac-black-700 mb-1.5">
                     심각도 <span class="text-red-500">*</span>
                 </label>
-                <div class="grid grid-cols-4 gap-2">
+                <div class="grid grid-cols-3 gap-2">
                     @foreach([
-                        ['value' => 'low',      'label' => '낮음',  'desc' => '사소한 불편', 'color' => 'border-pac-black-200 text-pac-black-500 peer-checked:border-pac-black-500 peer-checked:bg-pac-black-50'],
-                        ['value' => 'medium',   'label' => '보통',  'desc' => '기능 오류',   'color' => 'border-pac-black-200 text-pac-black-500 peer-checked:border-blue-400 peer-checked:bg-blue-50 peer-checked:text-blue-700'],
-                        ['value' => 'high',     'label' => '높음',  'desc' => '심각한 오류', 'color' => 'border-pac-black-200 text-pac-black-500 peer-checked:border-orange-400 peer-checked:bg-orange-50 peer-checked:text-orange-700'],
-                        ['value' => 'critical', 'label' => '긴급',  'desc' => '서비스 불가', 'color' => 'border-pac-black-200 text-pac-black-500 peer-checked:border-red-400 peer-checked:bg-red-50 peer-checked:text-red-700'],
+                        ['value' => 'low',    'label' => '낮음',  'desc' => '사소한 불편',
+                         'active' => 'border-pac-black-600 bg-pac-black-900 text-white',
+                         'inactive' => 'border-pac-black-200 bg-white text-pac-black-600 hover:border-pac-black-400'],
+                        ['value' => 'medium', 'label' => '보통',  'desc' => '기능 오류',
+                         'active' => 'border-blue-500 bg-blue-500 text-white',
+                         'inactive' => 'border-pac-black-200 bg-white text-pac-black-600 hover:border-blue-400'],
+                        ['value' => 'high',   'label' => '높음',  'desc' => '심각한 오류',
+                         'active' => 'border-red-500 bg-red-500 text-white',
+                         'inactive' => 'border-pac-black-200 bg-white text-pac-black-600 hover:border-red-400'],
                     ] as $item)
-                        <label class="cursor-pointer">
-                            <input type="radio" name="priority" value="{{ $item['value'] }}" class="peer sr-only"
-                                   {{ old('priority', 'medium') === $item['value'] ? 'checked' : '' }}>
-                            <div class="border-2 rounded-xl p-3 text-center transition-all duration-150 {{ $item['color'] }}">
-                                <p class="font-display text-sm font-bold uppercase tracking-wide">{{ $item['label'] }}</p>
-                                <p class="font-body text-[10px] mt-0.5">{{ $item['desc'] }}</p>
-                            </div>
-                        </label>
+                    <label class="cursor-pointer" @click="severity = '{{ $item['value'] }}'">
+                        <input type="radio" name="severity" value="{{ $item['value'] }}" class="sr-only"
+                               x-bind:checked="severity === '{{ $item['value'] }}'">
+                        <div class="border-2 rounded-xl p-3 text-center transition-all duration-150 select-none"
+                             x-bind:class="severity === '{{ $item['value'] }}' ? '{{ $item['active'] }}' : '{{ $item['inactive'] }}'">
+                            <p class="font-display text-sm font-bold uppercase tracking-wide">{{ $item['label'] }}</p>
+                            <p class="font-body text-[10px] mt-0.5 opacity-80">{{ $item['desc'] }}</p>
+                        </div>
+                    </label>
                     @endforeach
                 </div>
-                @error('priority')
+                @error('severity')
                     <p class="mt-1 font-body text-xs text-red-500">{{ $message }}</p>
                 @enderror
             </div>
@@ -92,7 +118,7 @@
                 </div>
             </div>
 
-            {{-- 파일 첨부 --}}
+            {{-- 스크린샷 첨부 --}}
             <div>
                 <label class="block font-body text-sm font-semibold text-pac-black-700 mb-1.5">
                     스크린샷 첨부 <span class="font-normal text-pac-black-400">(선택)</span>
@@ -101,7 +127,7 @@
                      :class="fileName ? 'border-pac-yellow-400 bg-pac-yellow-50' : 'border-pac-black-200 hover:border-pac-yellow-300'"
                      @dragover.prevent
                      @drop.prevent="handleDrop($event)">
-                    <input type="file" name="attachment" accept=".jpg,.jpeg,.png,.gif,.webp,.pdf"
+                    <input type="file" name="screenshot" accept=".jpg,.jpeg,.png,.webp"
                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                            @change="handleFile($event)">
                     <div class="px-5 py-8 text-center" x-show="!fileName">
@@ -110,7 +136,7 @@
                                   d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
                         <p class="font-body text-sm text-pac-black-500">클릭하거나 파일을 드래그하세요</p>
-                        <p class="font-body text-xs text-pac-black-400 mt-1">JPG, PNG, GIF, WEBP, PDF · 최대 5MB</p>
+                        <p class="font-body text-xs text-pac-black-400 mt-1">JPG, PNG, WEBP · 최대 10MB</p>
                     </div>
                     <div class="px-5 py-4 flex items-center gap-3" x-show="fileName" style="display:none">
                         <svg class="w-6 h-6 text-pac-yellow-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -124,7 +150,7 @@
                         </button>
                     </div>
                 </div>
-                @error('attachment')
+                @error('screenshot')
                     <p class="mt-1 font-body text-xs text-red-500">{{ $message }}</p>
                 @enderror
             </div>
@@ -137,7 +163,7 @@
                 접수 후 관리자가 확인하여 처리 상태를 업데이트합니다.
             </p>
             <div class="flex gap-3">
-                <a href="{{ route('bug-reports.create') }}"
+                <a href="{{ url()->previous('/') }}"
                    class="px-5 py-2.5 font-display text-sm font-bold uppercase tracking-wide text-pac-black-500
                           border border-pac-black-200 rounded-xl hover:bg-pac-black-100 transition-colors duration-150">
                     취소
@@ -158,9 +184,9 @@
 <script>
 function bugReportForm() {
     return {
+        severity: '{{ old('severity', 'medium') }}',
         description: '{{ old('description', '') }}',
         fileName: '',
-        fileInput: null,
         handleFile(e) {
             const file = e.target.files[0];
             if (file) this.fileName = file.name;
@@ -169,16 +195,15 @@ function bugReportForm() {
             const file = e.dataTransfer.files[0];
             if (file) {
                 this.fileName = file.name;
-                // DataTransfer로 input에 파일 주입
                 const dt = new DataTransfer();
                 dt.items.add(file);
-                document.querySelector('input[name="attachment"]').files = dt.files;
+                document.querySelector('input[name="screenshot"]').files = dt.files;
             }
         },
         clearFile() {
             this.fileName = '';
-            const input = document.querySelector('input[name="attachment"]');
-            input.value = '';
+            const input = document.querySelector('input[name="screenshot"]');
+            if (input) input.value = '';
         },
     }
 }

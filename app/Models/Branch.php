@@ -9,7 +9,7 @@ class Branch extends Model
     protected $table = 'branches'; // public 스키마 (Supabase 기존 테이블)
 
     protected $fillable = [
-        'crew_id', 'name', 'admin_id', 'operator_id', 'status',
+        'crew_id', 'name', 'admin_id', 'operator_id', 'status', 'image_url', 'branch_desc',
     ];
 
     public function admin()

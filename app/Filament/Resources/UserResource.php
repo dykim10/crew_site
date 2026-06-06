@@ -40,7 +40,7 @@ class UserResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return '회원';
+        return '크루 관리';
     }
 
     /**

@@ -29,7 +29,7 @@
             <a href="/" class="mb-8 block">
                 <img src="{{ asset('images/logo.webp') }}"
                      alt="PAC RUN CREW"
-                     class="h-12 w-auto"
+                     class="h-20 w-auto"
                      loading="eager">
             </a>
 

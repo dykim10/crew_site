@@ -71,7 +71,7 @@ Route::middleware(['auth', 'verified'])->prefix('boards')->name('boards.')->grou
 
 // boards.free / boards.photo / boards.qna 단축 별칭 (GNB 드롭다운용)
 Route::get('/boards/free',  fn() => redirect()->route('boards.index', 'free'))->name('boards.free');
-Route::get('/boards/photo', fn() => redirect()->route('boards.index', 'photo'))->name('boards.photo');
+Route::get('/boards/photo', fn() => redirect()->route('photos.index'))->name('boards.photo');  // 포토갤러리는 PhotoGalleryController
 Route::get('/boards/qna',   fn() => redirect()->route('boards.index', 'qna'))->name('boards.qna');
 
 // 테마 전환 (super_admin / region_admin 전용)
@@ -118,6 +118,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // 러닝 기록

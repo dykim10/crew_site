@@ -31,11 +31,11 @@ class NoticeResource extends Resource
     protected static ?string $navigationLabel = '공지사항';
     protected static ?string $modelLabel = '공지';
     protected static ?string $pluralModelLabel = '공지사항 목록';
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 1;
 
     public static function getNavigationGroup(): ?string
     {
-        return '커뮤니티';
+        return '게시판 관리';
     }
 
     // operator 는 조회 전용 — 공지 작성 권한은 region_admin 이상

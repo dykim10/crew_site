@@ -20,7 +20,7 @@ class AdminLogResource extends Resource
 
     protected static ?string $navigationLabel = '관리자 로그';
 
-    protected static ?int $navigationSort = 99;
+    protected static ?int $navigationSort = 2;
 
     public static function getNavigationGroup(): ?string { return '시스템'; }
 

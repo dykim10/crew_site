@@ -3,13 +3,16 @@
      x-data="runLogCreate()">
 
     {{-- 페이지 헤더 --}}
-    <div class="flex items-center justify-between">
+    <div class="flex items-start justify-between">
         <div>
-            <p class="font-display text-[10px] font-bold text-pac-black-400 uppercase tracking-widest mb-0.5">MY RUNNING</p>
-            <h1 class="font-display text-2xl font-bold text-pac-black-900 uppercase tracking-tight">기록 등록</h1>
+            <p class="font-display text-[11px] tracking-[5px] uppercase text-pac-yellow-500 mb-3">MY RUNNING</p>
+            <h1 class="font-display text-[clamp(32px,5vw,60px)] leading-none tracking-wide text-white uppercase">
+                기록 등록
+            </h1>
+            <div class="w-12 h-0.5 bg-pac-yellow-500 mt-3 mb-1"></div>
         </div>
         <a href="{{ route('running-logs.index') }}"
-           class="font-display text-xs font-bold uppercase tracking-widest text-pac-black-400 hover:text-pac-black-600 transition-colors">
+           class="mt-1 font-display text-xs font-bold uppercase tracking-widest text-pac-black-500 hover:text-pac-yellow-400 transition-colors">
             ← 목록
         </a>
     </div>
@@ -77,8 +80,9 @@
 
                 <label for="imageInput" class="block cursor-pointer group">
                     <div class="border-2 border-dashed border-pac-black-100
-                                group-hover:border-pac-yellow-400 group-hover:bg-pac-black-50
-                                rounded-2xl p-12 text-center transition-all duration-200">
+                                group-hover:border-pac-yellow-400
+                                rounded-2xl p-12 text-center transition-all duration-200"
+                         style="transition: border-color 0.2s, background-color 0.2s;">
                         <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl
                                     bg-pac-black-900 group-hover:bg-pac-black-800 mb-4 transition-colors">
                             <svg class="w-8 h-8 text-pac-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -86,23 +90,23 @@
                                       d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
                             </svg>
                         </div>
-                        <p class="font-body text-pac-black-700 font-semibold text-base mb-1">
+                        <p class="font-body text-white font-semibold text-base mb-1">
                             러닝 앱 스크린샷 업로드
                         </p>
-                        <p class="font-body text-pac-black-400 text-sm mb-5">
+                        <p class="font-body text-pac-black-500 text-sm mb-5">
                             여러 장을 한번에 선택하면 AI가 기록을 순서대로 자동 파싱합니다
                         </p>
                         <span class="inline-flex items-center gap-2 px-7 py-3
                                      bg-pac-yellow-500 group-hover:bg-pac-yellow-400
                                      text-pac-black-900 font-display font-bold text-sm uppercase tracking-wide
-                                     rounded-xl transition-colors shadow-sm">
+                                     transition-colors">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                       d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                             </svg>
                             이미지 선택하기
                         </span>
-                        <p class="font-body text-xs text-pac-black-300 mt-4">JPG · PNG · WEBP · 최대 10MB · 다중 선택 가능</p>
+                        <p class="font-body text-xs text-pac-black-500 mt-4">JPG · PNG · WEBP · 최대 10MB · 다중 선택 가능</p>
                     </div>
                 </label>
             </div>

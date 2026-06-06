@@ -29,7 +29,7 @@ class BugReportResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return '고객지원';
+        return '시스템';
     }
 
     public static function canCreate(): bool { return false; }

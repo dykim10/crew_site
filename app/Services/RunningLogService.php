@@ -55,9 +55,11 @@ class RunningLogService
                 ? [$webp, pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '.webp']
                 : [file_get_contents($file->getRealPath()), $file->getClientOriginalName()];
 
+            $coreUrl = rtrim(config('services.core_api.url', 'http://localhost:8100'), '/');
+
             $response = Http::timeout(60)
                 ->attach('file', $fileContent, $fileName)
-                ->post(config('services.core_api.url') . '/api/parse-image');
+                ->post($coreUrl . '/api/parse-image');
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -75,15 +77,25 @@ class RunningLogService
                         'elevation_m'       => $data['elevation_m'] ?? null,
                     ],
                     'raw_parsed' => $data,
+                    'error'      => null,
                 ];
             }
 
-            Log::warning('CORE API parse-image 응답 오류: ' . $response->status());
+            Log::warning('CORE API parse-image 응답 오류', [
+                'url'    => $coreUrl . '/api/parse-image',
+                'status' => $response->status(),
+                'body'   => $response->body(),
+            ]);
+            return ['s3_url' => null, 'parsed' => [], 'raw_parsed' => [], 'error' => 'HTTP ' . $response->status()];
         } catch (\Exception $e) {
-            Log::warning('CORE API parse-image 실패: ' . $e->getMessage());
+            Log::warning('CORE API parse-image 연결 실패', [
+                'url'   => config('services.core_api.url', 'http://localhost:8100') . '/api/parse-image',
+                'error' => $e->getMessage(),
+            ]);
+            return ['s3_url' => null, 'parsed' => [], 'raw_parsed' => [], 'error' => $e->getMessage()];
         }
 
-        return ['s3_url' => null, 'parsed' => [], 'raw_parsed' => []];
+        return ['s3_url' => null, 'parsed' => [], 'raw_parsed' => [], 'error' => 'unknown'];
     }
 
     public function create(array $data, User $user): RunningLog

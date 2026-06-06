@@ -11,24 +11,25 @@ class BugReportController extends Controller
 {
     public function __construct(private BugReportService $service) {}
 
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('bug-reports.create');
+        // 이전 페이지 경로를 path 필드 기본값으로 전달
+        $previousPath = $request->query('from', '');
+        return view('bug-reports.create', compact('previousPath'));
     }
 
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'title'      => 'required|string|max:200',
-            'path'       => 'required|string|max:500',
-            'description'=> 'required|string|max:5000',
-            'severity'   => 'nullable|in:low,medium,high',
-            'screenshot' => 'nullable|file|mimes:jpg,jpeg,png,webp|max:10240',
+            'title'       => 'required|string|max:200',
+            'path'        => 'nullable|string|max:500',
+            'description' => 'required|string|max:5000',
+            'severity'    => 'nullable|in:low,medium,high',
+            'screenshot'  => 'nullable|file|mimes:jpg,jpeg,png,webp|max:10240',
         ], [
             'title.required'       => '제목을 입력해주세요.',
-            'path.required'        => '발생 경로를 입력해주세요.',
-            'description.required' => '재현 방법을 입력해주세요.',
-            'severity.in'          => '심각도는 low / medium / high 중 하나여야 합니다.',
+            'description.required' => '내용을 입력해주세요.',
+            'severity.in'          => '심각도 값이 올바르지 않습니다.',
             'screenshot.mimes'     => '이미지 파일(jpg, png, webp)만 업로드 가능합니다.',
             'screenshot.max'       => '파일 크기는 10MB 이하여야 합니다.',
         ]);

@@ -20,6 +20,7 @@ class UsersDetail extends Model
         'memo',
         'gender',
         'shirt_size',
+        'avatar_url',
     ];
 
     protected $attributes = [

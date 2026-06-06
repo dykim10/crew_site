@@ -45,11 +45,11 @@ class EventResource extends Resource
     protected static ?string $navigationLabel = '이벤트 관리';
     protected static ?string $modelLabel = '이벤트';
     protected static ?string $pluralModelLabel = '이벤트 목록';
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 1;
 
     public static function getNavigationGroup(): ?string
     {
-        return '러닝 기록';
+        return '이벤트 관리';
     }
 
     public static function canCreate(): bool

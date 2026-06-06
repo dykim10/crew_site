@@ -67,7 +67,11 @@ class RunningLogController extends Controller
         $result = $this->service->parseImage($request->file('image'));
 
         if (!$result['s3_url']) {
-            return response()->json(['success' => false, 'message' => 'CORE API 파싱 실패'], 422);
+            $errorDetail = $result['error'] ?? '알 수 없는 오류';
+            $message = str_contains($errorDetail, 'Connection refused') || str_contains($errorDetail, 'Failed to connect')
+                ? 'CORE API 서버에 연결할 수 없습니다. 서버 관리자에게 문의해주세요.'
+                : 'AI 파싱에 실패했습니다. 이미지를 확인하거나 잠시 후 다시 시도해주세요.';
+            return response()->json(['success' => false, 'message' => $message], 422);
         }
 
         $log = $this->service->createDraft($result, $request->user());

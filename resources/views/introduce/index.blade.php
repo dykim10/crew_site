@@ -9,10 +9,12 @@
       <span class="text-pac-black-400" style="-webkit-text-stroke:1px rgba(255,255,255,0.15);">CREW</span>
     </h1>
     <div class="w-20 h-0.5 bg-pac-yellow-500 mt-6 mb-8"></div>
-    <p class="font-body text-base text-pac-black-600 max-w-2xl leading-relaxed">
+    <p class="font-body text-base text-pac-black-600 max-w-3xl leading-relaxed">
       PAC-RUN은 <strong class="text-pac-black-900">H</strong>igh <strong class="text-pac-black-900">I</strong>ntensity <strong class="text-pac-black-900">I</strong>nterval <strong class="text-pac-black-900">T</strong>raining을 기반으로 한
-      <strong class="text-pac-black-900">P</strong>artnership <strong class="text-pac-black-900">A</strong>ctivation <strong class="text-pac-black-900">C</strong>rew입니다.
-      2024년 창단 이래 반포·연대·군포·인천 4개 지부에서 함께 달리고 있습니다.
+      <strong class="text-pac-black-900">P</strong>artnership <strong class="text-pac-black-900">A</strong>ctivation <strong class="text-pac-black-900">C</strong>rew입니다. 
+    </p>
+    <p class="font-body text-base text-pac-black-600 max-w-2xl leading-relaxed">
+      2024년 창단 이래 반포·연대·군포·인천 {{ $branchCount }}개 지부에서 함께 달리고 있습니다.
     </p>
   </div>
 
@@ -43,7 +45,7 @@
 
   {{-- 수치 --}}
   <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-pac-black-100 border border-pac-black-100 mb-16">
-    @foreach([['240+','Active Runners'], ['4','지부'], ['12','진행 이벤트'], ['1,840km','Total Distance']] as $stat)
+    @foreach([['240+','Active Runners'], ['4','지부'], ['12','진행 이벤트'], ['10,840km','Total Distance']] as $stat)
     <div class="bg-pac-black-900 px-8 py-10 text-center">
       <div class="font-display text-5xl text-pac-yellow-500 mb-2">{{ $stat[0] }}</div>
       <div class="font-display text-[10px] tracking-[3px] uppercase text-pac-black-500">{{ $stat[1] }}</div>
@@ -52,10 +54,48 @@
   </div>
 
   {{-- CTA --}}
-  <div class="flex flex-col sm:flex-row items-start gap-4">
+  <div class="flex flex-col sm:flex-row items-start gap-4 mb-24">
     <a href="{{ route('apply') }}" class="pac-btn">크루 합류하기 →</a>
     <a href="{{ route('branch') }}" class="pac-btn-ghost">지부 소개 보기</a>
   </div>
+
+  {{-- 스폰서 / 협약업체 --}}
+  @php
+    $sponsors = \App\Models\Sponsor::where('is_active', true)->orderBy('sort_order')->get();
+  @endphp
+  @if($sponsors->isNotEmpty())
+  <div class="border-t border-pac-black-100 pt-16">
+    <p class="font-display text-[11px] tracking-[5px] uppercase text-pac-yellow-500 mb-4">Partners</p>
+    <h2 class="font-display text-3xl uppercase text-pac-black-900 mb-8">스폰서 / 협약업체</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+      @foreach($sponsors as $sponsor)
+      <div class="group flex flex-col items-center gap-3">
+        @if($sponsor->link_url)
+          <a href="{{ $sponsor->link_url }}" target="_blank" rel="noopener"
+             class="w-full flex items-center justify-center rounded-lg border border-pac-black-100 bg-white p-4 h-20 hover:border-pac-yellow-500 hover:shadow-sm transition-all">
+            @if($sponsor->logo_url)
+              <img src="{{ $sponsor->logo_url }}" alt="{{ e($sponsor->name) }}"
+                   class="max-h-10 max-w-full object-contain grayscale group-hover:grayscale-0 transition-all">
+            @else
+              <span class="font-display text-sm uppercase tracking-wide text-pac-black-600">{{ $sponsor->name }}</span>
+            @endif
+          </a>
+        @else
+          <div class="w-full flex items-center justify-center rounded-lg border border-pac-black-100 bg-white p-4 h-20">
+            @if($sponsor->logo_url)
+              <img src="{{ $sponsor->logo_url }}" alt="{{ e($sponsor->name) }}"
+                   class="max-h-10 max-w-full object-contain grayscale">
+            @else
+              <span class="font-display text-sm uppercase tracking-wide text-pac-black-600">{{ $sponsor->name }}</span>
+            @endif
+          </div>
+        @endif
+        <p class="font-body text-xs text-pac-black-500 text-center">{{ $sponsor->name }}</p>
+      </div>
+      @endforeach
+    </div>
+  </div>
+  @endif
 
 </div>
 </x-app-layout>

@@ -20,11 +20,11 @@ class SmsResource extends Resource
     protected static ?string $navigationLabel = '단체 문자';
     protected static ?string $modelLabel = '문자 발송';
     protected static ?string $pluralModelLabel = '문자 발송 내역';
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 1;
 
     public static function getNavigationGroup(): ?string
     {
-        return '알림 관리';
+        return '알림 / 설문';
     }
 
     public static function canCreate(): bool { return false; }

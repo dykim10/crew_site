@@ -32,7 +32,7 @@ class ApplicationResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return '기수 관리';
+        return '기수 모집';
     }
 
     public static function canCreate(): bool { return false; }

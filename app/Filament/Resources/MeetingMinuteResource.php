@@ -28,11 +28,11 @@ class MeetingMinuteResource extends Resource
     protected static ?string $navigationLabel = '회의록';
     protected static ?string $modelLabel = '회의록';
     protected static ?string $pluralModelLabel = '회의록 목록';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 2;
 
     public static function getNavigationGroup(): ?string
     {
-        return '게시판';
+        return '게시판 관리';
     }
 
     public static function canDelete(Model $record): bool

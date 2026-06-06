@@ -2,15 +2,16 @@
 <div class="max-w-5xl mx-auto px-4 py-6 md:px-6 lg:px-8 space-y-5">
 
   {{-- 페이지 헤더 --}}
-  <div class="flex items-end justify-between gap-4">
+  <div class="flex items-start justify-between gap-4">
     <div>
-      <p class="font-display text-[9px] font-bold text-pac-black-500 uppercase tracking-[0.3em] mb-1">MY RUNNING</p>
-      <h1 class="font-display text-4xl lg:text-5xl font-black text-white uppercase tracking-tight leading-none">
-        기록 <span class="text-pac-yellow-400">목록</span>
+      <p class="font-display text-[11px] tracking-[5px] uppercase text-pac-yellow-500 mb-3">MY RUNNING</p>
+      <h1 class="font-display text-[clamp(40px,6vw,72px)] leading-none tracking-wide text-white uppercase">
+        기록 목록
       </h1>
+      <div class="w-16 h-0.5 bg-pac-yellow-500 mt-4 mb-1"></div>
     </div>
     <a href="{{ route('running-logs.create') }}"
-       class="shrink-0 inline-flex items-center gap-2 px-5 py-2.5
+       class="shrink-0 mt-1 inline-flex items-center gap-2 px-5 py-2.5
               bg-pac-yellow-500 hover:bg-pac-yellow-400
               text-pac-black-900 font-display font-black text-sm uppercase tracking-wider
               transition-colors duration-150">

@@ -9,7 +9,9 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -78,6 +80,26 @@ class BranchResource extends Resource
                         ->required(),
                 ])
                 ->columns(2),
+
+            Section::make('지부 소개')
+                ->schema([
+                    FileUpload::make('image_url')
+                        ->label('대표 이미지')
+                        ->image()
+                        ->disk('s3')
+                        ->directory('branches')
+                        ->visibility('public')
+                        ->maxSize(5120)
+                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                        ->helperText('권장 크기: 800×500px, 최대 5MB'),
+
+                    Textarea::make('branch_desc')
+                        ->label('간략 소개')
+                        ->maxLength(300)
+                        ->rows(3)
+                        ->placeholder('지부를 소개하는 한두 문장을 입력하세요. (최대 300자)')
+                        ->helperText('사용자 지부소개 페이지에 노출됩니다.'),
+                ]),
 
             Section::make('담당자')
                 ->schema([
