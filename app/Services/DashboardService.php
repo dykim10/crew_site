@@ -158,16 +158,16 @@ class DashboardService
         ];
     }
 
-    // ④ 진행 중 이벤트 목록 (Eloquent — route() 헬퍼에서 모델 키 자동 추출)
+    // ④ 이벤트 전체 목록 (active → upcoming → ended 순, 최대 6건)
+    // 참여 가능 = active(진행중) + upcoming(진행대기), ended(종료)는 구분 표시용으로 포함
     public function getActiveEvents(User $user): Collection
     {
-        $now = now();
+        $now = now()->toDateString();
+
         return \App\Models\Event::query()
-            ->where('status', 'active')
-            ->whereDate('start_date', '<=', $now->toDateString())
-            ->whereDate('end_date', '>=', $now->toDateString())
-            ->orderByDesc('created_at')
-            ->limit(3)
+            ->orderByRaw("CASE status WHEN 'active' THEN 0 WHEN 'upcoming' THEN 1 ELSE 2 END")
+            ->orderBy('start_date')
+            ->limit(5)
             ->get();
     }
 

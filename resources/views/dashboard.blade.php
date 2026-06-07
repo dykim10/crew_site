@@ -352,8 +352,9 @@
         </a>
       </div>
       @forelse($notices as $notice)
-        <div class="flex items-start gap-3 px-5 py-3.5 border-b border-white/[0.04] last:border-0
-                    hover:bg-white/[0.02] transition-colors cursor-pointer group">
+        <a href="{{ route('notices.show', $notice) }}"
+           class="flex items-start gap-3 px-5 py-3.5 border-b border-white/[0.04] last:border-0
+                  hover:bg-white/[0.02] transition-colors group">
           @if($notice->is_pinned)
             <span class="mt-0.5 shrink-0 font-display text-[9px] font-black uppercase tracking-wider
                          bg-pac-pink-500 text-white px-1.5 py-0.5">고정</span>
@@ -366,7 +367,7 @@
           <span class="font-display text-[9px] text-pac-black-600 shrink-0 tracking-wider">
             {{ $notice->created_at->format('m.d') }}
           </span>
-        </div>
+        </a>
       @empty
         <div class="px-5 py-12 text-center">
           <p class="font-display text-2xl font-black text-pac-black-800 uppercase tracking-widest mb-1">NO NOTICE</p>
@@ -416,33 +417,51 @@
         </div>
       @endif
 
-      {{-- 이벤트 목록 --}}
+      {{-- 이벤트 목록 (진행중·진행대기 = 참여 가능 / 종료 = 흐리게) --}}
+      @php
+        $availableCount = $events->whereIn('status', ['active', 'upcoming'])->count();
+      @endphp
+      @if($events->isNotEmpty())
+        <div class="px-5 py-2 border-b border-white/[0.04] bg-pac-black-800">
+          <span class="font-display text-[9px] font-bold uppercase tracking-widest text-pac-black-500">
+            참여 가능 {{ $availableCount }}건 · 전체 {{ $events->count() }}건
+          </span>
+        </div>
+      @endif
       @forelse($events as $event)
+        @php $isEnded = $event->status === 'ended'; @endphp
         <a href="{{ route('events.show', $event) }}"
            class="flex items-center gap-3 px-5 py-3.5 border-b border-white/[0.04] last:border-0
-                  hover:bg-white/[0.02] transition-colors group">
+                  hover:bg-white/[0.02] transition-colors group
+                  {{ $isEnded ? 'opacity-40' : '' }}">
           <div class="flex-1 min-w-0">
-            <p class="font-body text-sm font-semibold text-pac-black-300 group-hover:text-white transition-colors truncate">
+            <p class="font-body text-sm font-semibold
+                      {{ $isEnded ? 'text-pac-black-600' : 'text-pac-black-300 group-hover:text-white' }}
+                      transition-colors truncate">
               {{ $event->name }}
             </p>
             <p class="font-display text-[9px] text-pac-black-600 uppercase tracking-wider mt-0.5">
+              {{ \Carbon\Carbon::parse($event->start_date)->format('Y.m.d') }}
               ~ {{ \Carbon\Carbon::parse($event->end_date)->format('Y.m.d') }}
             </p>
           </div>
           @if($event->status === 'active')
             <span class="font-display text-[9px] font-black uppercase tracking-wider shrink-0
                          bg-pac-pink-500 text-white px-2 py-0.5 flex items-center gap-1">
-              <span class="w-1 h-1 rounded-full bg-white animate-pulse"></span>LIVE
+              <span class="w-1 h-1 rounded-full bg-white animate-pulse"></span>진행중
             </span>
+          @elseif($event->status === 'upcoming')
+            <span class="font-display text-[9px] font-black uppercase tracking-wider shrink-0
+                         border border-pac-yellow-500/50 text-pac-yellow-500 px-2 py-0.5">진행대기</span>
           @else
             <span class="font-display text-[9px] font-black uppercase tracking-wider shrink-0
-                         border border-pac-yellow-500/40 text-pac-yellow-600 px-2 py-0.5">예정</span>
+                         border border-white/10 text-pac-black-600 px-2 py-0.5">종료</span>
           @endif
         </a>
       @empty
         <div class="px-5 py-12 text-center">
           <p class="font-display text-2xl font-black text-pac-black-800 uppercase tracking-widest mb-1">NO EVENT</p>
-          <p class="font-body text-xs text-pac-black-600">진행 중인 이벤트가 없습니다</p>
+          <p class="font-body text-xs text-pac-black-600">등록된 이벤트가 없습니다</p>
         </div>
       @endforelse
     </div>

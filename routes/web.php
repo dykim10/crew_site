@@ -58,7 +58,13 @@ Route::get('/introduce', [IntroduceController::class, 'index'])->name('introduce
 // 지부 소개 (공개)
 Route::get('/branch', [BranchController::class, 'index'])->name('branch');
 
-// 게시판 (자유·포토·문의) — 목록/상세는 auth, 작성/수정/삭제도 auth
+// GNB 단축 별칭 — 와일드카드 그룹보다 반드시 먼저 등록 (선 등록 라우트가 우선 매칭)
+Route::get('/boards/free',   fn() => redirect()->route('boards.index', 'free'))->name('boards.free');
+Route::get('/boards/qna',    fn() => redirect()->route('boards.index', 'qna'))->name('boards.qna');
+Route::get('/boards/photo',  fn() => redirect()->route('photos.index'))->name('boards.photo');   // 포토갤러리는 PhotoGalleryController
+Route::get('/boards/photos', fn() => redirect()->route('photos.index'))->name('boards.photos');  // 복수형 별칭
+
+// 게시판 (자유·문의) — 목록/상세/작성/수정/삭제 모두 auth 필요
 Route::middleware(['auth', 'verified'])->prefix('boards')->name('boards.')->group(function () {
     Route::post('/images/upload',    [BoardController::class, 'uploadImage'])->name('images.upload');
     Route::get('/{type}',            [BoardController::class, 'index'])->name('index');
@@ -69,11 +75,6 @@ Route::middleware(['auth', 'verified'])->prefix('boards')->name('boards.')->grou
     Route::put('/{type}/{board}',        [BoardController::class, 'update'])->name('update');
     Route::delete('/{type}/{board}',     [BoardController::class, 'destroy'])->name('destroy');
 });
-
-// boards.free / boards.photo / boards.qna 단축 별칭 (GNB 드롭다운용)
-Route::get('/boards/free',  fn() => redirect()->route('boards.index', 'free'))->name('boards.free');
-Route::get('/boards/photo', fn() => redirect()->route('photos.index'))->name('boards.photo');  // 포토갤러리는 PhotoGalleryController
-Route::get('/boards/qna',   fn() => redirect()->route('boards.index', 'qna'))->name('boards.qna');
 
 // 테마 전환 (super_admin / region_admin 전용)
 Route::post('/theme/switch', [HomeController::class, 'switchTheme'])
