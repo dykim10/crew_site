@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Models\PhotoGallery;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class PhotoGalleryObserver
 {
@@ -38,10 +39,24 @@ class PhotoGalleryObserver
         $coreApiUrl = rtrim(config('services.core_api.url', 'http://localhost:8100'), '/');
 
         try {
-            // S3 원본 이미지 다운로드
-            $imageContent = Http::timeout(30)->get($photo->image_url)->body();
-            $ext          = pathinfo(parse_url($photo->image_url, PHP_URL_PATH), PATHINFO_EXTENSION) ?: 'jpg';
-            $filename     = "photo_{$photo->id}.{$ext}";
+            // S3 키 추출: 전체 URL이면 경로 부분만, 경로면 그대로 사용
+            $imageUrl = $photo->image_url;
+            if (str_starts_with($imageUrl, 'http')) {
+                // https://bucket.s3.region.amazonaws.com/key 형식에서 key 추출
+                $s3Key = ltrim(parse_url($imageUrl, PHP_URL_PATH), '/');
+            } else {
+                $s3Key = $imageUrl;
+            }
+
+            // S3 자격증명으로 직접 다운로드 (private 버킷 대응)
+            $imageContent = Storage::disk('s3')->get($s3Key);
+            if (!$imageContent) {
+                Log::warning("PhotoGallery #{$photo->id} S3 다운로드 실패: {$s3Key}");
+                return;
+            }
+
+            $ext      = pathinfo($s3Key, PATHINFO_EXTENSION) ?: 'jpg';
+            $filename = "photo_{$photo->id}.{$ext}";
 
             // CORE API WebP 변환 요청
             $response = Http::timeout(60)

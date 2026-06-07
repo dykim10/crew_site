@@ -12,10 +12,12 @@ class PhotoGallery extends Model
     protected $fillable = [
         'crew_id',
         'admin_id',
+        'branch_id',
         'title',
         'description',
         'image_url',
         'thumbnail_url',
+        'google_photos_url',
         'taken_at',
         'view_count',
         'sort_order',
@@ -32,5 +34,11 @@ class PhotoGallery extends Model
     public function admin(): BelongsTo
     {
         return $this->belongsTo(User::class, 'admin_id');
+    }
+
+    /** 관련 지부 */
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }
