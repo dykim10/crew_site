@@ -110,14 +110,4 @@
 
 </div>
 
-<style>
-@keyframes pac-slide {
-  0%   { left: -60%; width: 60%; }
-  100% { left: 120%; width: 60%; }
-}
-.pac-loading-bar {
-  animation: pac-slide 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-</style>
-
 </x-app-layout>

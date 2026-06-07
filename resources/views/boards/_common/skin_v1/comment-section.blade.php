@@ -20,7 +20,7 @@
 
     {{-- 최상위 댓글 --}}
     <div class="bg-pac-black-800/60 border border-white/8 rounded p-4"
-         x-data="{ editing: false, reply: false, replyContent: '' }">
+         x-data="{ editing: false, editLoading: false, reply: false, replyLoading: false, replyContent: '' }">
 
       {{-- 작성자 행 --}}
       <div class="flex items-center justify-between gap-3">
@@ -66,15 +66,29 @@
       {{-- 인라인 수정 폼 --}}
       <form x-show="editing" method="POST"
             action="{{ route($commentBase . '.update', [$board, $comment]) }}"
-            class="mt-3" x-cloak>
+            class="mt-3" x-cloak @submit="editLoading = true">
         @csrf @method('PUT')
         <textarea name="content" rows="3"
                   class="w-full bg-pac-black-900 border border-white/10 focus:border-pac-yellow-500
                          text-pac-black-200 placeholder:text-pac-black-600
                          font-body text-sm px-3 py-2 outline-none resize-none transition-colors rounded">{{ $comment->content }}</textarea>
+        {{-- 수정 로딩 바 --}}
+        <div x-show="editLoading" x-cloak class="relative h-0.5 bg-pac-black-700 overflow-hidden mt-2">
+          <div class="absolute inset-y-0 pac-loading-bar bg-pac-yellow-500"></div>
+        </div>
         <div class="flex gap-2 mt-2">
-          <button type="submit" class="pac-btn text-xs px-3 py-1.5">저장</button>
-          <button type="button" @click="editing = false"
+          <button type="submit" class="pac-btn text-xs px-3 py-1.5"
+                  :disabled="editLoading" :class="editLoading ? 'opacity-70 cursor-not-allowed' : ''">
+            <span x-show="!editLoading">저장</span>
+            <span x-show="editLoading" x-cloak class="flex items-center gap-1.5">
+              <svg class="animate-spin h-3 w-3 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+              </svg>
+              저장 중...
+            </span>
+          </button>
+          <button type="button" @click="editing = false; editLoading = false"
                   class="pac-btn-ghost text-xs px-3 py-1.5">취소</button>
         </div>
       </form>
@@ -82,7 +96,8 @@
       {{-- 답글 작성 폼 --}}
       <form x-show="reply" method="POST"
             action="{{ route($commentBase . '.store', $board) }}"
-            class="mt-3 pl-4 border-l-2 border-pac-yellow-500/30" x-cloak>
+            class="mt-3 pl-4 border-l-2 border-pac-yellow-500/30" x-cloak
+            @submit="replyLoading = true">
         @csrf
         <input type="hidden" name="parent_id" value="{{ $comment->id }}">
         <textarea name="content" rows="2" x-model="replyContent"
@@ -90,9 +105,23 @@
                   class="w-full bg-pac-black-900 border border-white/10 focus:border-pac-yellow-500
                          text-pac-black-200 placeholder:text-pac-black-600
                          font-body text-sm px-3 py-2 outline-none resize-none transition-colors rounded"></textarea>
+        {{-- 답글 로딩 바 --}}
+        <div x-show="replyLoading" x-cloak class="relative h-0.5 bg-pac-black-700 overflow-hidden mt-2">
+          <div class="absolute inset-y-0 pac-loading-bar bg-pac-yellow-500"></div>
+        </div>
         <div class="flex gap-2 mt-2">
-          <button type="submit" class="pac-btn text-xs px-3 py-1.5">등록</button>
-          <button type="button" @click="reply = false; replyContent = ''"
+          <button type="submit" class="pac-btn text-xs px-3 py-1.5"
+                  :disabled="replyLoading" :class="replyLoading ? 'opacity-70 cursor-not-allowed' : ''">
+            <span x-show="!replyLoading">등록</span>
+            <span x-show="replyLoading" x-cloak class="flex items-center gap-1.5">
+              <svg class="animate-spin h-3 w-3 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+              </svg>
+              등록 중...
+            </span>
+          </button>
+          <button type="button" @click="reply = false; replyContent = ''; replyLoading = false"
                   class="pac-btn-ghost text-xs px-3 py-1.5">취소</button>
         </div>
       </form>
@@ -101,7 +130,7 @@
     {{-- 대댓글 --}}
     @foreach($comment->replies as $reply)
     <div class="ml-6 mt-1 bg-pac-black-700/40 border border-white/6 border-l-2 border-l-pac-yellow-500/25 rounded-r p-4"
-         x-data="{ editing: false }">
+         x-data="{ editing: false, editLoading: false }">
       <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-2 min-w-0">
           @php
@@ -138,15 +167,30 @@
 
       <form x-show="editing" method="POST"
             action="{{ route($commentBase . '.update', [$board, $reply]) }}"
-            class="mt-2 ml-8" x-cloak>
+            class="mt-2 ml-8" x-cloak @submit="editLoading = true">
         @csrf @method('PUT')
         <textarea name="content" rows="2"
                   class="w-full bg-pac-black-900 border border-white/10 focus:border-pac-yellow-500
                          text-pac-black-200 placeholder:text-pac-black-600
                          font-body text-sm px-3 py-2 outline-none resize-none transition-colors rounded">{{ $reply->content }}</textarea>
+        {{-- 수정 로딩 바 --}}
+        <div x-show="editLoading" x-cloak class="relative h-0.5 bg-pac-black-700 overflow-hidden mt-2">
+          <div class="absolute inset-y-0 pac-loading-bar bg-pac-yellow-500"></div>
+        </div>
         <div class="flex gap-2 mt-2">
-          <button type="submit" class="pac-btn text-xs px-3 py-1.5">저장</button>
-          <button type="button" @click="editing = false" class="pac-btn-ghost text-xs px-3 py-1.5">취소</button>
+          <button type="submit" class="pac-btn text-xs px-3 py-1.5"
+                  :disabled="editLoading" :class="editLoading ? 'opacity-70 cursor-not-allowed' : ''">
+            <span x-show="!editLoading">저장</span>
+            <span x-show="editLoading" x-cloak class="flex items-center gap-1.5">
+              <svg class="animate-spin h-3 w-3 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+              </svg>
+              저장 중...
+            </span>
+          </button>
+          <button type="button" @click="editing = false; editLoading = false"
+                  class="pac-btn-ghost text-xs px-3 py-1.5">취소</button>
         </div>
       </form>
     </div>
@@ -159,8 +203,9 @@
 
   {{-- 댓글 작성 폼 --}}
   @auth
-  <div class="mt-6 pt-6 border-t border-white/8">
-    <form method="POST" action="{{ route($commentBase . '.store', $board) }}">
+  <div class="mt-6 pt-6 border-t border-white/8" x-data="{ loading: false }">
+    <form method="POST" action="{{ route($commentBase . '.store', $board) }}"
+          @submit="loading = true">
       @csrf
       @error('content')
         <p class="font-body text-xs text-pac-pink-400 mb-2">{{ $message }}</p>
@@ -170,8 +215,24 @@
                 class="w-full bg-pac-black-800 border border-white/10 focus:border-pac-yellow-500
                        text-pac-black-200 placeholder:text-pac-black-600
                        font-body text-sm px-4 py-3 outline-none resize-none transition-colors rounded">{{ old('content') }}</textarea>
+
+      {{-- 댓글 로딩 바 --}}
+      <div x-show="loading" x-cloak class="relative h-0.5 bg-pac-black-700 overflow-hidden mt-2">
+        <div class="absolute inset-y-0 pac-loading-bar bg-pac-yellow-500"></div>
+      </div>
+
       <div class="flex justify-end mt-2">
-        <button type="submit" class="pac-btn">댓글 등록</button>
+        <button type="submit" class="pac-btn"
+                :disabled="loading" :class="loading ? 'opacity-70 cursor-not-allowed' : ''">
+          <span x-show="!loading">댓글 등록</span>
+          <span x-show="loading" x-cloak class="flex items-center gap-2">
+            <svg class="animate-spin h-3.5 w-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
+            등록 중...
+          </span>
+        </button>
       </div>
     </form>
   </div>

@@ -398,6 +398,15 @@
 .tiptap-output a          { color: #E5AD16; text-decoration: underline; }
 .tiptap-output img        { max-width: 100%; border-radius: 2px; margin: 0.5em 0; display: block; }
 
+/* ── LOADING BAR ────────────────────────────────────── */
+@keyframes pac-slide {
+  0%   { left: -60%; width: 60%; }
+  100% { left: 120%; width: 60%; }
+}
+.pac-loading-bar {
+  animation: pac-slide 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
 /* ── RESPONSIVE ─────────────────────────────────────── */
 @media (max-width: 767px) {
   /* Tailwind hidden/md:inline-flex보다 늦게 선언되므로 명시적으로 숨김 */
