@@ -332,8 +332,8 @@ class RunningLogService
         return $content ?: null;
     }
 
-    // 파싱된 날짜의 연도 교정 — GPT 환각(2020, 2023 등) 방어용 2차 안전망
-    // CORE API에서 1차 교정 후에도 잘못된 연도가 오면 올해로 덮어쓴다
+    // 파싱된 날짜 유효성 검사 — CORE API가 연도를 1차 교정하므로 여기서는 최소한만 처리
+    // "2년 이상 과거 교정"은 CORE API에서만 수행 (이미지에 연도가 있으면 과거 기록도 신뢰해야 함)
     private function sanitizeRunDate(?string $date): string
     {
         if (!$date) return now()->toDateString();
@@ -341,16 +341,9 @@ class RunningLogService
         $parsed = Carbon::createFromFormat('Y-m-d', $date);
         if (!$parsed) return now()->toDateString();
 
-        $currentYear = now()->year;
-
-        // 연도가 2년 이상 과거 → 올해로 교정
-        if ($parsed->year < $currentYear - 1) {
-            $parsed->setYear($currentYear);
-        }
-
-        // 미래 날짜 → 전년도로 교정
+        // 미래 날짜 → 전년도로 교정 (최후 안전망)
         if ($parsed->isFuture()) {
-            $parsed->setYear($currentYear - 1);
+            $parsed->setYear(now()->year - 1);
         }
 
         return $parsed->toDateString();
