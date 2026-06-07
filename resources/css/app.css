@@ -346,36 +346,41 @@
   color: rgba(255,255,255,.7);
 }
 
-/* ── TIPTAP 에디터 ──────────────────────────────────── */
+/* ── TIPTAP 에디터 (라이트 테마) ─────────────────────── */
 .tiptap-editor .ProseMirror {
   outline: none;
-  min-height: 200px;
+  min-height: 400px;
   padding: 2px 0;
+  color: #1a1a1a;
+  line-height: 1.8;
 }
 .tiptap-editor .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
-  color: #4a4a4a;
+  color: #c8c8c8;
   float: left;
   height: 0;
   pointer-events: none;
 }
 .tiptap-editor .ProseMirror > * + * { margin-top: 0.75em; }
+.tiptap-editor .ProseMirror p       { margin-bottom: 0.5em; }
 .tiptap-editor .ProseMirror ul     { list-style: disc; padding-left: 1.5em; }
 .tiptap-editor .ProseMirror ol     { list-style: decimal; padding-left: 1.5em; }
 .tiptap-editor .ProseMirror blockquote {
   border-left: 3px solid #E5AD16;
-  padding-left: 1em;
-  color: #888;
-  margin: 0.75em 0;
+  padding: 8px 16px;
+  margin: 12px 0;
+  background: rgba(229,173,22,0.05);
+  color: #666;
+  font-style: italic;
 }
 .tiptap-editor .ProseMirror strong { font-weight: 700; }
 .tiptap-editor .ProseMirror em     { font-style: italic; }
 .tiptap-editor .ProseMirror u      { text-decoration: underline; }
 .tiptap-editor .ProseMirror s      { text-decoration: line-through; }
-.tiptap-editor .ProseMirror h2     { font-size: 1.2em; font-weight: 700; margin: 1em 0 0.3em; }
-.tiptap-editor .ProseMirror h3     { font-size: 1.05em; font-weight: 700; margin: 0.8em 0 0.25em; }
-.tiptap-editor .ProseMirror hr     { border: none; border-top: 1px solid #333; margin: 1em 0; }
-.tiptap-editor .ProseMirror img    { max-width: 100%; border-radius: 2px; margin: 0.5em 0; display: block; }
+.tiptap-editor .ProseMirror h2     { font-size: 1.2em; font-weight: 700; margin: 1.2em 0 0.4em; color: #1A1212; }
+.tiptap-editor .ProseMirror h3     { font-size: 1.05em; font-weight: 700; margin: 1em 0 0.3em; color: #1A1212; }
+.tiptap-editor .ProseMirror hr     { border: none; border-top: 1px solid #e0e0e0; margin: 1.25em 0; }
+.tiptap-editor .ProseMirror img    { max-width: 100%; border-radius: 4px; margin: 0.75em 0; display: block; }
 
 /* TipTap 출력 HTML 스타일 (show 페이지) */
 .tiptap-output p          { margin-bottom: 0.75em; }

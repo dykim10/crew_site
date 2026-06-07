@@ -121,7 +121,7 @@ class BoardController extends Controller
 
             if (!$url) {
                 $path = $folder . '/' . Str::uuid() . '.' . $file->extension();
-                Storage::disk('s3')->put($path, $file->get(), 'public');
+                Storage::disk('s3')->put($path, $file->get());
                 $url = Storage::disk('s3')->url($path);
             }
 
