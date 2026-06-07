@@ -6,10 +6,10 @@
   <div class="flex items-end justify-between mb-8">
     <div>
       <p class="font-display text-[10px] tracking-[4px] uppercase text-pac-yellow-500 mb-2">Community</p>
-      <h1 class="font-display text-4xl lg:text-5xl uppercase tracking-tight text-pac-black-900 leading-none">
+      <h1 class="font-display text-4xl lg:text-5xl uppercase tracking-tight text-white leading-none">
         {{ $meta['label'] }}
       </h1>
-      <p class="font-body text-sm text-pac-black-600 mt-2">{{ $meta['desc'] }}</p>
+      <p class="font-body text-sm text-pac-black-400 mt-2">{{ $meta['desc'] }}</p>
     </div>
     <a href="{{ route('boards.create', $type) }}"
        class="pac-btn shrink-0">
@@ -99,17 +99,25 @@
 
       {{-- 제목 --}}
       <div class="flex-1 min-w-0">
-        <p class="font-body text-sm font-semibold text-pac-black-200 leading-snug
-                  group-hover:text-pac-yellow-400 transition-colors duration-150 truncate">
-          {{ $post->title }}
-        </p>
+        <div class="flex items-center gap-2 min-w-0">
+          @if($post->is_secret)
+            <span class="text-pac-black-500 flex-shrink-0 text-xs" title="비밀글">🔒</span>
+          @endif
+          <p class="font-body text-sm font-semibold text-pac-black-200 leading-snug
+                    group-hover:text-pac-yellow-400 transition-colors duration-150 truncate">
+            {{ $post->title }}
+          </p>
+          @if(isset($post->comments_count) && $post->comments_count > 0)
+            <span class="flex-shrink-0 font-display text-[9px] text-pac-yellow-500">[{{ $post->comments_count }}]</span>
+          @endif
+        </div>
         {{-- 모바일 서브정보 --}}
         <div class="sm:hidden flex items-center gap-2 mt-1">
-          <span class="font-display text-[9px] tracking-wider text-pac-black-600">
+          <span class="font-display text-[9px] tracking-wider text-pac-black-500">
             {{ $post->author->nickname ?? '?' }}
           </span>
           <span class="text-pac-black-700">·</span>
-          <span class="font-display text-[9px] tracking-wider text-pac-black-600">
+          <span class="font-display text-[9px] tracking-wider text-pac-black-500">
             {{ $post->created_at->format('Y.m.d') }}
           </span>
         </div>

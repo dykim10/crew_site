@@ -20,8 +20,8 @@
         <span class="inline-block font-display text-[9px] tracking-wider uppercase
                      bg-pac-yellow-500 text-pac-black px-1.5 py-0.5 mb-3">공지</span>
       @endif
-      <h1 class="font-body text-xl font-bold text-pac-black-900 leading-snug mb-4">
-        {{ $board->title }}
+      <h1 class="font-body text-xl font-bold text-white leading-snug mb-4">
+        @if($board->is_secret)<span class="mr-1 text-base">🔒</span>@endif{{ $board->title }}
       </h1>
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">

@@ -13,6 +13,7 @@ class BoardService
     {
         return Board::where('board_type', $boardType)
             ->with('author')
+            ->withCount('comments')
             ->orderByDesc('created_at')
             ->paginate($perPage);
     }
