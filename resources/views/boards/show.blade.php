@@ -52,16 +52,16 @@
           </span>
           @if($board->isWrittenBy(auth()->id()) || auth()->user()?->isAdmin())
             <a href="{{ route('boards.edit', [$type, $board]) }}"
-               class="font-body text-xs px-2.5 py-1 rounded border border-pac-black-100/60
-                      text-pac-black-400 hover:text-pac-yellow-500 hover:border-pac-yellow-500/50 transition-colors">
+               class="font-body text-xs px-2.5 py-1 rounded border border-white/20 bg-transparent
+                      text-pac-black-300 hover:text-pac-yellow-500 hover:border-pac-yellow-500/50 transition-colors leading-none">
               수정
             </a>
             <form method="POST" action="{{ route('boards.destroy', [$type, $board]) }}"
-                  onsubmit="return confirm('삭제하시겠습니까?');" class="inline">
+                  onsubmit="return confirm('삭제하시겠습니까?');" class="inline-flex">
               @csrf @method('DELETE')
               <button type="submit"
-                      class="font-body text-xs px-2.5 py-1 rounded border border-pac-black-100/60
-                             text-pac-black-400 hover:text-pac-pink-500 hover:border-pac-pink-500/50 transition-colors">
+                      class="font-body text-xs px-2.5 py-1 rounded border border-white/20 bg-transparent
+                             text-pac-black-300 hover:text-pac-pink-400 hover:border-pac-pink-500/50 transition-colors cursor-pointer leading-none">
                 삭제
               </button>
             </form>
