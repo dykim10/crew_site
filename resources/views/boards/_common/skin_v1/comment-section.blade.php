@@ -4,7 +4,7 @@
 
 <section class="mt-8 border-t border-pac-black-100 pt-8">
 
-  <h3 class="font-display text-[10px] tracking-[3px] uppercase text-pac-black-600 mb-6">
+  <h3 class="font-body text-sm font-semibold text-pac-black-300 mb-6">
     댓글 <span class="text-pac-yellow-500">{{ $board->comments->count() }}</span>
   </h3>
 
@@ -17,7 +17,7 @@
          x-data="{ editing: false, reply: false, replyContent: '' }">
 
       {{-- 작성자 정보 --}}
-      <div class="flex items-start justify-between gap-3">
+      <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-2.5">
           @php
             $nick  = $comment->author->nickname ?? '?';
@@ -25,24 +25,24 @@
             $bg    = match($role) { 'super_admin' => '#E80043', 'region_admin' => '#E5AD16', 'operator' => '#10b981', default => '#2D2020' };
             $tc    = ($role === 'region_admin') ? '#1A1212' : '#fff';
           @endphp
-          <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px] font-display"
+          <div class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-xs font-display"
                style="background:{{ $bg }};color:{{ $tc }};">
             {{ mb_strtoupper(mb_substr($nick, 0, 1)) }}
           </div>
-          <div>
-            <span class="font-body text-xs font-semibold text-pac-black-300">{{ $nick }}</span>
-            <span class="font-display text-[9px] tracking-wider text-pac-black-600 ml-2">
+          <div class="flex items-baseline gap-2">
+            <span class="font-body text-sm font-semibold text-pac-black-200">{{ $nick }}</span>
+            <span class="font-body text-xs text-pac-black-500">
               {{ $comment->created_at->format('Y.m.d H:i') }}
             </span>
           </div>
         </div>
 
         {{-- 액션 버튼 --}}
-        <div class="flex items-center gap-3 shrink-0">
+        <div class="flex items-center gap-1.5 shrink-0">
           @can('update', $comment)
             <button type="button" @click="editing = !editing"
-                    class="font-display text-[9px] tracking-wider uppercase text-pac-black-600
-                           hover:text-pac-yellow-500 transition-colors">
+                    class="font-body text-xs px-2 py-0.5 rounded border border-pac-black-100/50
+                           text-pac-black-400 hover:text-pac-yellow-500 hover:border-pac-yellow-500/40 transition-colors">
               수정
             </button>
           @endcan
@@ -52,16 +52,16 @@
                   onsubmit="return confirm('댓글을 삭제하시겠습니까?');">
               @csrf @method('DELETE')
               <button type="submit"
-                      class="font-display text-[9px] tracking-wider uppercase text-pac-black-600
-                             hover:text-pac-pink-500 transition-colors">
+                      class="font-body text-xs px-2 py-0.5 rounded border border-pac-black-100/50
+                             text-pac-black-400 hover:text-pac-pink-500 hover:border-pac-pink-500/40 transition-colors">
                 삭제
               </button>
             </form>
           @endcan
           @auth
             <button type="button" @click="reply = !reply"
-                    class="font-display text-[9px] tracking-wider uppercase text-pac-black-600
-                           hover:text-pac-yellow-500 transition-colors">
+                    class="font-body text-xs px-2 py-0.5 rounded border border-pac-black-100/50
+                           text-pac-black-400 hover:text-pac-yellow-500 hover:border-pac-yellow-500/40 transition-colors">
               답글
             </button>
           @endauth
@@ -110,7 +110,7 @@
     @foreach($comment->replies as $reply)
     <div class="ml-6 mt-1 bg-pac-black-800/30 border border-pac-black-100/30 border-l-2 border-l-pac-yellow-500/20 p-4"
          x-data="{ editing: false }">
-      <div class="flex items-start justify-between gap-3">
+      <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-2.5">
           @php
             $rNick = $reply->author->nickname ?? '?';
@@ -118,20 +118,22 @@
             $rBg   = match($rRole) { 'super_admin' => '#E80043', 'region_admin' => '#E5AD16', 'operator' => '#10b981', default => '#2D2020' };
             $rTc   = ($rRole === 'region_admin') ? '#1A1212' : '#fff';
           @endphp
-          <div class="w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-[9px] font-display"
+          <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-display"
                style="background:{{ $rBg }};color:{{ $rTc }};">
             {{ mb_strtoupper(mb_substr($rNick, 0, 1)) }}
           </div>
-          <span class="font-body text-xs font-semibold text-pac-black-400">{{ $rNick }}</span>
-          <span class="font-display text-[9px] tracking-wider text-pac-black-600">
-            {{ $reply->created_at->format('Y.m.d H:i') }}
-          </span>
+          <div class="flex items-baseline gap-2">
+            <span class="font-body text-sm font-semibold text-pac-black-300">{{ $rNick }}</span>
+            <span class="font-body text-xs text-pac-black-500">
+              {{ $reply->created_at->format('Y.m.d H:i') }}
+            </span>
+          </div>
         </div>
-        <div class="flex items-center gap-3 shrink-0">
+        <div class="flex items-center gap-1.5 shrink-0">
           @can('update', $reply)
             <button type="button" @click="editing = !editing"
-                    class="font-display text-[9px] tracking-wider uppercase text-pac-black-600
-                           hover:text-pac-yellow-500 transition-colors">수정</button>
+                    class="font-body text-xs px-2 py-0.5 rounded border border-pac-black-100/50
+                           text-pac-black-400 hover:text-pac-yellow-500 hover:border-pac-yellow-500/40 transition-colors">수정</button>
           @endcan
           @can('delete', $reply)
             <form method="POST"
@@ -139,8 +141,8 @@
                   onsubmit="return confirm('댓글을 삭제하시겠습니까?');">
               @csrf @method('DELETE')
               <button type="submit"
-                      class="font-display text-[9px] tracking-wider uppercase text-pac-black-600
-                             hover:text-pac-pink-500 transition-colors">삭제</button>
+                      class="font-body text-xs px-2 py-0.5 rounded border border-pac-black-100/50
+                             text-pac-black-400 hover:text-pac-pink-500 hover:border-pac-pink-500/40 transition-colors">삭제</button>
             </form>
           @endcan
         </div>

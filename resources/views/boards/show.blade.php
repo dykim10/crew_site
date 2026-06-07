@@ -4,11 +4,11 @@
   {{-- ── 브레드크럼 ── --}}
   <div class="flex items-center gap-2 mb-6">
     <a href="{{ route('boards.index', $type) }}"
-       class="font-display text-[10px] tracking-[3px] uppercase text-pac-yellow-500 hover:text-pac-yellow-400 transition-colors">
+       class="font-body text-xs text-pac-yellow-500 hover:text-pac-yellow-400 transition-colors">
       {{ $meta['label'] }}
     </a>
-    <span class="text-pac-black-700">›</span>
-    <span class="font-display text-[10px] tracking-[3px] uppercase text-pac-black-600">상세</span>
+    <span class="text-pac-black-600 text-xs">›</span>
+    <span class="font-body text-xs text-pac-black-500">상세</span>
   </div>
 
   {{-- ── 포스트 ── --}}
@@ -39,27 +39,29 @@
               <span class="font-display text-xs leading-none" style="color:{{ $txt }};">{{ $init }}</span>
             </div>
             <div>
-              <p class="font-body text-sm font-semibold text-pac-black-300">{{ $nick }}</p>
-              <p class="font-display text-[9px] tracking-wider uppercase text-pac-black-600">
+              <p class="font-body text-sm font-semibold text-pac-black-200">{{ $nick }}</p>
+              <p class="font-body text-xs text-pac-black-500">
                 {{ $board->created_at->format('Y.m.d H:i') }}
               </p>
             </div>
           </div>
         </div>
         <div class="flex items-center gap-3">
-          <span class="font-display text-[9px] tracking-wider uppercase text-pac-black-600">
+          <span class="font-body text-xs text-pac-black-500">
             조회 {{ number_format($board->view_count) }}
           </span>
           @if($board->isWrittenBy(auth()->id()) || auth()->user()?->isAdmin())
             <a href="{{ route('boards.edit', [$type, $board]) }}"
-               class="font-display text-[10px] tracking-wider uppercase text-pac-black-500 hover:text-pac-yellow-500 transition-colors">
+               class="font-body text-xs px-2.5 py-1 rounded border border-pac-black-100/60
+                      text-pac-black-400 hover:text-pac-yellow-500 hover:border-pac-yellow-500/50 transition-colors">
               수정
             </a>
             <form method="POST" action="{{ route('boards.destroy', [$type, $board]) }}"
                   onsubmit="return confirm('삭제하시겠습니까?');" class="inline">
               @csrf @method('DELETE')
               <button type="submit"
-                      class="font-display text-[10px] tracking-wider uppercase text-pac-black-600 hover:text-pac-pink-500 transition-colors">
+                      class="font-body text-xs px-2.5 py-1 rounded border border-pac-black-100/60
+                             text-pac-black-400 hover:text-pac-pink-500 hover:border-pac-pink-500/50 transition-colors">
                 삭제
               </button>
             </form>
