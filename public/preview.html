@@ -367,7 +367,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
       <div style="text-align:right">
         <div class="cov-year">2026</div>
         <div class="cov-ver">Project Docs v2.5</div>
-        <div class="s-num" id="snum" style="margin-top:4px;font-size:11px;color:var(--td);letter-spacing:2px">01 / 11</div>
+        <div class="s-num" id="snum" style="margin-top:4px;font-size:11px;color:var(--td);letter-spacing:2px">01 / 12</div>
       </div>
     </div>
 
@@ -821,9 +821,73 @@ app/Models/
   <div class="bg-num">05</div>
 </div>
 
-<!-- ═══ SLIDE 06 CREW ═══ -->
+<!-- ═══ SLIDE 06 AI INTELLIGENCE ═══ -->
 <div class="slide" data-i="5">
-  <div class="sh"><div class="s-label">Chapter 05 — CREW</div><div class="s-num">06 / 11</div></div>
+  <div class="sh"><div class="s-label">Chapter 05 — AI Intelligence</div><div class="s-num">06 / 12</div></div>
+  <div class="slide-content">
+    <div class="stitle">AI <span class="acc">특장점</span> <span class="dim">· 4대 핵심 인텔리전스</span></div>
+    <div class="ssub">이미지 파싱 · SNS 리뷰 분석 · 날씨 교차 보간 — Claude API (claude-opus-4-8) 기반 플랫폼 차별화</div>
+
+    <div class="g2">
+      <div>
+        <h3 class="st">01 · 러닝 이미지 AI 파싱 &nbsp;<span class="badge bd" style="font-family:'Noto Sans KR';text-transform:none;letter-spacing:0;font-size:12px">구현 완료</span></h3>
+        <p>러닝 앱 스크린샷 한 장만 업로드하면 <strong style="color:var(--tw)">Claude Vision</strong>이 9개 수치를 즉시 추출합니다. 수동 입력 불필요, 연도 환각 보정으로 파싱 정확도를 높입니다.</p>
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">파싱 항목 (9종)</span>
+거리 / 평균페이스 / 최고페이스
+운동시간 / 칼로리 / 심박수
+고도 / 실내외 / run_date
+
+<span class="mt">→ 연도 환각 보정  (sanitizeRunDate)
+→ Draft 저장 → 사용자 확인 → 관리자 검수
+→ 다중 이미지 일괄 업로드 지원</span></div>
+
+        <h3 class="st" style="margin-top:18px">02 · Instagram 유저 피드백 AI &nbsp;<span class="badge bp" style="font-family:'Noto Sans KR';text-transform:none;letter-spacing:0;font-size:12px">구현 예정</span></h3>
+        <p>PAC-RUN 공식 계정 및 크루 멤버 태그 포스트를 자동 수집해 <strong style="color:var(--tw)">감성분석</strong>을 수행합니다. 운영 인사이트를 관리자 대시보드에서 실시간 확인할 수 있습니다.</p>
+        <div class="ab" style="white-space:pre-wrap"><span class="gn">Instagram Graph API / Apify</span>  1일 1회 자동 수집
+  ↓
+crew.instagram_cache  upsert 저장
+  ↓
+<span class="hl">Claude API 감성분석</span>
+  positive / negative / neutral
+  ↓
+<span class="mt">CREW 대시보드 그리드 노출
+관리자 피드백 인사이트 집계</span></div>
+      </div>
+
+      <div>
+        <h3 class="st">03 · SNS 대회 리뷰 AI 요약 &nbsp;<span class="badge bw" style="font-family:'Noto Sans KR';text-transform:none;letter-spacing:0;font-size:12px">일부 구현</span></h3>
+        <p>플랫폼 내 리뷰는 이미 자동 분석됩니다. 향후 <strong style="color:var(--tw)">Instagram · YouTube · 네이버 블로그</strong> 공개 후기까지 통합해 대회별 종합 인텔리전스를 제공합니다.</p>
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">현재 — 플랫폼 내 리뷰 AI</span>
+  AI 요약 / 감성분석 / 키워드 자동 추출
+  ai_race_summary JSONB 리뷰 변경 시 재생성
+
+<span class="gn">예정 — SNS 크롤링 확장</span>
+  Apify: Instagram · YouTube · 네이버 블로그
+  → race_sns_contents 수집 저장
+  → <span class="hl">RAG</span>  pgvector 유사 케이스 검색
+  → 플랫폼 리뷰 + SNS 통합 종합 요약 생성</div>
+
+        <h3 class="st" style="margin-top:18px">04 · 기상청 × 현장 날씨 보간 &nbsp;<span class="badge bw" style="font-family:'Noto Sans KR';text-transform:none;letter-spacing:0;font-size:12px">1단계 구현</span></h3>
+        <p>기상청 ASOS 공식 측정소 데이터와 사용자 이미지에서 파싱된 <strong style="color:var(--tw)">코스 현장 실측치</strong>를 교차 분석합니다. 코스별 보정값을 누적해 시내 측정소와 실제 레이스 환경 간 오차를 자동으로 줄입니다.</p>
+        <div class="wx-msg">
+<span class="em">경로 A — 기상청 ASOS</span>  시내 고정 측정소
+  기온 13.2°C / 습도 79% / 풍속 2.1m/s
+
+<span class="em">경로 B — 이미지 파싱</span>  코스 현장 실측
+  기온 11.8°C / 습도 87%  (강변·호수 기온 하강)
+
+<span class="wn">→ 코스 보정값 자동 누적</span>
+   "춘천 의암호 코스: 측정소 대비 -1.4°C / 습도 +8%"
+→ pgvector RAG → 날씨 조건별 페이스 전략 자동 추천</div>
+      </div>
+    </div>
+  </div>
+  <div class="bg-num">06</div>
+</div>
+
+<!-- ═══ SLIDE 07 CREW ═══ -->
+<div class="slide" data-i="6">
+  <div class="sh"><div class="s-label">Chapter 06 — CREW</div><div class="s-num">07 / 12</div></div>
   <div class="slide-content">
     <div class="stitle">CREW <span class="dim">· crew.pac-run.com</span></div>
     <div class="ssub">러닝 크루 기록 · 이벤트 · 관리 통합 플랫폼 &nbsp;<span class="badge bd">v1 배포 완료</span></div>
@@ -888,12 +952,12 @@ app/Models/
       </div>
     </div>
   </div>
-  <div class="bg-num">06</div>
+  <div class="bg-num">07</div>
 </div>
 
-<!-- ═══ SLIDE 07 CORE API ═══ -->
-<div class="slide" data-i="6">
-  <div class="sh"><div class="s-label">Chapter 06 — CORE API</div><div class="s-num">07 / 11</div></div>
+<!-- ═══ SLIDE 08 CORE API ═══ -->
+<div class="slide" data-i="7">
+  <div class="sh"><div class="s-label">Chapter 07 — CORE API</div><div class="s-num">08 / 12</div></div>
   <div class="slide-content">
     <div class="stitle">CORE <span class="acc">API</span> <span class="dim">· api.pac-run.com</span></div>
     <div class="ssub">AI 분석 · 이미지 파싱 · 크롤링 전담 Python FastAPI 서버</div>
@@ -931,12 +995,12 @@ app/Models/
       <tr><td><code>GET</code></td><td>/api/weather/predict/{id}</td><td>AI 장기 날씨 예측</td><td>REVIEW</td><td><span class="badge bp">예정</span></td></tr>
     </table>
   </div>
-  <div class="bg-num">07</div>
+  <div class="bg-num">08</div>
 </div>
 
-<!-- ═══ SLIDE 08 DB SCHEMA ═══ -->
-<div class="slide" data-i="7">
-  <div class="sh"><div class="s-label">Chapter 07 — Database</div><div class="s-num">08 / 11</div></div>
+<!-- ═══ SLIDE 09 DB SCHEMA ═══ -->
+<div class="slide" data-i="8">
+  <div class="sh"><div class="s-label">Chapter 08 — Database</div><div class="s-num">09 / 12</div></div>
   <div class="slide-content">
     <div class="stitle">DB <span class="acc">스키마</span></div>
     <div class="ssub">Supabase PostgreSQL · 3개 스키마 분리 운영 · TIMESTAMPTZ(6) 통일</div>
@@ -1015,12 +1079,12 @@ app/Models/
       TIMESTAMPTZ(6) 통일 · 배열은 JSONB · public.users는 Schema::table만 (DROP/CREATE 금지) · hasColumn으로 멱등성 보장 · RefreshDatabase 트레이트 절대 금지 (DatabaseTransactions 사용)
     </div>
   </div>
-  <div class="bg-num">08</div>
+  <div class="bg-num">09</div>
 </div>
 
-<!-- ═══ SLIDE 09 ARCH & SECURITY ═══ -->
-<div class="slide" data-i="8">
-  <div class="sh"><div class="s-label">Chapter 08 — Architecture & Security</div><div class="s-num">09 / 11</div></div>
+<!-- ═══ SLIDE 10 ARCH & SECURITY ═══ -->
+<div class="slide" data-i="9">
+  <div class="sh"><div class="s-label">Chapter 09 — Architecture & Security</div><div class="s-num">10 / 12</div></div>
   <div class="slide-content">
     <div class="stitle">아키텍처 패턴 &amp; <span class="acc">보안</span></div>
     <div class="ssub">Controller → Service → Model 3계층 + 보안 체크리스트 + 개인정보 암호화</div>
@@ -1082,12 +1146,12 @@ app/Models/
       </div>
     </div>
   </div>
-  <div class="bg-num">09</div>
+  <div class="bg-num">10</div>
 </div>
 
-<!-- ═══ SLIDE 10 MEMBER & ADMIN ═══ -->
-<div class="slide" data-i="9">
-  <div class="sh"><div class="s-label">Chapter 09 — Member & Admin</div><div class="s-num">10 / 11</div></div>
+<!-- ═══ SLIDE 11 MEMBER & ADMIN ═══ -->
+<div class="slide" data-i="10">
+  <div class="sh"><div class="s-label">Chapter 10 — Member & Admin</div><div class="s-num">11 / 12</div></div>
   <div class="slide-content">
     <div class="stitle">회원 · 권한 &amp; <span class="acc">관리자</span> 패널</div>
     <div class="ssub">public.users 통합 회원 권한 4단계 + Filament v4 어드민 패널 (CREW)</div>
@@ -1145,12 +1209,12 @@ app/Models/
       </div>
     </div>
   </div>
-  <div class="bg-num">10</div>
+  <div class="bg-num">11</div>
 </div>
 
-<!-- ═══ SLIDE 11 ROADMAP ═══ -->
-<div class="slide" data-i="10">
-  <div class="sh"><div class="s-label">Chapter 10 — Status & Roadmap</div><div class="s-num">11 / 11</div></div>
+<!-- ═══ SLIDE 12 ROADMAP ═══ -->
+<div class="slide" data-i="11">
+  <div class="sh"><div class="s-label">Chapter 11 — Status & Roadmap</div><div class="s-num">12 / 12</div></div>
   <div class="slide-content">
     <div class="stitle">개발 현황 &amp; <span class="acc">로드맵</span></div>
     <div class="ssub">2026-06-07 기준 · 3개 서비스 통합 진행 현황</div>
@@ -1247,7 +1311,7 @@ app/Models/
       </div>
     </div>
   </div>
-  <div class="bg-num">11</div>
+  <div class="bg-num">12</div>
 </div>
 
 </div><!-- /sc -->
@@ -1274,6 +1338,7 @@ const META=[
   {lbl:'Tech Stack',  name:'기술 스택'},
   {lbl:'REVIEW v1',   name:'REVIEW 서비스'},
   {lbl:'REVIEW v2',   name:'날씨 × AI 시스템'},
+  {lbl:'AI Intel',    name:'AI 특장점'},
   {lbl:'CREW',        name:'CREW 서비스'},
   {lbl:'CORE API',    name:'CORE API'},
   {lbl:'Database',    name:'DB 스키마'},
