@@ -346,17 +346,17 @@
   color: rgba(255,255,255,.7);
 }
 
-/* ── TIPTAP 에디터 (라이트 테마) ─────────────────────── */
+/* ── TIPTAP 에디터 (다크 에디토리얼 테마) ───────────── */
 .tiptap-editor .ProseMirror {
   outline: none;
   min-height: 400px;
   padding: 2px 0;
-  color: #1a1a1a;
+  color: #c8c0b8;   /* pac-black-200 계열 */
   line-height: 1.8;
 }
 .tiptap-editor .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
-  color: #c8c8c8;
+  color: #3a3530;   /* pac-black-600/700 계열 */
   float: left;
   height: 0;
   pointer-events: none;
@@ -369,18 +369,18 @@
   border-left: 3px solid #E5AD16;
   padding: 8px 16px;
   margin: 12px 0;
-  background: rgba(229,173,22,0.05);
-  color: #666;
+  background: rgba(229,173,22,0.06);
+  color: #8a7e78;
   font-style: italic;
 }
-.tiptap-editor .ProseMirror strong { font-weight: 700; }
+.tiptap-editor .ProseMirror strong { font-weight: 700; color: #e8e0d8; }
 .tiptap-editor .ProseMirror em     { font-style: italic; }
 .tiptap-editor .ProseMirror u      { text-decoration: underline; }
 .tiptap-editor .ProseMirror s      { text-decoration: line-through; }
-.tiptap-editor .ProseMirror h2     { font-size: 1.2em; font-weight: 700; margin: 1.2em 0 0.4em; color: #1A1212; }
-.tiptap-editor .ProseMirror h3     { font-size: 1.05em; font-weight: 700; margin: 1em 0 0.3em; color: #1A1212; }
-.tiptap-editor .ProseMirror hr     { border: none; border-top: 1px solid #e0e0e0; margin: 1.25em 0; }
-.tiptap-editor .ProseMirror img    { max-width: 100%; border-radius: 4px; margin: 0.75em 0; display: block; }
+.tiptap-editor .ProseMirror h2     { font-size: 1.2em; font-weight: 700; margin: 1.2em 0 0.4em; color: #f0e8e0; }
+.tiptap-editor .ProseMirror h3     { font-size: 1.05em; font-weight: 700; margin: 1em 0 0.3em; color: #f0e8e0; }
+.tiptap-editor .ProseMirror hr     { border: none; border-top: 1px solid #2a2525; margin: 1.25em 0; }
+.tiptap-editor .ProseMirror img    { max-width: 100%; border-radius: 2px; margin: 0.75em 0; display: block; }
 
 /* TipTap 출력 HTML 스타일 (show 페이지) */
 .tiptap-output p          { margin-bottom: 0.75em; }
