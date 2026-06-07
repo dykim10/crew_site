@@ -3,7 +3,7 @@ import './bootstrap';
 import Alpine from 'alpinejs';
 import { Editor } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
-import Underline from '@tiptap/extension-underline';
+// Underline은 StarterKit v3에 내장 — 별도 import 시 중복 등록으로 "mismatched transaction" 발생
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 
@@ -28,7 +28,6 @@ Alpine.data('tiptap', (opts = {}) => ({
             element: this.$refs.editorEl,
             extensions: [
                 StarterKit,
-                Underline,
                 Image.configure({ inline: false }),
                 Placeholder.configure({ placeholder: opts.placeholder ?? '내용을 입력하세요...' }),
             ],
