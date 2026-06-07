@@ -21,7 +21,7 @@ class BoardCommentController extends Controller
             'content.max'      => '댓글은 2,000자 이하로 작성해주세요.',
         ]);
 
-        if ($validated['parent_id']) {
+        if ($validated['parent_id'] ?? null) {
             $parent = BoardComment::find($validated['parent_id']);
 
             // 존재 확인, 동일 게시글 확인, 2depth 초과 방지
