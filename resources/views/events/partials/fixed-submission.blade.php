@@ -4,9 +4,13 @@
      @param Collection $mySubmissions (사용자의 제출 내역)
 --}}
 
-<div class="bg-pac-black-900 border border-white/[0.05] overflow-hidden"
-     x-data="fixedSubmissionForm()"
-     @submit.prevent="handleSubmit">
+<div class="bg-pac-black-900 border border-white/[0.05] overflow-hidden relative"
+     x-data="fixedSubmissionForm()">
+
+  {{-- 로딩 바 --}}
+  <div x-show="isSubmitting" x-cloak class="absolute top-0 left-0 right-0 h-0.5 overflow-hidden z-10">
+    <div class="absolute inset-y-0 pac-loading-bar bg-pac-yellow-500"></div>
+  </div>
 
   {{-- 헤더 --}}
   <div class="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.06]">
@@ -28,7 +32,8 @@
 
   {{-- 폼 (업로드 영역) --}}
   <form action="{{ route('events.submit-fixed', $event) }}" method="POST" enctype="multipart/form-data"
-        class="px-5 py-5 border-b border-white/[0.06]">
+        class="px-5 py-5 border-b border-white/[0.06]"
+        @submit="isSubmitting = true">
     @csrf
 
     <div class="mb-4">
@@ -224,8 +229,7 @@ function fixedSubmissionForm() {
     },
 
     handleSubmit() {
-      this.isSubmitting = true;
-      // 폼은 자동으로 제출됨
+      // @submit="isSubmitting = true" on form handles loading state
     }
   };
 }
