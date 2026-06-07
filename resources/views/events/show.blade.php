@@ -6,8 +6,17 @@
         ? $event->thumbnail_url
         : \Storage::disk('s3')->url($event->thumbnail_url))
     : null;
-  $canRegister   = $event->isRecruitOpen() && !$alreadyRegistered && $eligible;
-  $recruitClosed = !$event->isRecruitOpen() && $event->status !== 'ended';
+
+  $now = now();
+
+  // 날짜 기반 세분화 상태 (스케줄러 lag 방어 — status 보조 판별만)
+  $isBeforeRecruit  = $event->recruit_start_at && $now->lt($event->recruit_start_at);
+  $isAfterRecruit   = $event->recruit_end_at   && $now->gt($event->recruit_end_at);
+  $daysUntilOpen    = $isBeforeRecruit ? (int) ceil($now->floatDiffInHours($event->recruit_start_at) / 24) : 0;
+  $hoursUntilOpen   = $isBeforeRecruit ? (int) ceil($now->floatDiffInHours($event->recruit_start_at))      : 0;
+  $daysLeftToClose  = ($event->recruit_end_at && !$isAfterRecruit)
+                        ? (int) floor($now->floatDiffInHours($event->recruit_end_at) / 24)
+                        : null;
 @endphp
 
 <div class="max-w-3xl mx-auto px-4 py-5 md:px-6 lg:px-8 space-y-5">
@@ -112,12 +121,19 @@
 
   {{-- 참가 신청 영역 --}}
   <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-    <div class="px-5 py-3.5 bg-pac-black-900">
+    <div class="px-5 py-3.5 bg-pac-black-900 flex items-center justify-between">
       <h2 class="font-display text-sm font-bold text-white uppercase tracking-widest">참가 신청</h2>
+      {{-- 모집 중일 때만 마감 임박 배지 표시 --}}
+      @if($daysLeftToClose !== null && $daysLeftToClose <= 3 && !$isBeforeRecruit)
+        <span class="font-display text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full
+          {{ $daysLeftToClose === 0 ? 'bg-pac-pink-500 text-white animate-pulse' : 'bg-pac-yellow-500 text-pac-black-900' }}">
+          {{ $daysLeftToClose === 0 ? '오늘 마감' : "D-{$daysLeftToClose}" }}
+        </span>
+      @endif
     </div>
 
     @if($alreadyRegistered)
-      {{-- 이미 신청 완료 --}}
+      {{-- ① 이미 신청 완료 --}}
       <div class="p-6 text-center space-y-4">
         <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-100 mx-auto">
           <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,7 +155,7 @@
       </div>
 
     @elseif(!auth()->check())
-      {{-- 비로그인 --}}
+      {{-- ② 비로그인 --}}
       <div class="p-6 text-center space-y-3">
         <p class="font-body text-sm text-pac-black-600">참가 신청은 로그인 후 이용하실 수 있습니다.</p>
         <a href="{{ route('login') }}?redirect={{ urlencode(request()->url()) }}"
@@ -151,25 +167,96 @@
       </div>
 
     @elseif(!$eligible)
+      {{-- ③ 참여 대상 아님 --}}
       <div class="p-6 text-center">
         <p class="font-body text-sm text-pac-black-500">이 이벤트는 참여 대상이 아닙니다.</p>
       </div>
 
-    @elseif($event->status === 'ended')
-      <div class="p-6 text-center">
-        <p class="font-body text-sm text-pac-black-400">이미 종료된 이벤트입니다.</p>
+    @elseif($event->status === 'ended' || ($event->end_date && $now->gt($event->end_date->endOfDay())))
+      {{-- ④ 이벤트 종료 --}}
+      <div class="p-6 text-center space-y-1">
+        <p class="font-body text-sm font-semibold text-pac-black-400">이미 종료된 이벤트입니다.</p>
+        @if($event->end_date)
+        <p class="font-body text-xs text-pac-black-300">종료일: {{ $event->end_date->format('Y년 m월 d일') }}</p>
+        @endif
       </div>
 
-    @elseif(!$event->is_registration_open || $recruitClosed)
-      <div class="p-6 text-center">
-        <p class="font-body text-sm text-pac-black-400">신청이 마감되었습니다.</p>
+    @elseif($isBeforeRecruit)
+      {{-- ⑤ 모집 시작 전 --}}
+      <div class="p-6 text-center space-y-4">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-pac-yellow-100 mx-auto">
+          <svg class="w-5 h-5 text-pac-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-body text-sm font-semibold text-pac-black-800">아직 모집이 시작되지 않았습니다.</p>
+          <p class="font-body text-sm text-pac-black-500 mt-1.5">
+            <span class="font-semibold text-pac-yellow-700">
+              {{ $event->recruit_start_at->format('Y년 m월 d일 H:i') }}
+            </span>
+            부터 신청 가능합니다.
+          </p>
+        </div>
+        <div class="inline-flex items-center gap-2 bg-pac-yellow-50 border border-pac-yellow-200 rounded-xl px-5 py-2.5">
+          @if($hoursUntilOpen < 24)
+            <span class="font-display text-xl font-bold text-pac-yellow-700">{{ $hoursUntilOpen }}시간 후</span>
+            <span class="font-body text-xs text-pac-yellow-600">오픈 예정</span>
+          @elseif($daysUntilOpen === 1)
+            <span class="font-display text-xl font-bold text-pac-yellow-700">내일 오픈</span>
+          @else
+            <span class="font-display text-3xl font-bold text-pac-yellow-700">D-{{ $daysUntilOpen }}</span>
+          @endif
+        </div>
+        @if($event->recruit_end_at)
+        <p class="font-body text-xs text-pac-black-400">
+          모집 기간: {{ $event->recruit_start_at->format('m.d') }} ~ {{ $event->recruit_end_at->format('m.d') }}
+        </p>
+        @endif
+      </div>
+
+    @elseif(!$event->is_registration_open)
+      {{-- ⑥ 관리자 수동 비활성화 --}}
+      <div class="p-6 text-center space-y-1">
+        <p class="font-body text-sm font-semibold text-pac-black-500">현재 신청이 비활성화되어 있습니다.</p>
+        <p class="font-body text-xs text-pac-black-400">이벤트 담당자에게 문의해 주세요.</p>
+      </div>
+
+    @elseif($isAfterRecruit)
+      {{-- ⑦ 모집 기간 종료 --}}
+      <div class="p-6 text-center space-y-1">
+        <p class="font-body text-sm font-semibold text-pac-black-500">신청이 마감되었습니다.</p>
+        @if($event->recruit_end_at)
+        <p class="font-body text-xs text-pac-black-400">
+          마감일: {{ $event->recruit_end_at->format('Y년 m월 d일 H:i') }}
+        </p>
+        @endif
+      </div>
+
+    @elseif($event->isCapacityFull())
+      {{-- ⑧ 정원 초과 --}}
+      <div class="p-6 text-center space-y-1">
+        <p class="font-body text-sm font-semibold text-pac-black-500">정원이 초과되었습니다.</p>
+        <p class="font-body text-xs text-pac-black-400">현재 {{ $participants->count() }}명 / 최대 {{ $event->max_participants }}명</p>
       </div>
 
     @else
-      {{-- 신청 폼 --}}
+      {{-- ⑨ 신청 가능 — 폼 표시 --}}
       <form method="POST" action="{{ route('events.register', $event) }}"
             class="p-6 space-y-4" enctype="multipart/form-data">
         @csrf
+
+        {{-- 마감 임박 경고 --}}
+        @if($daysLeftToClose !== null && $daysLeftToClose <= 3)
+        <div class="flex items-center gap-2 px-4 py-2.5 bg-pac-pink-50 border border-pac-pink-200 rounded-xl text-xs font-body text-pac-pink-700">
+          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          </svg>
+          {{ $daysLeftToClose === 0 ? '오늘이 신청 마감일입니다.' : "신청 마감 D-{$daysLeftToClose} — {$event->recruit_end_at->format('m월 d일 H:i')} 마감" }}
+        </div>
+        @endif
 
         @foreach($event->form_schema ?? [] as $field)
         @php
