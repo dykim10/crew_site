@@ -4,51 +4,59 @@
   {{-- 브레드크럼 --}}
   <div class="flex items-center gap-2 mb-6">
     <a href="{{ route('boards.index', $type) }}"
-       class="font-display text-[10px] tracking-[3px] uppercase text-pac-yellow-500 hover:text-pac-yellow-400 transition-colors">
+       class="font-body text-xs text-pac-yellow-500 hover:text-pac-yellow-400 transition-colors">
       {{ $meta['label'] }}
     </a>
-    <span class="text-pac-black-700">›</span>
+    <span class="text-pac-black-600 text-xs">›</span>
     <a href="{{ route('boards.show', [$type, $board]) }}"
-       class="font-display text-[10px] tracking-[3px] uppercase text-pac-black-600 hover:text-pac-black-400 transition-colors truncate max-w-[180px]">
+       class="font-body text-xs text-pac-black-500 hover:text-pac-black-300 transition-colors truncate max-w-[180px]">
       {{ Str::limit($board->title, 20) }}
     </a>
-    <span class="text-pac-black-700">›</span>
-    <span class="font-display text-[10px] tracking-[3px] uppercase text-pac-black-600">수정</span>
+    <span class="text-pac-black-600 text-xs">›</span>
+    <span class="font-body text-xs text-pac-black-500">수정</span>
   </div>
 
-  <div class="bg-pac-black-900 border border-pac-black-100">
+  <div class="bg-pac-black-900 border border-white/8 relative overflow-hidden"
+       x-data="{ loading: false }">
+
+    {{-- 로딩 바 --}}
+    <div x-show="loading" x-cloak
+         class="absolute top-0 left-0 right-0 h-0.5 bg-pac-black-700 overflow-hidden z-10">
+      <div class="absolute inset-y-0 pac-loading-bar bg-pac-yellow-500"></div>
+    </div>
 
     {{-- 카드 헤더 --}}
-    <div class="px-6 py-4 border-b border-pac-black-100">
+    <div class="px-6 py-4 border-b border-white/8">
       <h1 class="font-display text-xl uppercase tracking-wider text-white">
         게시글 수정 <span class="text-pac-yellow-500">— {{ $meta['label'] }}</span>
       </h1>
     </div>
 
-    <form method="POST" action="{{ route('boards.update', [$type, $board]) }}" class="p-6 space-y-5">
+    <form method="POST" action="{{ route('boards.update', [$type, $board]) }}" class="p-6 space-y-5"
+          @submit="loading = true">
       @csrf
       @method('PUT')
 
       {{-- 제목 --}}
       <div>
-        <label class="font-display text-[10px] tracking-[3px] uppercase text-pac-black-500 mb-2 block">
-          제목 <span class="text-pac-pink-500">*</span>
+        <label class="font-body text-xs text-pac-black-400 mb-2 block">
+          제목 <span class="text-pac-pink-400">*</span>
         </label>
         <input type="text" name="title"
                value="{{ old('title', $board->title) }}"
                placeholder="제목을 입력하세요"
                required maxlength="200"
-               class="w-full bg-pac-black-800 border border-pac-black-100 focus:border-pac-yellow-500
+               class="w-full bg-pac-black-800 border border-white/10 focus:border-pac-yellow-500
                       text-white placeholder:text-pac-black-600
                       font-body text-sm px-4 py-3 outline-none transition-colors">
         @error('title')
-          <p class="font-body text-xs text-pac-pink-500 mt-1">{{ $message }}</p>
+          <p class="font-body text-xs text-pac-pink-400 mt-1">{{ $message }}</p>
         @enderror
       </div>
 
       {{-- 문의게시판: 비밀글 --}}
       @if($type === 'qna')
-      <div class="flex items-center gap-3 py-2 px-3 bg-pac-black-800 border border-pac-black-100/60">
+      <div class="flex items-center gap-3 py-2 px-3 bg-pac-black-800 border border-white/8">
         <input type="checkbox" name="is_secret" id="is_secret" value="1"
                {{ old('is_secret', $board->is_secret) ? 'checked' : '' }}
                class="w-4 h-4 accent-pac-yellow-500 cursor-pointer">
@@ -60,8 +68,8 @@
 
       {{-- TipTap 에디터 --}}
       <div>
-        <label class="font-display text-[10px] tracking-[3px] uppercase text-pac-black-500 mb-2 block">
-          내용 <span class="text-pac-pink-500">*</span>
+        <label class="font-body text-xs text-pac-black-400 mb-2 block">
+          내용 <span class="text-pac-pink-400">*</span>
         </label>
         <x-tiptap-editor :value="old('content', $board->content ?? '')" />
       </div>
@@ -78,13 +86,38 @@
       </div>
 
       {{-- 액션 --}}
-      <div class="flex items-center justify-between pt-2 border-t border-pac-black-100">
+      <div class="flex items-center justify-between pt-2 border-t border-white/8">
         <a href="{{ route('boards.show', [$type, $board]) }}" class="pac-btn-ghost">취소</a>
-        <button type="submit" class="pac-btn">수정 완료</button>
+        <button type="submit" class="pac-btn"
+                :disabled="loading"
+                :class="loading ? 'opacity-70 cursor-not-allowed' : ''">
+          <span x-show="!loading">수정 완료</span>
+          <span x-show="loading" x-cloak class="flex items-center gap-2">
+            <svg class="animate-spin h-3.5 w-3.5 shrink-0" xmlns="http://www.w3.org/2000/svg"
+                 fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10"
+                      stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
+            저장 중...
+          </span>
+        </button>
       </div>
 
     </form>
   </div>
 
 </div>
+
+<style>
+@keyframes pac-slide {
+  0%   { left: -60%; width: 60%; }
+  100% { left: 120%; width: 60%; }
+}
+.pac-loading-bar {
+  animation: pac-slide 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+</style>
+
 </x-app-layout>
