@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>PAC-RUN — Project Portfolio 2026</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;800;900&family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 /* ── RESET ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -15,7 +15,7 @@
   --br:rgba(255,255,255,0.08); --bry:rgba(229,173,22,0.25);
   --tw:rgba(250,250,248,1); --tm:rgba(250,250,248,0.75);
   --td:rgba(250,250,248,0.40);
-  --fs-body:13.5px; --lh-body:1.85;
+  --fs-body:16px; --lh-body:1.85;
 }
 
 html,body{width:100%;height:100%;overflow:hidden;background:var(--dark)}
@@ -63,8 +63,8 @@ body{font-family:'Noto Sans KR',sans-serif;color:var(--tw);font-size:var(--fs-bo
 }
 @media(max-width:768px){.sh{padding:14px 20px 0}}
 
-.s-label{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--y);opacity:.75}
-.s-num{font-family:'Barlow Condensed',sans-serif;font-weight:400;font-size:12px;letter-spacing:2px;color:var(--td)}
+.s-label{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;letter-spacing:4px;text-transform:uppercase;color:var(--y);opacity:.75}
+.s-num{font-family:'Barlow Condensed',sans-serif;font-weight:400;font-size:15px;letter-spacing:2px;color:var(--td)}
 
 .slide-content{
   flex:1;overflow-y:auto;
@@ -78,21 +78,21 @@ body{font-family:'Noto Sans KR',sans-serif;color:var(--tw);font-size:var(--fs-bo
 
 /* ── TYPOGRAPHY ── */
 .stitle{
-  font-family:'Barlow Condensed',sans-serif;font-weight:900;
-  font-size:clamp(22px,2.8vw,34px);line-height:1.05;
+  font-family:'Barlow Condensed',sans-serif;font-weight:800;
+  font-size:clamp(25px,3.1vw,37px);line-height:1.05;
   color:var(--tw);margin-bottom:6px;letter-spacing:-.5px
 }
 .stitle .acc{color:var(--y)}
 .stitle .dim{color:var(--td);font-weight:300;font-size:.62em;letter-spacing:0;vertical-align:middle}
-.ssub{font-size:13.5px;color:var(--tm);font-weight:400;margin-bottom:20px;letter-spacing:.1px;line-height:1.65}
+.ssub{font-size:16px;color:var(--tm);font-weight:400;margin-bottom:20px;letter-spacing:.1px;line-height:1.65}
 
 h3.st{
-  font-family:'Barlow Condensed',sans-serif;font-weight:700;
-  font-size:12px;letter-spacing:2.5px;text-transform:uppercase;
+  font-family:'Barlow Condensed',sans-serif;font-weight:600;
+  font-size:15px;letter-spacing:2.5px;text-transform:uppercase;
   color:var(--y);margin:22px 0 12px;padding-bottom:5px;
   border-bottom:1px solid var(--bry)
 }
-h4.su{font-family:'Barlow',sans-serif;font-weight:600;font-size:13.5px;color:var(--tw);margin:14px 0 8px;letter-spacing:.3px}
+h4.su{font-family:'Barlow',sans-serif;font-weight:600;font-size:16px;color:var(--tw);margin:14px 0 8px;letter-spacing:.3px}
 p{font-size:var(--fs-body);color:var(--tm);line-height:var(--lh-body);margin-bottom:11px}
 
 /* ── GRIDS ── */
@@ -106,13 +106,13 @@ p{font-size:var(--fs-body);color:var(--tm);line-height:var(--lh-body);margin-bot
 .card.cy{border-top:2px solid var(--y)}
 .card.cp{border-top:2px solid var(--p)}
 .card.cd{border-top:2px solid rgba(255,255,255,.15)}
-.ctitle{font-family:'Barlow',sans-serif;font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--y);margin-bottom:11px;opacity:.9}
-.card p{font-size:13.5px;line-height:1.8;margin-bottom:0;color:var(--tm)}
+.ctitle{font-family:'Barlow',sans-serif;font-weight:600;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--y);margin-bottom:11px;opacity:.9}
+.card p{font-size:16px;line-height:1.8;margin-bottom:0;color:var(--tm)}
 
 /* ── ARCH BOX ── */
 .ab{
   background:#080404;border:1px solid var(--br);border-left:3px solid var(--y);
-  font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.95;
+  font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.95;
   padding:16px 20px;border-radius:0 6px 6px 0;margin:10px 0;
   overflow-x:auto;white-space:pre
 }
@@ -123,13 +123,13 @@ p{font-size:var(--fs-body);color:var(--tm);line-height:var(--lh-body);margin-bot
 .ab .cy{color:#7ECFFF}
 
 /* ── TABLE ── */
-.tbl{width:100%;border-collapse:collapse;font-size:13.5px;margin:10px 0}
-.tbl th{background:var(--surf2);color:var(--y);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--bry)}
+.tbl{width:100%;border-collapse:collapse;font-size:16px;margin:10px 0}
+.tbl th{background:var(--surf2);color:var(--y);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px;letter-spacing:1.5px;text-transform:uppercase;padding:10px 14px;text-align:left;border-bottom:1px solid var(--bry)}
 .tbl td{padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.05);color:var(--tm);vertical-align:top;line-height:1.65}
 .tbl tr:hover td{background:rgba(229,173,22,.05);color:var(--tw)}
 
 /* ── BADGE ── */
-.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-family:'Barlow',sans-serif;font-weight:700;font-size:11px;letter-spacing:.4px}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-family:'Barlow',sans-serif;font-weight:600;font-size:13px;letter-spacing:.4px}
 .bd{background:rgba(46,160,67,.18);color:#3FB950;border:1px solid rgba(46,160,67,.3)}
 .bw{background:rgba(229,173,22,.15);color:var(--y);border:1px solid var(--bry)}
 .bp{background:rgba(88,166,255,.1);color:#79BAFF;border:1px solid rgba(88,166,255,.2)}
@@ -138,8 +138,8 @@ p{font-size:var(--fs-body);color:var(--tm);line-height:var(--lh-body);margin-bot
 
 /* ── CHECKLIST ── */
 .cl{list-style:none}
-.cl li{font-size:13.5px;color:var(--tm);padding:5px 0 5px 22px;position:relative;line-height:1.65}
-.cl li::before{content:'✓';position:absolute;left:0;color:#3FB950;font-size:11px;font-weight:700;top:6px}
+.cl li{font-size:16px;color:var(--tm);padding:5px 0 5px 22px;position:relative;line-height:1.65}
+.cl li::before{content:'✓';position:absolute;left:0;color:#3FB950;font-size:13px;font-weight:600;top:6px}
 .cl li.pend::before{content:'○';color:var(--td)}
 .cl li.wip::before{content:'⟳';color:var(--y)}
 
@@ -147,22 +147,22 @@ p{font-size:var(--fs-body);color:var(--tm);line-height:var(--lh-body);margin-bot
 .flow{display:flex;flex-direction:column}
 .fs{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px dashed rgba(255,255,255,.07)}
 .fs:last-child{border-bottom:none}
-.fn{flex-shrink:0;width:24px;height:24px;background:var(--y);color:var(--b);border-radius:50%;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center}
-.fc strong{font-size:13.5px;display:block;margin-bottom:3px;color:var(--tw);font-weight:600}
-.fc span{font-size:12.5px;color:var(--tm);line-height:1.6}
+.fn{flex-shrink:0;width:26px;height:26px;background:var(--y);color:var(--b);border-radius:50%;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center}
+.fc strong{font-size:16px;display:block;margin-bottom:3px;color:var(--tw);font-weight:600}
+.fc span{font-size:15px;color:var(--tm);line-height:1.6}
 
 /* ── CALLOUT ── */
-.co{background:rgba(229,173,22,.07);border-left:3px solid var(--y);padding:13px 17px;border-radius:0 6px 6px 0;margin:12px 0;font-size:13.5px;color:var(--tm);line-height:1.75}
-.co strong{color:var(--y);display:block;margin-bottom:4px;font-size:12px;letter-spacing:.5px;text-transform:uppercase}
+.co{background:rgba(229,173,22,.07);border-left:3px solid var(--y);padding:13px 17px;border-radius:0 6px 6px 0;margin:12px 0;font-size:16px;color:var(--tm);line-height:1.75}
+.co strong{color:var(--y);display:block;margin-bottom:4px;font-size:15px;letter-spacing:.5px;text-transform:uppercase}
 .co.warn{background:rgba(232,0,67,.06);border-left-color:var(--p)}
 .co.warn strong{color:#FF6B8A}
 .co.info{background:rgba(88,166,255,.06);border-left-color:#79BAFF}
 .co.info strong{color:#79BAFF}
 
-code{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(229,173,22,.1);color:var(--y);padding:2px 6px;border-radius:3px}
+code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,173,22,.1);color:var(--y);padding:2px 6px;border-radius:3px}
 
 /* ── BG NUMBER ── */
-.bg-num{position:absolute;right:40px;top:50%;transform:translateY(-50%);font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(100px,15vw,180px);color:rgba(229,173,22,.035);line-height:1;pointer-events:none;user-select:none;letter-spacing:-4px;z-index:0}
+.bg-num{position:absolute;right:40px;top:50%;transform:translateY(-50%);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(100px,15vw,180px);color:rgba(229,173,22,.035);line-height:1;pointer-events:none;user-select:none;letter-spacing:-4px;z-index:0}
 
 /* ── COVER ── */
 .cover-slide{background:var(--b);position:relative;overflow:hidden}
@@ -170,25 +170,25 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(229,1
 .cover-slide::after{content:'';position:absolute;bottom:-150px;left:-150px;width:500px;height:500px;background:radial-gradient(circle,rgba(232,0,67,.08) 0%,transparent 70%);pointer-events:none}
 .ci{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:center;padding:50px 80px}
 @media(max-width:768px){.ci{padding:30px 24px}}
-.cbadge{display:inline-block;background:var(--y);color:var(--b);font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11px;letter-spacing:3px;text-transform:uppercase;padding:4px 12px;border-radius:2px;margin-bottom:24px;align-self:flex-start}
+.cbadge{display:inline-block;background:var(--y);color:var(--b);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px;letter-spacing:3px;text-transform:uppercase;padding:4px 12px;border-radius:2px;margin-bottom:24px;align-self:flex-start}
 .ctitle{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(60px,9vw,80px);line-height:.95;letter-spacing:-3px;color:var(--tw);margin-bottom:12px}
 .ctitle .acc{color:var(--y)}
-.ctagline{font-size:15px;color:var(--tm);font-weight:300;margin-bottom:40px;letter-spacing:.4px;line-height:1.7}
+.ctagline{font-size:18px;color:var(--tm);font-weight:300;margin-bottom:40px;letter-spacing:.4px;line-height:1.7}
 .csvc{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:40px}
 @media(max-width:768px){.csvc{grid-template-columns:1fr;gap:8px}}
 .svc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:18px;position:relative;overflow:hidden}
 .svc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
 .svc.s1::before{background:var(--y)}.svc.s2::before{background:var(--p)}.svc.s3::before{background:rgba(255,255,255,.25)}
-.svc .sl{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:10px;letter-spacing:3px;color:var(--y);margin-bottom:5px}
-.svc .sn{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:var(--tw);margin-bottom:4px}
-.svc .sd{font-size:12px;color:rgba(255,255,255,.42);line-height:1.55}
-.cmeta{font-size:12px;color:rgba(255,255,255,.30);display:flex;gap:16px;flex-wrap:wrap}
+.svc .sl{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:13px;letter-spacing:3px;color:var(--y);margin-bottom:5px}
+.svc .sn{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:25px;color:var(--tw);margin-bottom:4px}
+.svc .sd{font-size:15px;color:rgba(255,255,255,.42);line-height:1.55}
+.cmeta{font-size:15px;color:rgba(255,255,255,.30);display:flex;gap:16px;flex-wrap:wrap}
 .cmeta span{color:rgba(255,255,255,.60)}
 
 /* ── STAT BOX ── */
 .stat{text-align:center;padding:14px 10px;background:var(--surf);border:1px solid var(--br);border-radius:6px}
-.stat-n{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:40px;color:var(--y);line-height:1}
-.stat-l{font-size:11px;color:var(--td);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
+.stat-n{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:43px;color:var(--y);line-height:1}
+.stat-l{font-size:14px;color:var(--td);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
 
 /* ── STATUS BAR ── */
 .sbar{width:100%;height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;margin:8px 0}
@@ -199,14 +199,14 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(229,1
 .stage-item{display:flex;align-items:baseline;gap:10px;padding:9px 13px;background:var(--surf);border:1px solid var(--br);border-radius:5px;border-left:2px solid var(--y)}
 .stage-item.done{border-left-color:#3FB950}
 .stage-item.plan{border-left-color:rgba(229,173,22,.35)}
-.stage-no{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:11px;letter-spacing:2px;color:var(--y);flex-shrink:0}
+.stage-no{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;letter-spacing:2px;color:var(--y);flex-shrink:0}
 .stage-item.done .stage-no{color:#3FB950}
-.stage-ttl{font-size:13px;color:var(--tw);font-weight:600;flex:1}
-.stage-desc{font-size:12px;color:var(--tm)}
+.stage-ttl{font-size:16px;color:var(--tw);font-weight:600;flex:1}
+.stage-desc{font-size:15px;color:var(--tm)}
 
 /* ── WEATHER BOX ── */
 .wx-card{background:var(--surf);border:1px solid var(--br);border-radius:6px;padding:12px 15px;margin:5px 0}
-.wx-msg{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--tm);line-height:1.9;padding:12px 15px;background:#080404;border-left:3px solid var(--y);border-radius:0 5px 5px 0;margin:8px 0}
+.wx-msg{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--tm);line-height:1.9;padding:12px 15px;background:#080404;border-left:3px solid var(--y);border-radius:0 5px 5px 0;margin:8px 0}
 .wx-msg .em{color:var(--y)}
 .wx-msg .wn{color:#FF6B8A}
 
@@ -232,20 +232,20 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(229,1
 .cbtn:hover{color:var(--y);border-color:rgba(229,173,22,.3)}
 
 /* ── KB HINT ── */
-.kb-hint{position:fixed;bottom:60px;right:18px;font-size:10px;color:var(--td);letter-spacing:.8px;z-index:100;display:flex;gap:6px}
-.key{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:1px 5px;font-family:'JetBrains Mono',monospace;font-size:9px}
+.kb-hint{position:fixed;bottom:60px;right:18px;font-size:13px;color:var(--td);letter-spacing:.8px;z-index:100;display:flex;gap:6px}
+.key{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:3px;padding:1px 5px;font-family:'JetBrains Mono',monospace;font-size:12px}
 @media(max-width:768px){.kb-hint{display:none}}
 
 /* ── OVERVIEW ── */
 .overview{position:fixed;inset:0;background:rgba(8,4,4,.96);backdrop-filter:blur(20px);z-index:500;display:none;flex-direction:column;align-items:center;padding:32px 20px;overflow-y:auto}
 .overview.vis{display:flex}
-.ov-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:4px;color:var(--y);text-transform:uppercase;margin-bottom:24px}
+.ov-title{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:16px;letter-spacing:4px;color:var(--y);text-transform:uppercase;margin-bottom:24px}
 .ov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:10px;width:100%;max-width:1040px}
 .ov-item{background:var(--surf);border:1px solid var(--br);border-radius:7px;padding:14px;cursor:pointer;transition:all .18s}
 .ov-item:hover,.ov-item.cur{border-color:var(--y);background:var(--surf2)}
-.ov-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;color:rgba(229,173,22,.25);line-height:1;margin-bottom:5px}
-.ov-lbl{font-size:11px;color:var(--td);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
-.ov-name{font-family:'Barlow',sans-serif;font-weight:700;font-size:13px;color:var(--tw)}
+.ov-num{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:29px;color:rgba(229,173,22,.25);line-height:1;margin-bottom:5px}
+.ov-lbl{font-size:13px;color:var(--td);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.ov-name{font-family:'Barlow',sans-serif;font-weight:600;font-size:15px;color:var(--tw)}
 
 /* ── ENTRANCE ANIMATIONS ── */
 .slide.active .stitle{animation:sup .45s ease .05s both}
@@ -261,6 +261,76 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(229,1
 .swipe-hint{display:none;position:fixed;bottom:60px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--td);letter-spacing:1px;text-transform:uppercase;animation:fadeio 4s ease 1.5s forwards;pointer-events:none;opacity:0}
 @media(max-width:768px){.swipe-hint{display:block}}
 @keyframes fadeio{0%{opacity:0}15%{opacity:1}75%{opacity:1}100%{opacity:0}}
+
+/* ── COVER v3 ── */
+.slide.cover-slide{position:absolute}
+.cov-wrap{position:absolute;inset:0;display:flex;flex-direction:column;z-index:1}
+.cov-head{padding:18px 60px 14px;display:flex;align-items:flex-end;justify-content:space-between;flex-shrink:0;border-bottom:2px solid var(--y)}
+.cov-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(44px,7vw,72px);line-height:.88;letter-spacing:-3px;color:var(--tw)}
+.cov-title .acc{color:var(--y)}
+.cov-sub{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:9.5px;letter-spacing:5px;color:var(--y);text-transform:uppercase;margin-bottom:7px;opacity:.8}
+.cov-year{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(40px,6vw,66px);color:rgba(229,173,22,.09);letter-spacing:-3px;line-height:1}
+.cov-ver{font-size:9.5px;color:rgba(255,255,255,.2);letter-spacing:3px;text-transform:uppercase;text-align:right;margin-top:2px;font-family:'JetBrains Mono',monospace}
+.cov-projs{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+/* proj row — flex stretch so zones span full height */
+.cov-proj{flex:1 1 0;display:flex;align-items:stretch;border-bottom:1px solid rgba(255,255,255,.05);position:relative;overflow:hidden;padding-left:32px;min-height:0}
+.cov-proj:last-child{border-bottom:none}
+/* progressive-fill gradient overlay: left=dark → right=slightly brighter */
+.cov-proj::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,transparent 25%,rgba(255,255,255,.008) 55%,rgba(255,255,255,.02) 100%);pointer-events:none;z-index:0}
+.cov-proj-bg{position:absolute;right:20px;top:50%;transform:translateY(-50%);font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(80px,12vw,145px);letter-spacing:-5px;line-height:1;pointer-events:none;user-select:none;z-index:0}
+.cov-bar{width:5px;align-self:stretch;flex-shrink:0;border-radius:3px;margin:14px 20px 14px 0}
+/* ── Zone A — Identity (humble start) ── */
+.cov-za{flex-shrink:0;width:190px;display:flex;flex-direction:column;justify-content:center;padding:16px 18px 16px 0;position:relative;z-index:1}
+.cov-proj-label{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:3px;text-transform:uppercase;margin-bottom:5px}
+.cov-proj-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(30px,4vw,50px);color:var(--tw);line-height:.88;letter-spacing:-2px}
+.cov-proj-url{font-size:13px;color:var(--td);font-family:'JetBrains Mono',monospace;margin-top:8px;letter-spacing:-.2px}
+/* ── Zone B — Story (growing narrative) ── */
+.cov-zb{flex:1;display:flex;flex-direction:column;justify-content:center;padding:16px 28px;border-left:1px solid rgba(255,255,255,.04);position:relative;z-index:1;min-width:0}
+.cov-zb-label{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:3.5px;text-transform:uppercase;color:var(--td);margin-bottom:9px}
+.cov-feats{display:flex;flex-direction:column;gap:6px}
+.cov-feat{font-size:15px;color:var(--tm);display:flex;align-items:baseline;gap:7px;line-height:1.45}
+.cov-feat-dot{font-size:12px;font-weight:800;flex-shrink:0}
+/* ── Zone C — Evidence (dense, strong end) ── */
+.cov-zc{flex-shrink:0;width:583px;display:flex;flex-direction:column;justify-content:center;gap:8px;padding:16px 32px 16px 28px;background:rgba(255,255,255,.02);border-left:1px solid rgba(255,255,255,.07);position:relative;z-index:1}
+.cov-zc-kpi{display:flex;align-items:baseline;gap:8px}
+.cov-kpi-val{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:clamp(28px,3.6vw,42px);line-height:1;letter-spacing:-1.5px}
+.cov-kpi-lbl{font-size:13px;color:var(--td);letter-spacing:.2px;line-height:1.4}
+.cov-zc-badges{display:flex;gap:5px;flex-wrap:wrap}
+.cov-zc-sep{height:1px;background:rgba(255,255,255,.06);margin:1px 0}
+.cov-techs{display:flex;gap:4px;flex-wrap:wrap}
+.cov-tech{font-size:12px;padding:3px 9px;border-radius:3px;background:rgba(255,255,255,.05);color:var(--td);border:1px solid rgba(255,255,255,.08);letter-spacing:.2px}
+.cov-foot{padding:9px 60px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;border-top:1px solid rgba(255,255,255,.06)}
+.cov-author{font-size:11.5px;color:rgba(255,255,255,.3)}
+.cov-author span{color:rgba(255,255,255,.65);font-weight:400}
+.cov-live{display:flex;align-items:center;gap:7px}
+.cov-live-dot{width:6px;height:6px;border-radius:50%;background:#3FB950;box-shadow:0 0 7px rgba(63,185,80,.55)}
+.cov-live-txt{font-size:10.5px;color:rgba(255,255,255,.38)}
+.cov-date{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:10.5px;letter-spacing:3px;color:rgba(255,255,255,.18);text-transform:uppercase}
+/* cover responsive */
+@media(max-width:900px){
+  .cov-head,.cov-foot{padding-left:28px;padding-right:28px}
+  .cov-proj{padding-left:20px}
+  .cov-za{width:150px}
+  .cov-zb{padding:12px 20px}
+  .cov-zc{width:300px;padding:12px 20px 12px 18px}
+  .cov-kpi-val{font-size:clamp(24px,3vw,34px)}
+  .cov-proj-bg{font-size:clamp(60px,9vw,105px)}
+}
+@media(max-width:640px){
+  .cov-wrap{overflow-y:auto}
+  .cov-head{padding:12px 20px 10px;flex-shrink:0}
+  .cov-proj{flex:none;min-height:145px;padding-left:10px}
+  .cov-bar{width:4px;margin:10px 12px 10px 0}
+  .cov-za{width:115px;padding:10px 8px 10px 0}
+  .cov-proj-name{font-size:clamp(22px,6vw,30px)}
+  .cov-proj-url{display:none}
+  .cov-zb{padding:10px 10px}
+  .cov-feat:nth-child(n+3){display:none}
+  .cov-zc{display:none}
+  .cov-proj-bg{display:none}
+  .cov-foot{padding:6px 20px;flex-shrink:0}
+  .cov-date{display:none}
+}
 </style>
 </head>
 <body>
@@ -286,36 +356,175 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(229,1
 
 <!-- ═══ SLIDE 01 COVER ═══ -->
 <div class="slide cover-slide active" data-i="0">
-  <div class="sh" style="padding:18px 80px 0">
-    <div class="s-label">PAC-RUN Portfolio · 2026</div>
-    <div class="s-num" id="snum">01 / 11</div>
-  </div>
-  <div class="ci">
-    <div class="cbadge">Project Documentation v2.4 · 2026-06-07</div>
-    <div class="ctitle"><span class="acc">PAC</span>-RUN</div>
-    <div class="ctagline">러닝 커뮤니티 통합 플랫폼 · 기술 아키텍처 포트폴리오</div>
-    <div class="csvc">
-      <div class="svc s1">
-        <div class="sl">Service 01</div>
-        <div class="sn">REVIEW</div>
-        <div class="sd">마라톤/러닝 대회 리뷰 · AI 분석<br>v2 날씨 × AI 기획 완료<br>review.pac-run.com</div>
+  <div class="cov-wrap">
+
+    <!-- ① 헤더 타이틀 -->
+    <div class="cov-head">
+      <div>
+        <div class="cov-sub">러닝 커뮤니티 통합 플랫폼</div>
+        <div class="cov-title"><span class="acc">PAC</span>-RUN</div>
       </div>
-      <div class="svc s2">
-        <div class="sl">Service 02</div>
-        <div class="sn">CREW</div>
-        <div class="sd">러닝 크루 기록 · 이벤트 관리<br>게시판 구현 진행 중<br>crew.pac-run.com</div>
-      </div>
-      <div class="svc s3">
-        <div class="sl">Service 03</div>
-        <div class="sn">CORE API</div>
-        <div class="sd">AI 분석 · 크롤링 전담 API<br>S3 ACL 공개접근 패치 완료<br>api.pac-run.com</div>
+      <div style="text-align:right">
+        <div class="cov-year">2026</div>
+        <div class="cov-ver">Project Docs v2.5</div>
+        <div class="s-num" id="snum" style="margin-top:4px;font-size:11px;color:var(--td);letter-spacing:2px">01 / 11</div>
       </div>
     </div>
-    <div class="cmeta">
-      작성일: <span>2026-06-07</span> &nbsp;·&nbsp; 담당자: <span>김대윤</span> &nbsp;·&nbsp; 문의: <span>dykim10iufc@gmail.com</span>
+
+    <!-- ② 프로젝트 3개 — 전체 높이 균등 배분 -->
+    <div class="cov-projs">
+
+      <!-- Project 01 — REVIEW -->
+      <div class="cov-proj">
+        <div class="cov-proj-bg" style="color:rgba(229,173,22,.045)">01</div>
+        <div class="cov-bar" style="background:var(--y)"></div>
+
+        <!-- Zone A: Identity -->
+        <div class="cov-za">
+          <div class="cov-proj-label" style="color:var(--y)">Project 01</div>
+          <div class="cov-proj-name">REVIEW</div>
+          <div class="cov-proj-url">review.pac-run.com</div>
+        </div>
+
+        <!-- Zone B: Story -->
+        <div class="cov-zb">
+          <div class="cov-zb-label">핵심 기능</div>
+          <div class="cov-feats">
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:var(--y)">▸</span>마라톤 · 러닝 대회 리뷰 플랫폼 (1인 1리뷰, 크롤링 2종)</div>
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:var(--y)">▸</span>AI 대회 종합 분석 · 감성분석 (claude-opus-4-8)</div>
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:var(--y)">▸</span>기상청 ASOS 날씨 연동 — 단일 캐시 방어 로직</div>
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:var(--y)">▸</span>리뷰 이미지 S3 업로드 · CloudFront CDN</div>
+          </div>
+        </div>
+
+        <!-- Zone C: Evidence (dense) -->
+        <div class="cov-zc">
+          <div class="cov-zc-kpi">
+            <span class="cov-kpi-val" style="color:var(--y)">3종</span>
+            <span class="cov-kpi-lbl">AI 분석<br>요약 · 감성 · 대회종합</span>
+          </div>
+          <div class="cov-zc-badges">
+            <span class="badge bd">v1 운영 중</span>
+            <span class="badge bw">v2 기획 완료</span>
+          </div>
+          <div class="cov-zc-sep"></div>
+          <div class="cov-techs">
+            <span class="cov-tech">PHP 8.3</span>
+            <span class="cov-tech">Laravel 13</span>
+            <span class="cov-tech">Claude API</span>
+            <span class="cov-tech">Blade</span>
+            <span class="cov-tech">Supabase</span>
+            <span class="cov-tech">S3 CDN</span>
+            <span class="cov-tech">ASOS API</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project 02 — CREW -->
+      <div class="cov-proj">
+        <div class="cov-proj-bg" style="color:rgba(232,0,67,.04)">02</div>
+        <div class="cov-bar" style="background:var(--p)"></div>
+
+        <!-- Zone A: Identity -->
+        <div class="cov-za">
+          <div class="cov-proj-label" style="color:#FF6B8A">Project 02</div>
+          <div class="cov-proj-name">CREW</div>
+          <div class="cov-proj-url">crew.pac-run.com</div>
+        </div>
+
+        <!-- Zone B: Story -->
+        <div class="cov-zb">
+          <div class="cov-zb-label">핵심 기능</div>
+          <div class="cov-feats">
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:#FF6B8A">▸</span>러닝 크루 기록 · 이벤트 점수 관리 (A타입 / 고정점수)</div>
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:#FF6B8A">▸</span>이미지 AI 파싱 → 2단계 확정 · 관리자 검수 플로우</div>
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:#FF6B8A">▸</span>Filament v4 어드민 · 단체 SMS · 기수 신청서</div>
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:#FF6B8A">▸</span>스킨 시스템 · 게시판 TipTap · 포토갤러리</div>
+          </div>
+        </div>
+
+        <!-- Zone C: Evidence (dense) -->
+        <div class="cov-zc">
+          <div class="cov-zc-kpi">
+            <span class="cov-kpi-val" style="color:#FF6B8A">15+</span>
+            <span class="cov-kpi-lbl">Filament<br>관리자 리소스</span>
+          </div>
+          <div class="cov-zc-badges">
+            <span class="badge bd">배포 완료</span>
+            <span class="badge bpk">v1 개발 중</span>
+          </div>
+          <div class="cov-zc-sep"></div>
+          <div class="cov-techs">
+            <span class="cov-tech">PHP 8.3</span>
+            <span class="cov-tech">Filament v4</span>
+            <span class="cov-tech">Alpine.js</span>
+            <span class="cov-tech">Tailwind</span>
+            <span class="cov-tech">Supabase</span>
+            <span class="cov-tech">S3 CDN</span>
+            <span class="cov-tech">Solapi SMS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project 03 — CORE API -->
+      <div class="cov-proj">
+        <div class="cov-proj-bg" style="color:rgba(255,255,255,.035)">03</div>
+        <div class="cov-bar" style="background:rgba(255,255,255,.25)"></div>
+
+        <!-- Zone A: Identity -->
+        <div class="cov-za">
+          <div class="cov-proj-label" style="color:var(--td)">Project 03</div>
+          <div class="cov-proj-name">CORE<br><span style="font-size:.58em;opacity:.65;letter-spacing:0">API</span></div>
+          <div class="cov-proj-url">api.pac-run.com</div>
+        </div>
+
+        <!-- Zone B: Story -->
+        <div class="cov-zb">
+          <div class="cov-zb-label">핵심 기능</div>
+          <div class="cov-feats">
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:rgba(255,255,255,.3)">▸</span>Claude Vision 이미지 파싱 · AI 요약 · 감성분석</div>
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:rgba(255,255,255,.3)">▸</span>기상청 ASOS 날씨 수집 · S3 WebP 변환 · CDN</div>
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:rgba(255,255,255,.3)">▸</span>마라톤고 / 로드런 대회 크롤링 (2종 파서)</div>
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:rgba(255,255,255,.3)">▸</span>APScheduler 자동 백업 · Solapi 단체 SMS</div>
+          </div>
+        </div>
+
+        <!-- Zone C: Evidence (dense) -->
+        <div class="cov-zc">
+          <div class="cov-zc-kpi">
+            <span class="cov-kpi-val" style="color:rgba(255,255,255,.55)">16</span>
+            <span class="cov-kpi-lbl">API<br>엔드포인트</span>
+          </div>
+          <div class="cov-zc-badges">
+            <span class="badge bd">v1 운영 중</span>
+            <span class="badge bp">확장 예정</span>
+          </div>
+          <div class="cov-zc-sep"></div>
+          <div class="cov-techs">
+            <span class="cov-tech">Python 3.14</span>
+            <span class="cov-tech">FastAPI</span>
+            <span class="cov-tech">Claude API</span>
+            <span class="cov-tech">boto3</span>
+            <span class="cov-tech">APScheduler</span>
+            <span class="cov-tech">Supabase</span>
+            <span class="cov-tech">S3 CDN</span>
+          </div>
+        </div>
+      </div>
+
     </div>
+
+    <!-- ③ 푸터 -->
+    <div class="cov-foot">
+      <div class="cov-author"><span>김대윤</span> &nbsp;·&nbsp; dykim10iufc@gmail.com</div>
+      <div class="cov-live">
+        <div class="cov-live-dot"></div>
+        <div class="cov-live-txt">All Services Live</div>
+      </div>
+      <div class="cov-date">2026 — 06 — 07</div>
+    </div>
+
   </div>
-  <div class="bg-num">01</div>
 </div>
 
 <!-- ═══ SLIDE 02 ARCHITECTURE ═══ -->
@@ -386,7 +595,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:12px;background:rgba(229,1
         </table>
 
         <h3 class="st">로컬 실행 순서</h3>
-        <div class="ab" style="font-size:11.5px"><span class="mt"># 터미널 1 — CORE API 먼저 (의존성)</span>
+        <div class="ab"><span class="mt"># 터미널 1 — CORE API 먼저 (의존성)</span>
 cd C:\src\projects\core-api
 python -m uvicorn main:app --reload --port=<span class="hl">8100</span>
 
@@ -410,7 +619,7 @@ php artisan serve --port=<span class="hl">8300</span></div>
         </div>
 
         <h3 class="st" style="margin-top:18px">GitHub 저장소</h3>
-        <div class="ab" style="font-size:11px; white-space:pre-wrap"><span class="hl">review_site</span>           → REVIEW (dev/main)
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">review_site</span>           → REVIEW (dev/main)
 <span class="pk">crew_site</span>             → CREW   (dev/main)
 <span class="gn">python_core_api_site</span>  → CORE   (dev/main)</div>
       </div>
@@ -436,15 +645,18 @@ php artisan serve --port=<span class="hl">8300</span></div>
           <li>대회 목록/상세 조회 (공개 + 페이지네이션)</li>
           <li>대회 CRUD (관리자 전용)</li>
           <li>크롤링 연동 — marathongo / roadrun</li>
-          <li>리뷰 CRUD + 이미지 첨부 (AWS S3)</li>
+          <li>리뷰 CRUD + 이미지 첨부 (CORE API → AWS S3 · CloudFront)</li>
           <li>해시태그 Tag-input UI</li>
           <li>AI 개별 리뷰 요약 + 감성분석 (positive/negative/neutral)</li>
           <li>AI 대회 종합 분석 (자동 재생성)</li>
           <li>races.ai_race_summary JSONB 리뷰 변경 시 자동 갱신</li>
+          <li>날씨 데이터 연동 (기상청 ASOS · race_weather 단일 캐시 방어)</li>
+          <li>서울 07:00 / 그 외 08:00 기본 관측시각 자동 적용</li>
+          <li>reviews PK 시퀀스 리셋 마이그레이션 (중복키 방지)</li>
         </ul>
 
         <h3 class="st">v2 UI 설계 확정</h3>
-        <div class="ab" style="font-size:11.5px; white-space:pre-wrap"><span class="mt">// review-main-v2_1.html 기준 설계 완료</span>
+        <div class="ab" style="white-space:pre-wrap"><span class="mt">// review-main-v2_1.html 기준 설계 완료</span>
 
 <span class="hl">GRID / CAL 뷰 토글</span>
   그리드 → 카드 목록 (hover 날씨 슬라이드업)
@@ -463,11 +675,18 @@ php artisan serve --port=<span class="hl">8300</span></div>
       <div>
         <h3 class="st">v2 예정 기능 (우선순위)</h3>
         <div class="stage-list">
-          <div class="stage-item plan">
-            <span class="stage-no">S1</span>
+          <div class="stage-item done">
+            <span class="stage-no">S1-A</span>
             <div>
-              <div class="stage-ttl">날씨 데이터 파이프라인</div>
-              <div class="stage-desc">기상청 ASOS + Google Geocoding 연동, 측정소 자동 매핑</div>
+              <div class="stage-ttl">날씨 ASOS 연동 <span style="font-size:14px;color:#3FB950">✓ 완료</span></div>
+              <div class="stage-desc">기상청 ASOS · race_weather 캐시 · 서울/지방 기본시각 자동 분기</div>
+            </div>
+          </div>
+          <div class="stage-item plan">
+            <span class="stage-no">S1-B</span>
+            <div>
+              <div class="stage-ttl">지점코드 자동 매핑</div>
+              <div class="stage-desc">Google Geocoding → 가장 가까운 ASOS 측정소 자동 추론</div>
             </div>
           </div>
           <div class="stage-item plan">
@@ -501,7 +720,7 @@ php artisan serve --port=<span class="hl">8300</span></div>
         </div>
 
         <h3 class="st">코드 구조</h3>
-        <div class="ab" style="font-size:11px; white-space:pre-wrap">app/Services/
+        <div class="ab" style="white-space:pre-wrap">app/Services/
 ├── RaceService.php
 ├── ReviewService.php
 ├── SummaryService.php   ← CORE API 호출
@@ -527,7 +746,7 @@ app/Models/
     <div class="g2">
       <div>
         <h3 class="st">날씨 예측 3단계 전략</h3>
-        <div class="ab" style="font-size:11.5px; white-space:pre-wrap"><span class="gn">가까운 미래 (3일 이내)</span>
+        <div class="ab" style="white-space:pre-wrap"><span class="gn">가까운 미래 (3일 이내)</span>
   → 기상청 단기예보 API
      정확도 높음
 
@@ -540,7 +759,7 @@ app/Models/
      최근 연도 가중치 높음 (이상기후 반영)</div>
 
         <h3 class="st">날씨 더블체크 전략</h3>
-        <div class="ab" style="font-size:11.5px; white-space:pre-wrap"><span class="hl">경로 1.</span> 기상청 ASOS API
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">경로 1.</span> 기상청 ASOS API
   → 공식 측정소 기온/습도 (시내 고정 위치)
 
 <span class="pk">경로 2.</span> 사용자 이미지 파싱
@@ -561,7 +780,7 @@ app/Models/
       </div>
       <div>
         <h3 class="st">RAG 아키텍처</h3>
-        <div class="ab" style="font-size:11.5px; white-space:pre-wrap"><span class="mt">▶ 데이터 축적 단계</span>
+        <div class="ab" style="white-space:pre-wrap"><span class="mt">▶ 데이터 축적 단계</span>
 사용자 A  춘천 / 13°C / 습도 95% / 3:56:17
 사용자 B  춘천 / 13°C / 습도 92% / 4:12:33
 ...수백 케이스 축적
@@ -578,7 +797,7 @@ app/Models/
 → 동일 조건 구간 캐시 반환</div>
 
         <h3 class="st">DB 신규 테이블</h3>
-        <table class="tbl" style="font-size:12.5px">
+        <table class="tbl">
           <tr><th>테이블</th><th>용도</th></tr>
           <tr><td><code>race_weather_cases</code></td><td>날씨 × 기록 케이스 (pgvector 임베딩)</td></tr>
           <tr><td><code>race_ai_summaries</code></td><td>AI 종합 요약 캐시 (race_id UNIQUE)</td></tr>
@@ -588,7 +807,7 @@ app/Models/
         </table>
 
         <h3 class="st">CORE API 추가 엔드포인트</h3>
-        <table class="tbl" style="font-size:12.5px">
+        <table class="tbl">
           <tr><th>Method</th><th>경로</th><th>상태</th></tr>
           <tr><td><code>POST</code></td><td>/api/weather/geocode</td><td><span class="badge bp">예정</span></td></tr>
           <tr><td><code>POST</code></td><td>/api/weather/fetch-past</td><td><span class="badge bp">예정</span></td></tr>
@@ -612,7 +831,7 @@ app/Models/
     <div class="g2">
       <div>
         <h3 class="st">조직 계층</h3>
-        <div class="ab" style="font-size:11.5px; white-space:pre-wrap">1차 <span class="hl">기수 (generation)</span>  → 1기, 2기, 3기...
+        <div class="ab" style="white-space:pre-wrap">1차 <span class="hl">기수 (generation)</span>  → 1기, 2기, 3기...
 2차 <span class="hl">지역 (region)</span>      → 반포·연대·인천·군포
 3차 <span class="hl">조 (group)</span>         → A조/B조... (5~15명)
 4차 <span class="hl">등급 (grade)</span>       → A/B/C 자동 매칭
@@ -630,7 +849,7 @@ app/Models/
         </div>
 
         <h3 class="st">스케줄러 현황</h3>
-        <table class="tbl" style="font-size:12.5px">
+        <table class="tbl">
           <tr><th>커맨드</th><th>실행 시간</th><th>역할</th></tr>
           <tr><td><code>events:update-status</code></td><td>매일 00:05</td><td>A/B타입 상태 전환</td></tr>
           <tr><td><code>events:sync-participants</code></td><td>매일 01:00</td><td>A타입 기수 구성원 동기화</td></tr>
@@ -639,7 +858,7 @@ app/Models/
       </div>
       <div>
         <h3 class="st">v1 완료 기능 (주요)</h3>
-        <ul class="cl" style="font-size:12.5px">
+        <ul class="cl">
           <li>초대 코드 기반 가입 (클로즈 베타)</li>
           <li>crew 스키마 전체 마이그레이션 (18개+ 테이블)</li>
           <li>러닝 이미지 2단계 파싱 플로우 + 다중 일괄 업로드</li>
@@ -707,6 +926,7 @@ app/Models/
       <tr><td><code>POST</code></td><td>/api/photo/resize-webp</td><td>이미지 → WebP 변환 + S3</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
       <tr><td><code>POST</code></td><td>/api/backup/run</td><td>DB 전체 백업 즉시 실행</td><td>내부</td><td><span class="badge bd">구현</span></td></tr>
       <tr><td><code>GET</code></td><td>/api/instagram/posts</td><td>인스타그램 캐시 반환</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>POST</code></td><td>/api/weather/race/{id}</td><td>대회 날씨 수집 (기상청 ASOS) + race_weather DB 저장</td><td>REVIEW</td><td><span class="badge bd">구현</span></td></tr>
       <tr><td><code>POST</code></td><td>/api/weather/geocode</td><td>주소 → 위도/경도 (Geocoding)</td><td>REVIEW</td><td><span class="badge bp">예정</span></td></tr>
       <tr><td><code>GET</code></td><td>/api/weather/predict/{id}</td><td>AI 장기 날씨 예측</td><td>REVIEW</td><td><span class="badge bp">예정</span></td></tr>
     </table>
@@ -724,8 +944,8 @@ app/Models/
     <div class="g3">
       <div>
         <h3 class="st">public 스키마</h3>
-        <p style="font-size:12px;color:var(--td);margin-bottom:8px">3개 서비스 공통</p>
-        <div class="ab" style="font-size:11px; white-space:pre-wrap"><span class="hl">users</span>
+        <p style="font-size:15px;color:var(--td);margin-bottom:8px">3개 서비스 공통</p>
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">users</span>
   role (4단계), email_verified_at
   crew_id, branch_id, group_id
   is_beta, invite_code
@@ -742,18 +962,23 @@ app/Models/
       </div>
       <div>
         <h3 class="st">review 스키마</h3>
-        <p style="font-size:12px;color:var(--td);margin-bottom:8px">REVIEW 전용 · v2 확장 예정</p>
-        <div class="ab" style="font-size:11px; white-space:pre-wrap"><span class="hl">races</span>
+        <p style="font-size:15px;color:var(--td);margin-bottom:8px">REVIEW 전용 · v2 확장 예정</p>
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">races</span>
   name, date, location
   distances text[], ai_race_summary JSONB
-  <span class="mt">lat, lng, station_no (예정)</span>
+  weather_stn_id (기상청 지점코드)
+  <span class="mt">lat, lng (예정)</span>
 
 <span class="hl">reviews</span>
   distance_km, rating, sentiment
   ai_summary, image_urls JSONB
 
 <span class="hl">hashtags</span> / <span class="hl">review_hashtags</span>
-<span class="hl">race_weather</span>   temp, humidity
+<span class="hl">race_weather</span>   단일 캐시 방어
+  temp, humidity, wind_speed
+  wind_direction, precipitation
+  weather_condition · stn_id
+  raw_data JSONB · fetched_at
 
 <span class="mt">── v2 예정 ───────────────────</span>
 <span class="mt">weather_stations</span>   측정소 목록
@@ -764,8 +989,8 @@ app/Models/
       </div>
       <div>
         <h3 class="st">crew 스키마</h3>
-        <p style="font-size:12px;color:var(--td);margin-bottom:8px">CREW 전용 (18개+ 테이블)</p>
-        <div class="ab" style="font-size:11px; white-space:pre-wrap"><span class="hl">running_logs</span>      is_confirmed
+        <p style="font-size:15px;color:var(--td);margin-bottom:8px">CREW 전용 (18개+ 테이블)</p>
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">running_logs</span>      is_confirmed
 <span class="hl">events</span>            form_schema JSONB
 <span class="hl">event_scores</span> / <span class="hl">user_goals</span>
 <span class="hl">event_groups</span>      branch_id
@@ -803,7 +1028,7 @@ app/Models/
     <div class="g2">
       <div>
         <h3 class="st">3계층 아키텍처</h3>
-        <div class="ab" style="font-size:11.5px; white-space:pre-wrap"><span class="hl">Controller</span>  app/Http/Controllers/
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">Controller</span>  app/Http/Controllers/
   요청 수신 → validate() → Service 호출
   <span class="pk">비즈니스 로직 작성 금지</span>
        ↓
@@ -819,12 +1044,12 @@ app/Models/
 
         <h3 class="st">기능 추가 표준 절차</h3>
         <div class="flow">
-          <div class="fs"><div class="fn" style="font-size:11px;width:20px;height:20px">1</div><div class="fc"><strong>Model</strong><span>fillable, casts, scope 정의</span></div></div>
-          <div class="fs"><div class="fn" style="font-size:11px;width:20px;height:20px">2</div><div class="fc"><strong>Migration</strong><span>기존: Schema::table / 신규: Schema::create</span></div></div>
-          <div class="fs"><div class="fn" style="font-size:11px;width:20px;height:20px">3</div><div class="fc"><strong>Service</strong><span>비즈니스 로직, Model 호출</span></div></div>
-          <div class="fs"><div class="fn" style="font-size:11px;width:20px;height:20px">4</div><div class="fc"><strong>Controller</strong><span>validate → Service → 응답</span></div></div>
-          <div class="fs"><div class="fn" style="font-size:11px;width:20px;height:20px">5</div><div class="fc"><strong>View</strong><span>Blade + Tailwind CSS (인라인 style 금지)</span></div></div>
-          <div class="fs"><div class="fn" style="font-size:11px;width:20px;height:20px">6</div><div class="fc"><strong>브라우저 확인</strong><span>실제 테스트 후 완료 보고</span></div></div>
+          <div class="fs"><div class="fn">1</div><div class="fc"><strong>Model</strong><span>fillable, casts, scope 정의</span></div></div>
+          <div class="fs"><div class="fn">2</div><div class="fc"><strong>Migration</strong><span>기존: Schema::table / 신규: Schema::create</span></div></div>
+          <div class="fs"><div class="fn">3</div><div class="fc"><strong>Service</strong><span>비즈니스 로직, Model 호출</span></div></div>
+          <div class="fs"><div class="fn">4</div><div class="fc"><strong>Controller</strong><span>validate → Service → 응답</span></div></div>
+          <div class="fs"><div class="fn">5</div><div class="fc"><strong>View</strong><span>Blade + Tailwind CSS (인라인 style 금지)</span></div></div>
+          <div class="fs"><div class="fn">6</div><div class="fc"><strong>브라우저 확인</strong><span>실제 테스트 후 완료 보고</span></div></div>
         </div>
       </div>
       <div>
@@ -888,7 +1113,7 @@ app/Models/
         <p style="margin-top:6px;font-size:12.5px">초대 코드: <code>CREW2026</code> <code>PACRUN</code> <code>RUNNING</code></p>
 
         <h3 class="st">명예 뱃지 (시스템 권한 없음)</h3>
-        <div class="ab" style="font-size:11.5px; white-space:pre-wrap">users_detail.badges JSONB
+        <div class="ab" style="white-space:pre-wrap">users_detail.badges JSONB
   <span class="hl">pacer</span>        선두 러너
   <span class="hl">group_leader</span> 이벤트 팀장
 
@@ -896,8 +1121,8 @@ app/Models/
       </div>
       <div>
         <h3 class="st">Filament v4 어드민 패널</h3>
-        <p style="font-size:12px;color:var(--td);margin-bottom:10px">CREW /admin · 15+ 리소스 · PAC 컬러 테마 적용</p>
-        <ul class="cl" style="font-size:12.5px">
+        <p style="font-size:15px;color:var(--td);margin-bottom:10px">CREW /admin · 15+ 리소스 · PAC 컬러 테마 적용</p>
+        <ul class="cl">
           <li>UserResource — 이메일 복호화, 비밀번호 초기화</li>
           <li>RunningLogResource — 검수 확인/취소, 마일리지 반영</li>
           <li>EventResource — A/B타입 동적 폼 빌더 + 조 편성</li>
@@ -934,26 +1159,26 @@ app/Models/
       <div class="card cy">
         <div class="ctitle">REVIEW</div>
         <div style="display:flex;align-items:center;gap:8px;margin:8px 0">
-          <div class="sbar" style="flex:1"><div class="fill" style="width:95%"></div></div>
-          <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:900;color:var(--y)">95%</span>
+          <div class="sbar" style="flex:1"><div class="fill" style="width:97%"></div></div>
+          <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:800;color:var(--y)">97%</span>
         </div>
-        <p style="font-size:12.5px"><span class="badge bd">v1 운영 중</span>&nbsp;<span class="badge bw">v2 기획 완료</span><br>날씨 × AI · RAG 설계 완료</p>
+        <p><span class="badge bd">v1 운영 중</span>&nbsp;<span class="badge bw">v2 기획 완료</span><br>날씨 ASOS 완료 · 이미지 S3 완료</p>
       </div>
       <div class="card cp">
         <div class="ctitle">CREW</div>
         <div style="display:flex;align-items:center;gap:8px;margin:8px 0">
           <div class="sbar" style="flex:1"><div class="fill" style="width:88%;background:var(--p)"></div></div>
-          <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:900;color:var(--p)">88%</span>
+          <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:800;color:var(--p)">88%</span>
         </div>
-        <p style="font-size:12.5px"><span class="badge bd">배포 완료</span><br>프로필 개선 · S3 ACL 패치 완료</p>
+        <p><span class="badge bd">배포 완료</span><br>프로필 개선 · S3 ACL 패치 완료</p>
       </div>
       <div class="card cd">
         <div class="ctitle">CORE API</div>
         <div style="display:flex;align-items:center;gap:8px;margin:8px 0">
           <div class="sbar" style="flex:1"><div class="fill" style="width:80%"></div></div>
-          <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:900;color:var(--y)">80%</span>
+          <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:800;color:var(--y)">80%</span>
         </div>
-        <p style="font-size:12.5px"><span class="badge bd">v1 운영 중</span><br>ACL 공개접근 패치 · 날씨 예정</p>
+        <p><span class="badge bd">v1 운영 중</span><br>ACL 공개접근 패치 · 날씨 예정</p>
       </div>
     </div>
 
@@ -971,29 +1196,29 @@ app/Models/
           <div class="stage-item plan">
             <span class="stage-no">2</span>
             <div>
-              <div class="stage-ttl">CORE API EC2 배포</div>
-              <div class="stage-desc">S3 ACL 패치 (parse_image.py + photo.py) 배포</div>
-            </div>
-          </div>
-          <div class="stage-item plan">
-            <span class="stage-no">3</span>
-            <div>
               <div class="stage-ttl">관리자 엑셀 업로드</div>
               <div class="stage-desc">UserImport (maatwebsite/excel)</div>
             </div>
           </div>
           <div class="stage-item plan">
+            <span class="stage-no">3</span>
+            <div>
+              <div class="stage-ttl">REVIEW v2 날씨 S1-B</div>
+              <div class="stage-desc">Google Geocoding → 측정소 자동 매핑 (ASOS S1-A 완료)</div>
+            </div>
+          </div>
+          <div class="stage-item plan">
             <span class="stage-no">4</span>
             <div>
-              <div class="stage-ttl">REVIEW v2 날씨 Stage 1</div>
-              <div class="stage-desc">기상청 ASOS + Google Geocoding 연동</div>
+              <div class="stage-ttl">Instagram 연동</div>
+              <div class="stage-desc">Apify → instagram_cache → CREW 대시보드</div>
             </div>
           </div>
           <div class="stage-item plan">
             <span class="stage-no">5</span>
             <div>
-              <div class="stage-ttl">Instagram 연동</div>
-              <div class="stage-desc">Apify → instagram_cache → CREW 대시보드</div>
+              <div class="stage-ttl">마라톤 특화 날씨 해석</div>
+              <div class="stage-desc">페이스 전략 AI 메시지 자동 생성 (REVIEW v2 S2)</div>
             </div>
           </div>
         </div>
@@ -1012,8 +1237,8 @@ app/Models/
         </table>
 
         <div style="margin-top:16px;text-align:center;padding:18px;background:var(--surf);border-radius:8px;border:1px solid var(--br)">
-          <div style="font-family:'Barlow Condensed';font-weight:900;font-size:30px;color:var(--y);letter-spacing:-1px">PAC-RUN</div>
-          <div style="font-size:12px;color:var(--td);margin-top:6px;line-height:1.9">
+          <div style="font-family:'Barlow Condensed';font-weight:800;font-size:30px;color:var(--y);letter-spacing:-1px">PAC-RUN</div>
+          <div style="font-size:15px;color:var(--td);margin-top:6px;line-height:1.9">
             Project Documentation v2.4<br>
             김대윤 · dykim10iufc@gmail.com<br>
             2026-06-07
