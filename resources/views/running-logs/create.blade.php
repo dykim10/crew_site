@@ -398,6 +398,10 @@
     {{-- Sticky 하단 바 (review 단계) --}}
     <div x-show="phase === 'review'" x-cloak
          class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-pac-black-100 shadow-xl">
+        {{-- 제출 로딩 바 --}}
+        <div x-show="submitting" x-cloak class="absolute top-0 left-0 right-0 h-0.5 overflow-hidden">
+            <div class="absolute inset-y-0 pac-loading-bar bg-pac-yellow-500"></div>
+        </div>
         <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
             <div class="flex items-center gap-4">
                 <a href="{{ route('running-logs.index') }}"
@@ -410,15 +414,28 @@
                 </template>
             </div>
             <button type="button" @click="submitAll()"
-                    :disabled="doneCount === 0"
+                    :disabled="doneCount === 0 || submitting"
                     class="inline-flex items-center gap-2 px-7 py-3
                            bg-pac-yellow-500 hover:bg-pac-yellow-400 disabled:opacity-40 disabled:cursor-not-allowed
                            text-pac-black-900 font-display font-bold text-sm uppercase tracking-wide
                            rounded-xl transition-colors duration-200 shadow-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-                </svg>
-                <span x-text="`${doneCount}건 모두 등록`"></span>
+                <template x-if="!submitting">
+                    <span class="inline-flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span x-text="`${doneCount}건 모두 등록`"></span>
+                    </span>
+                </template>
+                <template x-if="submitting">
+                    <span class="inline-flex items-center gap-2">
+                        <svg class="animate-spin h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                        </svg>
+                        등록 중...
+                    </span>
+                </template>
             </button>
         </div>
     </div>
@@ -431,6 +448,7 @@ function runLogCreate() {
         phase: 'upload',
         files: [],
         currentIdx: 0,
+        submitting: false,
 
         get doneCount()  { return this.files.filter(f => f.status === 'done').length; },
         get errorCount() { return this.files.filter(f => f.status === 'error').length; },
@@ -505,20 +523,31 @@ function runLogCreate() {
         },
 
         async submitAll() {
+            if (this.submitting) return;
+            this.submitting = true;
+
             const items = this.files
                 .filter(f => f.status === 'done')
                 .map(f => ({ log_id: f.logId, ...f.parsed }));
 
-            const res = await fetch('{{ route("running-logs.batch-confirm") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                },
-                body: JSON.stringify({ items }),
-            });
-            const data = await res.json();
-            if (data.success) window.location.href = data.redirect;
+            try {
+                const res = await fetch('{{ route("running-logs.batch-confirm") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    },
+                    body: JSON.stringify({ items }),
+                });
+                const data = await res.json();
+                if (data.success) {
+                    window.location.href = data.redirect;
+                } else {
+                    this.submitting = false;
+                }
+            } catch (e) {
+                this.submitting = false;
+            }
         },
 
         formatPace(sec) {

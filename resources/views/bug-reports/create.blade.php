@@ -26,9 +26,14 @@
 
     <form method="POST" action="{{ route('bug-reports.store') }}"
           enctype="multipart/form-data"
-          class="bg-white rounded-2xl shadow-sm overflow-hidden"
-          x-data="bugReportForm()">
+          class="bg-white rounded-2xl shadow-sm overflow-hidden relative"
+          x-data="bugReportForm()" @submit="loading = true">
         @csrf
+
+        {{-- 로딩 바 --}}
+        <div x-show="loading" x-cloak class="absolute top-0 left-0 right-0 h-0.5 overflow-hidden z-10">
+            <div class="absolute inset-y-0 pac-loading-bar bg-pac-yellow-500"></div>
+        </div>
 
         <div class="px-5 py-3.5 bg-pac-black-900">
             <h3 class="font-display text-sm font-bold text-white uppercase tracking-widest">제보 내용</h3>
@@ -169,10 +174,18 @@
                     취소
                 </a>
                 <button type="submit"
-                        class="px-5 py-2.5 bg-pac-yellow-500 hover:bg-pac-yellow-400
+                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-pac-yellow-500 hover:bg-pac-yellow-400
                                text-pac-black-900 font-display font-bold text-sm uppercase tracking-wide
-                               rounded-xl transition-colors duration-150">
-                    제보 접수
+                               rounded-xl transition-colors duration-150"
+                        :disabled="loading" :class="loading ? 'opacity-70 cursor-not-allowed' : ''">
+                    <span x-show="!loading">제보 접수</span>
+                    <span x-show="loading" x-cloak class="flex items-center gap-2">
+                        <svg class="animate-spin h-4 w-4 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                        </svg>
+                        접수 중...
+                    </span>
                 </button>
             </div>
         </div>
@@ -184,6 +197,7 @@
 <script>
 function bugReportForm() {
     return {
+        loading: false,
         severity: '{{ old('severity', 'medium') }}',
         description: '{{ old('description', '') }}',
         fileName: '',
