@@ -998,9 +998,90 @@ crew.instagram_cache  upsert 저장
   <div class="bg-num">08</div>
 </div>
 
-<!-- ═══ SLIDE 09 DB SCHEMA ═══ -->
+<!-- ═══ SLIDE 09 EXTERNAL SERVICES ═══ -->
 <div class="slide" data-i="8">
-  <div class="sh"><div class="s-label">Chapter 08 — Database</div><div class="s-num">09 / 12</div></div>
+  <div class="sh"><div class="s-label">Chapter 08 — External Services</div><div class="s-num">09 / 14</div></div>
+  <div class="slide-content">
+    <div class="stitle">외부 <span class="acc">서비스</span> 연동 <span class="dim">· 4대 외부 데이터 소스</span></div>
+    <div class="ssub">기상청 ASOS · Apify · Instagram Graph API · YouTube — CORE API가 수집·캐시·전달하는 외부 데이터 파이프라인</div>
+
+    <div class="g2">
+      <div>
+        <h3 class="st">기상청 ASOS &nbsp;<span class="badge bd" style="font-family:'Noto Sans KR';text-transform:none;letter-spacing:0;font-size:12px">구현 완료</span></h3>
+        <p>전국 자동기상관측망(ASOS)의 시간 단위 데이터를 수집합니다. 대회 장소에 가장 가까운 측정소 기준으로 대회 당일 날씨를 단일 캐시로 저장하며, 재수집을 차단합니다.</p>
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">수집 항목</span>
+  기온 / 습도 / 풍향 / 풍속 / 강수량
+  weather_condition (KMA WC코드 → 한국어)
+  원본 raw_data JSONB 보존
+
+<span class="gn">저장: review.race_weather</span>  단일 캐시 방어
+  레코드 존재 시 재수집 차단 (null 마커 포함)
+  서울(stn_id=108) 07:00 / 그 외 기본 08:00
+
+<span class="mt">예정: Google Geocoding → 최근접 ASOS 자동 매핑
+      5개년 평년 AI 예측 (중기 예보 보완)</span></div>
+
+        <h3 class="st" style="margin-top:18px">Apify &nbsp;<span class="badge bp" style="font-family:'Noto Sans KR';text-transform:none;letter-spacing:0;font-size:12px">연동 예정</span></h3>
+        <p>클라우드 기반 웹 스크래핑 플랫폼으로 Instagram, YouTube, 네이버 블로그 공개 콘텐츠를 수집합니다. 공식 API 접근이 제한될 때 Fallback으로도 활용합니다.</p>
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">사용 Actor</span>
+  Instagram Scraper  → 대회·크루 해시태그
+  YouTube Scraper    → 대회명 + "후기/리뷰/완주"
+  Naver Blog Scraper → 대회명 키워드 검색
+
+<span class="gn">저장 테이블</span>
+  review.race_sns_contents  대회 후기 콘텐츠
+  crew.instagram_cache      크루 피드 캐시
+
+<span class="wn">비용 모니터링 필수</span>  usage-based 과금
+APScheduler 1일 1회 자동 수집 (CORE)</div>
+      </div>
+
+      <div>
+        <h3 class="st">Instagram Graph API &nbsp;<span class="badge bp" style="font-family:'Noto Sans KR';text-transform:none;letter-spacing:0;font-size:12px">연동 예정</span></h3>
+        <p>Meta 공식 API로 @pac-run 비즈니스 계정의 포스트를 수집합니다. Long-lived Token 기반으로 APScheduler가 1일 1회 자동 수집하고 <code>instagram_cache</code>에 upsert합니다.</p>
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">사전 조건</span>
+  @pac-run 비즈니스/크리에이터 계정 전환
+  Meta Developer Console 앱 등록
+  Long-lived Token (60일, 수동 갱신 필요)
+  CORE .env: INSTAGRAM_ACCESS_TOKEN
+
+<span class="gn">수집 항목</span>
+  post_id / media_type / media_url
+  caption / like_count / permalink / posted_at
+
+<span class="hl">CORE API 엔드포인트</span>
+  GET  /api/instagram/posts  캐시 목록 반환
+  POST /api/instagram/fetch  수동 수집 트리거
+
+<span class="mt">→ CREW 대시보드 그리드 노출
+→ Apify를 Fallback으로 병행 운영</span></div>
+
+        <h3 class="st" style="margin-top:18px">YouTube &nbsp;<span class="badge bp" style="font-family:'Noto Sans KR';text-transform:none;letter-spacing:0;font-size:12px">연동 예정</span></h3>
+        <p>마라톤·러닝 대회 후기 영상을 수집해 AI 종합 분석에 통합합니다. 영상 제목·설명·댓글을 텍스트로 추출하여 RAG 파이프라인의 데이터 소스로 활용합니다.</p>
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">수집 방식</span>  Apify YouTube Scraper
+  검색: 대회명 + "후기" / "리뷰" / "완주"
+
+<span class="gn">추출 항목</span>
+  video_id / title / description
+  view_count / like_count / published_at
+  transcript (자막 텍스트, 가능 시)
+
+<span class="gn">저장: review.race_sns_contents</span>
+  source = 'youtube'
+
+<span class="hl">AI 파이프라인 연결</span>
+  → Claude API 텍스트 요약
+  → pgvector 임베딩 → RAG 검색
+  → 플랫폼 리뷰 + SNS 통합 종합 분석</div>
+      </div>
+    </div>
+  </div>
+  <div class="bg-num">09</div>
+</div>
+
+<!-- ═══ SLIDE 10 DB SCHEMA ═══ -->
+<div class="slide" data-i="9">
+  <div class="sh"><div class="s-label">Chapter 09 — Database</div><div class="s-num">10 / 14</div></div>
   <div class="slide-content">
     <div class="stitle">DB <span class="acc">스키마</span></div>
     <div class="ssub">Supabase PostgreSQL · 3개 스키마 분리 운영 · TIMESTAMPTZ(6) 통일</div>
