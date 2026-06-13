@@ -181,6 +181,32 @@ Route::middleware(['auth', 'verified'])->prefix('admin/events')->name('admin.eve
     Route::get('/{event}/groups/excel', [EventGroupController::class, 'downloadExcel'])->name('groups.excel');
 });
 
+// 이메일 발송 테스트 (super_admin 전용)
+Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/email-test', function () {
+        abort_unless(auth()->user()->role === 'super_admin', 403);
+        return view('admin.email-test');
+    })->name('email-test');
+
+    Route::post('/email-test', function (\Illuminate\Http\Request $request) {
+        abort_unless(auth()->user()->role === 'super_admin', 403);
+        $request->validate([
+            'to'      => 'required|email',
+            'subject' => 'required|string|max:200',
+            'body'    => 'required|string',
+        ]);
+        try {
+            \Illuminate\Support\Facades\Mail::html(
+                $request->body,
+                fn ($msg) => $msg->to($request->to)->subject($request->subject)
+            );
+            return back()->with('success', "{$request->to} 으로 발송했습니다.");
+        } catch (\Throwable $e) {
+            return back()->with('error', '발송 실패: ' . $e->getMessage())->withInput();
+        }
+    })->name('email-test.send');
+});
+
 // 관리자 비밀번호 재확인 (로그인 상태 필요, CSRF 적용)
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin-confirm', [AdminPasswordConfirmController::class, 'show'])->name('admin.password.confirm');
