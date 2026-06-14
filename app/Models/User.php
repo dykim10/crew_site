@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\ResetPasswordNotification;
 use App\Notifications\VerifyEmailNotification;
 use App\Services\CryptoService;
 use Filament\Models\Contracts\FilamentUser;
@@ -147,6 +148,11 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
     public function sendEmailVerificationNotification(): void
     {
         $this->notify(new VerifyEmailNotification());
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPasswordNotification($token));
     }
 
     // crew.users_detail 1:1 관계

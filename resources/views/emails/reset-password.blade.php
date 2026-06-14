@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>이메일 인증 — PAC RUN CREW</title>
+<title>비밀번호 재설정 — PAC RUN CREW</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -28,11 +28,10 @@
     background-color: #141010;
   }
 
-  /* ── 상단 골드 라인 ── */
+  /* ── 상단 레드 라인 ── */
   .top-stripe {
     height: 3px;
-    background-color: #E5AD16;
-    background-image: linear-gradient(90deg, #E5AD16 0%, #F0C040 50%, #E5AD16 100%);
+    background-color: #E80043;
   }
 
   /* ── 헤더 ── */
@@ -69,7 +68,7 @@
 
   /* ── 히어로 ── */
   .hero {
-    background-color: #0F0D0D;
+    background-color: #100A0A;
     padding: 52px 40px 44px;
     position: relative;
     overflow: hidden;
@@ -82,7 +81,7 @@
     font-family: 'Bebas Neue', sans-serif;
     font-size: 200px;
     color: transparent;
-    -webkit-text-stroke: 1px rgba(229, 173, 22, 0.07);
+    -webkit-text-stroke: 1px rgba(232, 0, 67, 0.08);
     letter-spacing: 0;
     line-height: 1;
     pointer-events: none;
@@ -114,8 +113,8 @@
 
   .hero-badge {
     display: inline-block;
-    background-color: #E5AD16;
-    color: #0F0D0D;
+    background-color: #E80043;
+    color: #FFFFFF;
     font-family: 'Bebas Neue', sans-serif;
     font-size: 10px;
     letter-spacing: 4px;
@@ -136,14 +135,14 @@
     font-family: 'Bebas Neue', sans-serif;
     font-size: 72px;
     letter-spacing: 2px;
-    color: #E5AD16;
+    color: #E80043;
     line-height: 0.9;
     display: block;
   }
 
   .hero-rule {
     border: none;
-    border-top: 1px solid #1F1C1C;
+    border-top: 1px solid #200A0A;
     margin: 28px 0 20px;
   }
 
@@ -151,7 +150,7 @@
     font-family: 'Bebas Neue', sans-serif;
     font-size: 10px;
     letter-spacing: 3px;
-    color: #2E2828;
+    color: #2E2020;
   }
 
   /* ── 본문 ── */
@@ -164,7 +163,7 @@
     font-family: 'Bebas Neue', sans-serif;
     font-size: 10px;
     letter-spacing: 4px;
-    color: #E5AD16;
+    color: #E80043;
     margin-bottom: 20px;
     display: block;
   }
@@ -197,18 +196,16 @@
     text-align: center;
   }
 
-  .cta-table { margin: 0 auto; border-collapse: collapse; }
-
   .cta-btn {
     display: inline-block;
-    background-color: #E5AD16;
-    color: #0F0D0D;
+    background-color: #E80043;
+    color: #FFFFFF;
     font-family: 'Bebas Neue', sans-serif;
     font-size: 18px;
     letter-spacing: 6px;
     padding: 20px 60px;
     text-decoration: none;
-    border-bottom: 5px solid #B8881A;
+    border-bottom: 5px solid #A8002F;
   }
 
   /* ── 구분선 ── */
@@ -226,7 +223,7 @@
     font-family: 'Bebas Neue', sans-serif;
     font-size: 10px;
     letter-spacing: 4px;
-    color: #E5AD16;
+    color: #E80043;
     display: block;
     margin-bottom: 8px;
   }
@@ -265,7 +262,7 @@
   .footer {
     background-color: #0F0D0D;
     padding: 32px 40px 28px;
-    border-top: 3px solid #E5AD16;
+    border-top: 3px solid #E80043;
   }
 
   .footer table { width: 100%; border-collapse: collapse; }
@@ -352,7 +349,7 @@
 <div class="outer-wrap">
 <div class="email-wrapper">
 
-  <!-- 상단 골드 라인 -->
+  <!-- 상단 레드 라인 -->
   <div class="top-stripe"></div>
 
   <!-- 헤더 -->
@@ -368,16 +365,16 @@
 
   <!-- 히어로 -->
   <div class="hero">
-    <div class="hero-watermark">V</div>
+    <div class="hero-watermark">R</div>
 
     <div class="hero-meta">
-      <span class="hero-step">01</span>
+      <span class="hero-step">SEC</span>
       <span class="hero-step-line"></span>
-      <span class="hero-badge">EMAIL VERIFICATION</span>
+      <span class="hero-badge">PASSWORD RESET</span>
     </div>
 
-    <span class="hero-title-line1">이메일</span>
-    <span class="hero-title-line2">인증 요청</span>
+    <span class="hero-title-line1">비밀번호</span>
+    <span class="hero-title-line2">재설정 요청</span>
 
     <hr class="hero-rule">
     <div class="hero-desc">HIGH INTENSITY INTERVAL TRAINING PARTNERSHIP ACTIVATION CREW</div>
@@ -386,7 +383,7 @@
   <!-- 본문 -->
   <div class="body">
 
-    <span class="body-eyebrow">— 이메일 인증 안내</span>
+    <span class="body-eyebrow">— 비밀번호 재설정 안내</span>
 
     <div class="greeting">
       안녕하세요,<br>
@@ -394,19 +391,19 @@
     </div>
 
     <p class="message">
-      PAC RUN CREW에 가입해주셔서 감사합니다.<br>
-      아래 버튼을 클릭하여 이메일 인증을 완료하면<br>
-      모든 서비스를 이용하실 수 있습니다.
+      비밀번호 재설정 요청이 접수되었습니다.<br>
+      아래 버튼을 클릭하여 새로운 비밀번호를 설정해 주세요.<br>
+      본인이 요청하지 않은 경우 이 메일을 무시하시면 됩니다.
     </p>
 
     <div class="cta-wrap">
-      <a href="{{ $url }}" class="cta-btn">이메일 인증하기</a>
+      <a href="{{ $url }}" class="cta-btn">비밀번호 재설정하기</a>
     </div>
 
     <hr class="divider">
 
     <div class="url-box">
-      <span class="url-label">DIRECT LINK</span>
+      <span class="url-label">RESET LINK</span>
       <div class="url-text">{{ $url }}</div>
     </div>
 
