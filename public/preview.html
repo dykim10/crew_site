@@ -366,7 +366,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
       </div>
       <div style="text-align:right">
         <div class="cov-year">2026</div>
-        <div class="cov-ver">Project Docs v2.5</div>
+        <div class="cov-ver">Project Docs v2.6</div>
         <div class="s-num" id="snum" style="margin-top:4px;font-size:11px;color:var(--td);letter-spacing:2px">01 / 12</div>
       </div>
     </div>
@@ -485,14 +485,14 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
             <div class="cov-feat"><span class="cov-feat-dot" style="color:rgba(255,255,255,.3)">▸</span>Claude Vision 이미지 파싱 · AI 요약 · 감성분석</div>
             <div class="cov-feat"><span class="cov-feat-dot" style="color:rgba(255,255,255,.3)">▸</span>기상청 ASOS 날씨 수집 · S3 WebP 변환 · CDN</div>
             <div class="cov-feat"><span class="cov-feat-dot" style="color:rgba(255,255,255,.3)">▸</span>마라톤고 / 로드런 대회 크롤링 (2종 파서)</div>
-            <div class="cov-feat"><span class="cov-feat-dot" style="color:rgba(255,255,255,.3)">▸</span>APScheduler 자동 백업 · Solapi 단체 SMS</div>
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:rgba(255,255,255,.3)">▸</span>APScheduler 백업 · SMS · 주간 뉴스레터 메일링 (월 06:00)</div>
           </div>
         </div>
 
         <!-- Zone C: Evidence (dense) -->
         <div class="cov-zc">
           <div class="cov-zc-kpi">
-            <span class="cov-kpi-val" style="color:rgba(255,255,255,.55)">16</span>
+            <span class="cov-kpi-val" style="color:rgba(255,255,255,.55)">19</span>
             <span class="cov-kpi-lbl">API<br>엔드포인트</span>
           </div>
           <div class="cov-zc-badges">
@@ -521,7 +521,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
         <div class="cov-live-dot"></div>
         <div class="cov-live-txt">All Services Live</div>
       </div>
-      <div class="cov-date">2026 — 06 — 07</div>
+      <div class="cov-date">2026 — 06 — 14</div>
     </div>
 
   </div>
@@ -653,6 +653,7 @@ php artisan serve --port=<span class="hl">8300</span></div>
           <li>날씨 데이터 연동 (기상청 ASOS · race_weather 단일 캐시 방어)</li>
           <li>서울 07:00 / 그 외 08:00 기본 관측시각 자동 적용</li>
           <li>reviews PK 시퀀스 리셋 마이그레이션 (중복키 방지)</li>
+          <li>커스텀 이메일 템플릿 (인증/비밀번호 재설정 · 모바일 반응형 · Playfair Display 에디토리얼 스타일)</li>
         </ul>
 
         <h3 class="st">v2 UI 설계 확정</h3>
@@ -941,6 +942,7 @@ crew.instagram_cache  upsert 저장
           <li>프로필 페이지 재설계 (아바타 S3 업로드)</li>
           <li>비밀번호 찾기 email_hash 기반 토큰 수정</li>
           <li>XSS 방어 (mews/purifier · Symfony 보안 패치)</li>
+          <li>커스텀 이메일 템플릿 (인증/비밀번호 재설정 · Bebas Neue 다크 에디토리얼 · 모바일 반응형)</li>
         </ul>
 
         <h3 class="st">다음 작업 (우선순위)</h3>
@@ -991,6 +993,9 @@ crew.instagram_cache  upsert 저장
       <tr><td><code>POST</code></td><td>/api/backup/run</td><td>DB 전체 백업 즉시 실행</td><td>내부</td><td><span class="badge bd">구현</span></td></tr>
       <tr><td><code>GET</code></td><td>/api/instagram/posts</td><td>인스타그램 캐시 반환</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
       <tr><td><code>POST</code></td><td>/api/weather/race/{id}</td><td>대회 날씨 수집 (기상청 ASOS) + race_weather DB 저장</td><td>REVIEW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>POST</code></td><td>/api/mailing/send-now</td><td>주간 뉴스레터 즉시 발송</td><td>내부</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>POST</code></td><td>/api/mailing/schedule-test</td><td>지정 시각 1회 테스트 발송 스케줄</td><td>내부</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>GET</code></td><td>/api/mailing/preview</td><td>뉴스레터 HTML 미리보기</td><td>내부</td><td><span class="badge bd">구현</span></td></tr>
       <tr><td><code>POST</code></td><td>/api/weather/geocode</td><td>주소 → 위도/경도 (Geocoding)</td><td>REVIEW</td><td><span class="badge bp">예정</span></td></tr>
       <tr><td><code>GET</code></td><td>/api/weather/predict/{id}</td><td>AI 장기 날씨 예측</td><td>REVIEW</td><td><span class="badge bp">예정</span></td></tr>
     </table>
@@ -1298,7 +1303,7 @@ APScheduler 1일 1회 자동 수집 (CORE)</div>
   <div class="sh"><div class="s-label">Chapter 11 — Status & Roadmap</div><div class="s-num">12 / 12</div></div>
   <div class="slide-content">
     <div class="stitle">개발 현황 &amp; <span class="acc">로드맵</span></div>
-    <div class="ssub">2026-06-07 기준 · 3개 서비스 통합 진행 현황</div>
+    <div class="ssub">2026-06-14 기준 · 3개 서비스 통합 진행 현황</div>
 
     <div class="g3" style="margin-bottom:16px">
       <div class="card cy">
@@ -1307,23 +1312,23 @@ APScheduler 1일 1회 자동 수집 (CORE)</div>
           <div class="sbar" style="flex:1"><div class="fill" style="width:97%"></div></div>
           <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:800;color:var(--y)">97%</span>
         </div>
-        <p><span class="badge bd">v1 운영 중</span>&nbsp;<span class="badge bw">v2 기획 완료</span><br>날씨 ASOS 완료 · 이미지 S3 완료</p>
+        <p><span class="badge bd">v1 운영 중</span>&nbsp;<span class="badge bw">v2 기획 완료</span><br>커스텀 이메일 템플릿 · 날씨 ASOS 완료</p>
       </div>
       <div class="card cp">
         <div class="ctitle">CREW</div>
         <div style="display:flex;align-items:center;gap:8px;margin:8px 0">
-          <div class="sbar" style="flex:1"><div class="fill" style="width:88%;background:var(--p)"></div></div>
-          <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:800;color:var(--p)">88%</span>
+          <div class="sbar" style="flex:1"><div class="fill" style="width:90%;background:var(--p)"></div></div>
+          <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:800;color:var(--p)">90%</span>
         </div>
-        <p><span class="badge bd">배포 완료</span><br>프로필 개선 · S3 ACL 패치 완료</p>
+        <p><span class="badge bd">배포 완료</span><br>커스텀 이메일 템플릿 추가 · 배포 완료</p>
       </div>
       <div class="card cd">
         <div class="ctitle">CORE API</div>
         <div style="display:flex;align-items:center;gap:8px;margin:8px 0">
-          <div class="sbar" style="flex:1"><div class="fill" style="width:80%"></div></div>
-          <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:800;color:var(--y)">80%</span>
+          <div class="sbar" style="flex:1"><div class="fill" style="width:83%"></div></div>
+          <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:800;color:var(--y)">83%</span>
         </div>
-        <p><span class="badge bd">v1 운영 중</span><br>ACL 공개접근 패치 · 날씨 예정</p>
+        <p><span class="badge bd">v1 운영 중</span><br>주간 뉴스레터 메일링 APScheduler 추가</p>
       </div>
     </div>
 
@@ -1331,11 +1336,18 @@ APScheduler 1일 1회 자동 수집 (CORE)</div>
       <div>
         <h3 class="st">통합 다음 작업 (우선순위)</h3>
         <div class="stage-list">
+          <div class="stage-item done">
+            <span class="stage-no">✓</span>
+            <div>
+              <div class="stage-ttl">커스텀 이메일 템플릿 <span style="font-size:14px;color:#3FB950">완료 (2026-06-14)</span></div>
+              <div class="stage-desc">CREW · REVIEW 인증/비밀번호 재설정 · 모바일 반응형 · 주간 뉴스레터 메일링</div>
+            </div>
+          </div>
           <div class="stage-item plan">
             <span class="stage-no">1</span>
             <div>
-              <div class="stage-ttl">CREW 게시판 Blade 뷰</div>
-              <div class="stage-desc">boards/ list · show · form — skin v1/v2</div>
+              <div class="stage-ttl">REVIEW EC2 배포</div>
+              <div class="stage-desc">Phase 3-5 변경사항 · race_editions 마이그레이션 확인</div>
             </div>
           </div>
           <div class="stage-item plan">
@@ -1348,15 +1360,15 @@ APScheduler 1일 1회 자동 수집 (CORE)</div>
           <div class="stage-item plan">
             <span class="stage-no">3</span>
             <div>
-              <div class="stage-ttl">REVIEW v2 날씨 S1-B</div>
-              <div class="stage-desc">Google Geocoding → 측정소 자동 매핑 (ASOS S1-A 완료)</div>
+              <div class="stage-ttl">Instagram 연동</div>
+              <div class="stage-desc">Apify → instagram_cache → CREW 대시보드</div>
             </div>
           </div>
           <div class="stage-item plan">
             <span class="stage-no">4</span>
             <div>
-              <div class="stage-ttl">Instagram 연동</div>
-              <div class="stage-desc">Apify → instagram_cache → CREW 대시보드</div>
+              <div class="stage-ttl">완주 인증 플로우</div>
+              <div class="stage-desc">completion_records · 기록 사진 AI 파싱 (REVIEW v2)</div>
             </div>
           </div>
           <div class="stage-item plan">
@@ -1384,9 +1396,9 @@ APScheduler 1일 1회 자동 수집 (CORE)</div>
         <div style="margin-top:16px;text-align:center;padding:18px;background:var(--surf);border-radius:8px;border:1px solid var(--br)">
           <div style="font-family:'Barlow Condensed';font-weight:800;font-size:30px;color:var(--y);letter-spacing:-1px">PAC-RUN</div>
           <div style="font-size:15px;color:var(--td);margin-top:6px;line-height:1.9">
-            Project Documentation v2.4<br>
+            Project Documentation v2.6<br>
             김대윤 · dykim10iufc@gmail.com<br>
-            2026-06-07
+            2026-06-14
           </div>
         </div>
       </div>
