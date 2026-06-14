@@ -565,7 +565,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
       </div>
       <div class="card cy">
         <div class="ctitle">외부 서비스</div>
-        <p>AWS S3 + CloudFront (CDN)<br>AWS SES (이메일, 월 3k 무료)<br>솔라피 (SMS · HMAC 인증)<br>Claude API (Vision/요약/분석)</p>
+        <p>AWS S3 + CloudFront (CDN)<br>Resend (이메일 발송)<br>솔라피 (SMS · HMAC 인증)<br>Claude API (Vision/요약/분석)</p>
       </div>
     </div>
   </div>
@@ -588,7 +588,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
           <tr><td>웹서버</td><td>Nginx</td><td>Virtual Host</td></tr>
           <tr><td>DB</td><td>Supabase PostgreSQL</td><td>스키마 분리</td></tr>
           <tr><td>파일</td><td>AWS S3 + CloudFront</td><td>이미지 CDN</td></tr>
-          <tr><td>이메일</td><td>AWS SES</td><td>월 3,000건 무료</td></tr>
+          <tr><td>이메일</td><td>Resend</td><td>무료 100건/일</td></tr>
           <tr><td>SMS</td><td>솔라피</td><td>HMAC 인증</td></tr>
           <tr><td>AI</td><td>Claude API</td><td>claude-opus-4-8</td></tr>
           <tr><td>배포</td><td>GitHub → git pull</td><td>수동 (v1)</td></tr>
@@ -1385,7 +1385,7 @@ APScheduler 1일 1회 자동 수집 (CORE)</div>
         <table class="tbl">
           <tr><th>항목</th><th>내용</th></tr>
           <tr><td>CI/CD</td><td>GitHub Actions 자동 배포</td></tr>
-          <tr><td>SES</td><td>샌드박스 해제 요청 완료 <span class="badge bw">대기 중</span></td></tr>
+          <tr><td>Resend</td><td>무료 플랜 운영 중 · 유료 전환 시점 미정</td></tr>
           <tr><td>REVIEW v2</td><td>날씨 × AI · RAG 구현 시작 시점</td></tr>
           <tr><td>pgvector</td><td>Supabase 벡터 DB 활성화</td></tr>
           <tr><td>서비스 연계</td><td>REVIEW ↔ CREW 완주 인증</td></tr>
