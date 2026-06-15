@@ -540,12 +540,12 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
 <span class="hl">       AWS Route 53</span>  →  DNS 라우팅
                    │
                    ▼
-<span class="hl">    Nginx  (EC2 · Ubuntu 24.04 · t2.micro · 13.125.109.144)</span>
-     ├── review.pac-run.com ──▶ <span class="gn">REVIEW</span>  Laravel  :8200
-     ├── crew.pac-run.com   ──▶ <span class="pk">CREW</span>    Laravel  :8300
-     └── api.pac-run.com    ──▶ <span class="hl">CORE</span>    FastAPI  :8100
-<span class="mt">──── 내부 통신 (동일 EC2, 외부 인터넷 불필요) ───────────</span>
-     REVIEW / CREW  ──▶  http://localhost:8100/api/...
+<span class="hl">    Nginx  (EC2 · Ubuntu 24.04 · t2.micro · ***.***.***.***)</span>
+     ├── review.pac-run.com ──▶ <span class="gn">REVIEW</span>  Laravel  (독립 포트)
+     ├── crew.pac-run.com   ──▶ <span class="pk">CREW</span>    Laravel  (독립 포트)
+     └── api.pac-run.com    ──▶ <span class="hl">CORE</span>    FastAPI  (독립 포트)
+<span class="mt">──── 내부 통신 (동일 EC2, 서비스 간 직접 API 호출) ──────</span>
+     REVIEW / CREW  ──▶  CORE API 내부 엔드포인트 호출
                    ▼
 <span class="hl">    Supabase PostgreSQL</span>  (스키마 분리 운영)
      ├── public : users · crews · generations · regions · branches
@@ -557,11 +557,11 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
     <div class="g3" style="margin-top:14px">
       <div class="card cy">
         <div class="ctitle">EC2 인스턴스</div>
-        <p>t2.micro · Ubuntu 24.04<br>IP: 13.125.109.144<br>SSL: Let's Encrypt + ACM<br>배포: GitHub → git pull 수동</p>
+        <p>t2.micro · Ubuntu 24.04<br>IP: ***.***.***.***<br>SSL: Let's Encrypt + ACM<br>배포: GitHub → git pull 수동</p>
       </div>
       <div class="card cy">
         <div class="ctitle">데이터베이스</div>
-        <p>Supabase PostgreSQL<br>3개 스키마 분리 운영<br>TIMESTAMPTZ(6) 통일<br>Free 플랜 · CORE API 백업</p>
+        <p>Supabase PostgreSQL<br>3개 스키마 분리 운영<br>TIMESTAMPTZ(6) 통일<br>플랜 분리 운영 · 전용 백업 솔루션</p>
       </div>
       <div class="card cy">
         <div class="ctitle">외부 서비스</div>
@@ -596,16 +596,16 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
 
         <h3 class="st">로컬 실행 순서</h3>
         <div class="ab"><span class="mt"># 터미널 1 — CORE API 먼저 (의존성)</span>
-cd C:\src\projects\core-api
-python -m uvicorn main:app --reload --port=<span class="hl">8100</span>
+cd ./core-api
+python -m uvicorn main:app --reload --port=<span class="hl">[CORE]</span>
 
 <span class="mt"># 터미널 2 — REVIEW</span>
-cd C:\src\projects\review
-php artisan serve --port=<span class="hl">8200</span>
+cd ./review
+php artisan serve --port=<span class="hl">[REVIEW]</span>
 
 <span class="mt"># 터미널 3 — CREW</span>
-cd C:\src\projects\crew
-php artisan serve --port=<span class="hl">8300</span></div>
+cd ./crew
+php artisan serve --port=<span class="hl">[CREW]</span></div>
       </div>
       <div>
         <h3 class="st">서비스별 스택</h3>
@@ -619,9 +619,9 @@ php artisan serve --port=<span class="hl">8300</span></div>
         </div>
 
         <h3 class="st" style="margin-top:18px">GitHub 저장소</h3>
-        <div class="ab" style="white-space:pre-wrap"><span class="hl">review_site</span>           → REVIEW (dev/main)
-<span class="pk">crew_site</span>             → CREW   (dev/main)
-<span class="gn">python_core_api_site</span>  → CORE   (dev/main)</div>
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">review_***</span>            → REVIEW (dev/main)
+<span class="pk">crew_***</span>              → CREW   (dev/main)
+<span class="gn">python_***_api</span>        → CORE   (dev/main)</div>
       </div>
     </div>
   </div>
@@ -810,11 +810,11 @@ app/Models/
         <h3 class="st">CORE API 추가 엔드포인트</h3>
         <table class="tbl">
           <tr><th>Method</th><th>경로</th><th>상태</th></tr>
-          <tr><td><code>POST</code></td><td>/api/weather/geocode</td><td><span class="badge bp">예정</span></td></tr>
-          <tr><td><code>POST</code></td><td>/api/weather/fetch-past</td><td><span class="badge bp">예정</span></td></tr>
-          <tr><td><code>GET</code></td><td>/api/weather/predict/{id}</td><td><span class="badge bp">예정</span></td></tr>
-          <tr><td><code>POST</code></td><td>/api/rag/embed</td><td><span class="badge bp">예정</span></td></tr>
-          <tr><td><code>POST</code></td><td>/api/summary/race/{id}</td><td><span class="badge bp">예정</span></td></tr>
+          <tr><td><code>POST</code></td><td>[비공개]</td><td><span class="badge bp">예정</span></td></tr>
+          <tr><td><code>POST</code></td><td>[비공개]</td><td><span class="badge bp">예정</span></td></tr>
+          <tr><td><code>GET</code></td><td>[비공개]</td><td><span class="badge bp">예정</span></td></tr>
+          <tr><td><code>POST</code></td><td>[비공개]</td><td><span class="badge bp">예정</span></td></tr>
+          <tr><td><code>POST</code></td><td>[비공개]</td><td><span class="badge bp">예정</span></td></tr>
         </table>
       </div>
     </div>
@@ -982,22 +982,22 @@ crew.instagram_cache  upsert 저장
     <h3 class="st">엔드포인트 전체</h3>
     <table class="tbl">
       <tr><th>Method</th><th>경로</th><th>설명</th><th>호출자</th><th>상태</th></tr>
-      <tr><td><code>POST</code></td><td>/api/parse-image</td><td>러닝 이미지 파싱 (Claude Vision)</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
-      <tr><td><code>POST</code></td><td>/api/summarize</td><td>리뷰 AI 요약 + 감성분석</td><td>REVIEW</td><td><span class="badge bd">구현</span></td></tr>
-      <tr><td><code>POST</code></td><td>/api/races/summarize</td><td>대회별 AI 종합 분석</td><td>REVIEW</td><td><span class="badge bd">구현</span></td></tr>
-      <tr><td><code>GET</code></td><td>/api/race-info</td><td>대회 정보 크롤링</td><td>REVIEW</td><td><span class="badge bd">구현</span></td></tr>
-      <tr><td><code>POST</code></td><td>/api/sms/send</td><td>솔라피 단체 문자 발송</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
-      <tr><td><code>GET</code></td><td>/api/sms/status/{id}</td><td>SMS 수신 결과 집계</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
-      <tr><td><code>DELETE</code></td><td>/api/s3/image</td><td>S3 이미지 삭제</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
-      <tr><td><code>POST</code></td><td>/api/photo/resize-webp</td><td>이미지 → WebP 변환 + S3</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
-      <tr><td><code>POST</code></td><td>/api/backup/run</td><td>DB 전체 백업 즉시 실행</td><td>내부</td><td><span class="badge bd">구현</span></td></tr>
-      <tr><td><code>GET</code></td><td>/api/instagram/posts</td><td>인스타그램 캐시 반환</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
-      <tr><td><code>POST</code></td><td>/api/weather/race/{id}</td><td>대회 날씨 수집 (기상청 ASOS) + race_weather DB 저장</td><td>REVIEW</td><td><span class="badge bd">구현</span></td></tr>
-      <tr><td><code>POST</code></td><td>/api/mailing/send-now</td><td>주간 뉴스레터 즉시 발송</td><td>내부</td><td><span class="badge bd">구현</span></td></tr>
-      <tr><td><code>POST</code></td><td>/api/mailing/schedule-test</td><td>지정 시각 1회 테스트 발송 스케줄</td><td>내부</td><td><span class="badge bd">구현</span></td></tr>
-      <tr><td><code>GET</code></td><td>/api/mailing/preview</td><td>뉴스레터 HTML 미리보기</td><td>내부</td><td><span class="badge bd">구현</span></td></tr>
-      <tr><td><code>POST</code></td><td>/api/weather/geocode</td><td>주소 → 위도/경도 (Geocoding)</td><td>REVIEW</td><td><span class="badge bp">예정</span></td></tr>
-      <tr><td><code>GET</code></td><td>/api/weather/predict/{id}</td><td>AI 장기 날씨 예측</td><td>REVIEW</td><td><span class="badge bp">예정</span></td></tr>
+      <tr><td><code>POST</code></td><td>[비공개]</td><td>러닝 이미지 파싱 (Claude Vision)</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>POST</code></td><td>[비공개]</td><td>리뷰 AI 요약 + 감성분석</td><td>REVIEW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>POST</code></td><td>[비공개]</td><td>대회별 AI 종합 분석</td><td>REVIEW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>GET</code></td><td>[비공개]</td><td>대회 정보 크롤링</td><td>REVIEW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>POST</code></td><td>[비공개]</td><td>솔라피 단체 문자 발송</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>GET</code></td><td>[비공개]</td><td>SMS 수신 결과 집계</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>DELETE</code></td><td>[비공개]</td><td>S3 이미지 삭제</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>POST</code></td><td>[비공개]</td><td>이미지 → WebP 변환 + S3</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>POST</code></td><td>[비공개]</td><td>DB 전체 백업 즉시 실행</td><td>내부</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>GET</code></td><td>[비공개]</td><td>인스타그램 캐시 반환</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>POST</code></td><td>[비공개]</td><td>대회 날씨 수집 (기상청 ASOS) + DB 저장</td><td>REVIEW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>POST</code></td><td>[비공개]</td><td>주간 뉴스레터 즉시 발송</td><td>내부</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>POST</code></td><td>[비공개]</td><td>지정 시각 1회 테스트 발송 스케줄</td><td>내부</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>GET</code></td><td>[비공개]</td><td>뉴스레터 HTML 미리보기</td><td>내부</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>POST</code></td><td>[비공개]</td><td>주소 → 위도/경도 (Geocoding)</td><td>REVIEW</td><td><span class="badge bp">예정</span></td></tr>
+      <tr><td><code>GET</code></td><td>[비공개]</td><td>AI 장기 날씨 예측</td><td>REVIEW</td><td><span class="badge bp">예정</span></td></tr>
     </table>
   </div>
   <div class="bg-num">08</div>
@@ -1055,8 +1055,8 @@ APScheduler 1일 1회 자동 수집 (CORE)</div>
   caption / like_count / permalink / posted_at
 
 <span class="hl">CORE API 엔드포인트</span>
-  GET  /api/instagram/posts  캐시 목록 반환
-  POST /api/instagram/fetch  수동 수집 트리거
+  GET  [비공개]  캐시 목록 반환
+  POST [비공개]  수동 수집 트리거
 
 <span class="mt">→ CREW 대시보드 그리드 노출
 → Apify를 Fallback으로 병행 운영</span></div>
@@ -1211,23 +1211,23 @@ APScheduler 1일 1회 자동 수집 (CORE)</div>
           <tr><td>CSRF</td><td>모든 POST/PUT/DELETE에 @csrf 필수</td></tr>
           <tr><td>관리자</td><td>/admin/* → auth, verified 미들웨어</td></tr>
           <tr><td>입력 검증</td><td>$request->validate() 반드시 선행</td></tr>
-          <tr><td>개인정보</td><td>이름/이메일/전화 → AES-128 암호화</td></tr>
+          <tr><td>개인정보</td><td>이름/이메일/전화 → 암호화 저장</td></tr>
           <tr><td>XSS</td><td>mews/purifier 적용 (boards 프로파일)</td></tr>
           <tr><td>테스트</td><td>DatabaseTransactions (RefreshDatabase 금지)</td></tr>
         </table>
 
         <h3 class="st">개인정보 암호화 설계</h3>
         <table class="tbl">
-          <tr><th>데이터</th><th>방식</th><th>컬럼</th></tr>
-          <tr><td>이메일 (검색)</td><td>SHA-256 단방향</td><td>email_hash</td></tr>
-          <tr><td>이메일 (표시)</td><td>AES-128 양방향</td><td>email_enc</td></tr>
-          <tr><td>전화번호</td><td>AES-128 양방향</td><td>phone_enc</td></tr>
-          <tr><td>이름</td><td>AES-128 양방향</td><td>name_enc</td></tr>
+          <tr><th>데이터</th><th>방식</th></tr>
+          <tr><td>이메일 (검색)</td><td>단방향 해시 암호화</td></tr>
+          <tr><td>이메일 (표시)</td><td>양방향 암호화</td></tr>
+          <tr><td>전화번호</td><td>양방향 암호화</td></tr>
+          <tr><td>이름</td><td>양방향 암호화</td></tr>
         </table>
 
         <div class="co warn" style="margin-top:10px">
           <strong>운영 안전 정책</strong>
-          CORE API APScheduler → 매일 00:00 KST → S3 backups/ → 7일 보관. Supabase Free 플랜 자체 백업 없음 — CORE API 백업에 의존.
+          DB 플랜 분리 운영 · 전용 백업 솔루션 이중 적용으로 데이터 안전성 확보.
         </div>
       </div>
     </div>
@@ -1407,6 +1407,72 @@ APScheduler 1일 1회 자동 수집 (CORE)</div>
   <div class="bg-num">12</div>
 </div>
 
+<!-- ═══ SLIDE 13 DEPLOY AUTOMATION ═══ -->
+<div class="slide" data-i="12">
+  <div class="sh"><div class="s-label">Chapter 12 — Deploy Automation</div><div class="s-num">13 / 13</div></div>
+  <div class="slide-content">
+    <div class="stitle">AI <span class="acc">배포 자동화</span> <span class="dim">· Claude Code Hook 기반</span></div>
+    <div class="ssub">자연어 명령 한 줄 → Hook 자동 실행 → EC2 배포 완료 — 개발자 개입 최소화</div>
+
+    <div class="g2">
+      <div>
+        <h3 class="st">배포 플로우</h3>
+        <div class="flow">
+          <div class="fs"><div class="fn">1</div><div class="fc"><strong>자연어 명령</strong><span>"커밋하고 배포해줘" — 한 줄 입력</span></div></div>
+          <div class="fs"><div class="fn">2</div><div class="fc"><strong>Claude Code</strong><span>git diff 분석 → 커밋 메시지 자동 작성 → commit + push</span></div></div>
+          <div class="fs"><div class="fn">3</div><div class="fc"><strong>PostToolUse Hook</strong><span>git push main 감지 → deploy-ec2.sh 자동 실행</span></div></div>
+          <div class="fs"><div class="fn">4</div><div class="fc"><strong>EC2 자동화</strong><span>git pull → composer install → npm build → migrate → restart</span></div></div>
+          <div class="fs"><div class="fn">5</div><div class="fc"><strong>완료</strong><span>배포 결과 반환 — 전체 소요 약 60~90초</span></div></div>
+        </div>
+
+        <h3 class="st">Hook 구성 (3레이어)</h3>
+        <table class="tbl">
+          <tr><th>Hook 종류</th><th>트리거</th><th>역할</th></tr>
+          <tr><td><code>PreToolUse</code></td><td>git push main 직전</td><td>배포 전 검증 알림</td></tr>
+          <tr><td><code>PostToolUse</code></td><td>git push main 완료</td><td>EC2 deploy-ec2.sh 자동 실행</td></tr>
+          <tr><td><code>PostToolUse</code></td><td>git commit 완료</td><td>정의서 업데이트 알림</td></tr>
+          <tr><td><code>PostToolUse</code></td><td>Bash 명령 후</td><td>패키지 취약점 자동 검사</td></tr>
+          <tr><td><code>Stop</code></td><td>응답 종료 시</td><td>배포 체크리스트 확인</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3 class="st">Hook 설정 구조</h3>
+        <div class="ab" style="white-space:pre-wrap"><span class="mt">// .claude/settings.json</span>
+{
+  <span class="hl">"hooks"</span>: {
+    <span class="gn">"PostToolUse"</span>: [{
+      <span class="hl">"matcher"</span>: <span class="cy">"Bash"</span>,
+      <span class="hl">"hooks"</span>: [{
+        <span class="hl">"type"</span>:          <span class="cy">"command"</span>,
+        <span class="hl">"command"</span>:       <span class="cy">"deploy-ec2.sh"</span>,
+        <span class="hl">"timeout"</span>:       360,
+        <span class="hl">"statusMessage"</span>: <span class="cy">"EC2 자동 배포 중..."</span>
+      }]
+    }],
+    <span class="gn">"PreToolUse"</span>: [{ <span class="mt">/* 배포 전 검증 */</span> }],
+    <span class="gn">"Stop"</span>:        [{ <span class="mt">/* 체크리스트 확인 */</span> }]
+  }
+}</div>
+
+        <h3 class="st">전통 방식 vs AI Hook 방식</h3>
+        <table class="tbl">
+          <tr><th>항목</th><th>전통 방식</th><th>AI Hook 방식</th></tr>
+          <tr><td>커밋 메시지</td><td>직접 작성</td><td><span class="badge bd">AI 자동 생성</span></td></tr>
+          <tr><td>배포 트리거</td><td>수동 SSH 접속</td><td><span class="badge bd">Hook 자동 실행</span></td></tr>
+          <tr><td>배포 명령</td><td>순서대로 수동 실행</td><td><span class="badge bd">스크립트 자동화</span></td></tr>
+          <tr><td>사용자 입력</td><td>10+ 단계</td><td><span class="badge bd">자연어 1줄</span></td></tr>
+        </table>
+
+        <div class="co" style="margin-top:12px">
+          <strong>핵심 차별점</strong>
+          Claude Code가 AI로서 액션을 트리거하고, Hook이 시스템 레벨에서 자동 실행합니다. 개발자는 자연어 한 줄만 입력하면 커밋 메시지 작성부터 EC2 서비스 재시작까지 자동 완료됩니다.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bg-num">13</div>
+</div>
+
 </div><!-- /sc -->
 
 <!-- Navigation -->
@@ -1438,6 +1504,7 @@ const META=[
   {lbl:'Arch & Sec',  name:'아키텍처 & 보안'},
   {lbl:'Member/Admin',name:'회원 · 권한 & 관리자'},
   {lbl:'Roadmap',     name:'개발 현황 & 로드맵'},
+  {lbl:'Deploy Auto', name:'AI 배포 자동화'},
 ];
 
 let cur=0;

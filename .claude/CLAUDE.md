@@ -1,5 +1,7 @@
 # CREW 프로젝트 - Claude Code 지침
 
+@C:\Users\dykim\.claude\plugins\marketplaces\claude-plugins-official\plugins\frontend-design\skills\frontend-design\SKILL.md
+
 > 러닝 크루 구성원 기록 관리 및 이벤트 점수 플랫폼
 > 공통 정의서 참고: ./project-definition.md
 
