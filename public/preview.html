@@ -366,7 +366,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
       </div>
       <div style="text-align:right">
         <div class="cov-year">2026</div>
-        <div class="cov-ver">Project Docs v2.6</div>
+        <div class="cov-ver">Project Docs v2.7</div>
         <div class="s-num" id="snum" style="margin-top:4px;font-size:11px;color:var(--td);letter-spacing:2px">01 / 12</div>
       </div>
     </div>
@@ -521,7 +521,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
         <div class="cov-live-dot"></div>
         <div class="cov-live-txt">All Services Live</div>
       </div>
-      <div class="cov-date">2026 — 06 — 14</div>
+      <div class="cov-date">2026 — 06 — 15</div>
     </div>
 
   </div>
@@ -549,7 +549,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
                    ▼
 <span class="hl">    Supabase PostgreSQL</span>  (스키마 분리 운영)
      ├── public : users · crews · generations · regions · branches
-     ├── review : races · reviews · race_weather · hashtags
+     ├── review : races · race_editions · reviews · race_weather · completion_records
      └── crew   : running_logs · events · boards · sms_logs ...
                    ▼
 <span class="hl">    AWS S3 + CloudFront</span>  (이미지 CDN, ACL public-read)</div>
@@ -587,10 +587,13 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
           <tr><td>서버</td><td>AWS EC2 t2.micro</td><td>Ubuntu 24.04</td></tr>
           <tr><td>웹서버</td><td>Nginx</td><td>Virtual Host</td></tr>
           <tr><td>DB</td><td>Supabase PostgreSQL</td><td>스키마 분리</td></tr>
-          <tr><td>파일</td><td>AWS S3 + CloudFront</td><td>이미지 CDN</td></tr>
+          <tr><td>벡터 DB</td><td>pgvector (Supabase)</td><td>v2 RAG 임베딩용</td></tr>
+          <tr><td>파일</td><td>AWS S3 + CloudFront</td><td>이미지 / GPX</td></tr>
           <tr><td>이메일</td><td>Resend</td><td>무료 100건/일</td></tr>
           <tr><td>SMS</td><td>솔라피</td><td>HMAC 인증</td></tr>
           <tr><td>AI</td><td>Claude API</td><td>claude-opus-4-8</td></tr>
+          <tr><td>SNS 수집</td><td>Apify</td><td>YouTube / Instagram · 월 $5</td></tr>
+          <tr><td>GPS 연동</td><td>Strava OAuth 2.0</td><td>v2 개인 GPX</td></tr>
           <tr><td>배포</td><td>GitHub → git pull</td><td>수동 (v1)</td></tr>
         </table>
 
@@ -654,6 +657,13 @@ php artisan serve --port=<span class="hl">[CREW]</span></div>
           <li>서울 07:00 / 그 외 08:00 기본 관측시각 자동 적용</li>
           <li>reviews PK 시퀀스 리셋 마이그레이션 (중복키 방지)</li>
           <li>커스텀 이메일 템플릿 (인증/비밀번호 재설정 · 모바일 반응형 · Playfair Display 에디토리얼 스타일)</li>
+          <li><strong style="color:var(--y)">races / race_editions 아키텍처 재설계 (2026-06-13)</strong></li>
+          <li>race_editions 테이블 신규 생성 (연도별 개최 이력 분리 · 303건 자동 마이그레이션)</li>
+          <li>RaceEdition 모델 + RaceEditionService + RaceEditionController (관리자 CRUD)</li>
+          <li>completion_records 테이블 신규 생성 (완주 기록)</li>
+          <li>races.is_domestic / country 추가 (국내/해외 구분 · 도시명 기반 303건 일괄 분류)</li>
+          <li>races 마스터 카탈로그 전용 정제 (11개 에디션 컬럼 제거 → race_editions 분리)</li>
+          <li>Race::latestEdition() hasOne ofMany + LATERAL JOIN listWithReviewStats()</li>
         </ul>
 
         <h3 class="st">v2 UI 설계 확정</h3>
@@ -674,63 +684,65 @@ php artisan serve --port=<span class="hl">[CREW]</span></div>
   🌡 기온  💧 습도  — 평년 기준 자동 표시</div>
       </div>
       <div>
-        <h3 class="st">v2 예정 기능 (우선순위)</h3>
+        <h3 class="st">v2 레이스 플랜 로드맵 <span class="badge bw" style="font-size:11px;font-family:'Noto Sans KR';text-transform:none;letter-spacing:0">기획 완료 2026-06-15</span></h3>
         <div class="stage-list">
-          <div class="stage-item done">
-            <span class="stage-no">S1-A</span>
+          <div class="stage-item plan">
+            <span class="stage-no">P1</span>
             <div>
-              <div class="stage-ttl">날씨 ASOS 연동 <span style="font-size:14px;color:#3FB950">✓ 완료</span></div>
-              <div class="stage-desc">기상청 ASOS · race_weather 캐시 · 서울/지방 기본시각 자동 분기</div>
+              <div class="stage-ttl">DB 마이그레이션</div>
+              <div class="stage-desc">race_courses · race_weather_cases · strava_tokens · reviews v2 컬럼</div>
             </div>
           </div>
           <div class="stage-item plan">
-            <span class="stage-no">S1-B</span>
+            <span class="stage-no">P2</span>
             <div>
-              <div class="stage-ttl">지점코드 자동 매핑</div>
-              <div class="stage-desc">Google Geocoding → 가장 가까운 ASOS 측정소 자동 추론</div>
+              <div class="stage-ttl">관리자 GPX 업로드</div>
+              <div class="stage-desc">race_courses Filament 리소스 · wari-gari/official 수동 등록</div>
             </div>
           </div>
           <div class="stage-item plan">
-            <span class="stage-no">S2</span>
+            <span class="stage-no">P3</span>
             <div>
-              <div class="stage-ttl">마라톤 특화 날씨 해석</div>
-              <div class="stage-desc">습도·기온·풍향 → 페이스 전략 추천 메시지 자동 생성</div>
+              <div class="stage-ttl">리뷰 폼 개편</div>
+              <div class="stage-desc">finish_time · course_type · 워치 이미지 파싱 · source 선택</div>
             </div>
           </div>
           <div class="stage-item plan">
-            <span class="stage-no">S3</span>
+            <span class="stage-no">P4</span>
             <div>
-              <div class="stage-ttl">RAG 기반 AI 종합 요약</div>
-              <div class="stage-desc">리뷰 + SNS 분석 + 날씨 통합 · pgvector 유사 케이스 검색</div>
+              <div class="stage-ttl">Strava OAuth 연동</div>
+              <div class="stage-desc">CORE API strava_service.py · 토큰 AES-128 저장 · GPX 자동 수급</div>
             </div>
           </div>
           <div class="stage-item plan">
-            <span class="stage-no">S4</span>
+            <span class="stage-no">P5–6</span>
             <div>
-              <div class="stage-ttl">SNS 후기 수집</div>
-              <div class="stage-desc">Apify — 인스타그램 / 유튜브 / 네이버 블로그</div>
+              <div class="stage-ttl">pgvector + 레이스 플랜 AI</div>
+              <div class="stage-desc">race_weather_cases 임베딩 → RAG → Claude API 레이스 플랜 생성</div>
             </div>
           </div>
           <div class="stage-item plan">
-            <span class="stage-no">S5</span>
+            <span class="stage-no">P7–9</span>
             <div>
-              <div class="stage-ttl">완주 인증</div>
-              <div class="stage-desc">기록 사진 AI 파싱 — CORE API parse-image 재활용</div>
+              <div class="stage-ttl">레이스 플랜 UI · SNS 수집</div>
+              <div class="stage-desc">REVIEW UI · Apify YouTube/Instagram 임베딩 → RAG 통합</div>
             </div>
           </div>
         </div>
 
         <h3 class="st">코드 구조</h3>
         <div class="ab" style="white-space:pre-wrap">app/Services/
-├── RaceService.php
+├── RaceService.php          RACE_FIELDS / EDITION_FIELDS 분리
+├── RaceEditionService.php   연도별 개최 이력 CRUD
 ├── ReviewService.php
-├── SummaryService.php   ← CORE API 호출
-└── HashtagService.php
+├── SummaryService.php       ← CORE API 호출
+└── WeatherService.php       기상청 ASOS · race_editions 기반
 
 app/Models/
-├── Race.php       ← review.races
-├── Review.php     ← image_urls JSONB
-└── Hashtag.php</div>
+├── Race.php          latestEdition() · listWithReviewStats()
+├── RaceEdition.php   ← review.race_editions
+├── Review.php        ← v2 컬럼 (finish_time · source)
+└── CompletionRecord.php</div>
       </div>
     </div>
   </div>
@@ -741,8 +753,8 @@ app/Models/
 <div class="slide" data-i="4">
   <div class="sh"><div class="s-label">Chapter 04 — REVIEW v2 · Weather × AI</div><div class="s-num">05 / 11</div></div>
   <div class="slide-content">
-    <div class="stitle">날씨 <span class="acc">× AI</span> 시스템 <span class="dim">· 기획 완료 / 설계 대기</span></div>
-    <div class="ssub">"숫자가 아닌 상황 해석을 주는 마라톤 특화 날씨 서비스" — PLAN-weather-ai-idea.md 기준</div>
+    <div class="stitle">REVIEW <span class="acc">v2</span> — 레이스 플랜 시스템 <span class="dim">· 기획 완료 2026-06-15</span></div>
+    <div class="ssub">"이 대회, 이 코스, 이 날씨에서 — 내 기록 기준으로 어떻게 달려야 최선이냐?" — Claude API + pgvector RAG + Strava GPS</div>
 
     <div class="g2">
       <div>
@@ -797,24 +809,26 @@ app/Models/
 기온 5°C 구간 · 습도 20% 구간 · 바람 3단계
 → 동일 조건 구간 캐시 반환</div>
 
-        <h3 class="st">DB 신규 테이블</h3>
+        <h3 class="st">DB 신규 테이블 (v2 예정 · review 스키마)</h3>
         <table class="tbl">
           <tr><th>테이블</th><th>용도</th></tr>
-          <tr><td><code>race_weather_cases</code></td><td>날씨 × 기록 케이스 (pgvector 임베딩)</td></tr>
-          <tr><td><code>race_ai_summaries</code></td><td>AI 종합 요약 캐시 (race_id UNIQUE)</td></tr>
-          <tr><td><code>race_sns_contents</code></td><td>SNS 수집 콘텐츠 (IG/YT/Naver)</td></tr>
-          <tr><td><code>weather_stations</code></td><td>전국 기상 측정소 목록</td></tr>
-          <tr><td><code>weather_observations</code></td><td>시간 단위 날씨 관측 기록</td></tr>
+          <tr><td><code>race_courses</code></td><td>연도별 공식 GPX · S3 경로 · 고도 프로파일</td></tr>
+          <tr><td><code>race_weather_cases</code></td><td>날씨 × 기록 RAG 케이스 (vector(1536) 임베딩)</td></tr>
+          <tr><td><code>strava_tokens</code></td><td>Strava OAuth 토큰 (AES-128 암호화 저장)</td></tr>
+          <tr><td><code>youtube_cache</code></td><td>Apify YouTube 수집 · video_id UNIQUE · RAG</td></tr>
+          <tr><td><code>instagram_cache</code></td><td>Apify Instagram 수집 · post_id UNIQUE · RAG</td></tr>
         </table>
 
-        <h3 class="st">CORE API 추가 엔드포인트</h3>
+        <h3 class="st">CORE API v2 예정 엔드포인트</h3>
         <table class="tbl">
-          <tr><th>Method</th><th>경로</th><th>상태</th></tr>
-          <tr><td><code>POST</code></td><td>[비공개]</td><td><span class="badge bp">예정</span></td></tr>
-          <tr><td><code>POST</code></td><td>[비공개]</td><td><span class="badge bp">예정</span></td></tr>
-          <tr><td><code>GET</code></td><td>[비공개]</td><td><span class="badge bp">예정</span></td></tr>
-          <tr><td><code>POST</code></td><td>[비공개]</td><td><span class="badge bp">예정</span></td></tr>
-          <tr><td><code>POST</code></td><td>[비공개]</td><td><span class="badge bp">예정</span></td></tr>
+          <tr><th>Method</th><th>경로</th><th>설명</th></tr>
+          <tr><td><code>GET</code></td><td>/api/strava/auth-url</td><td>OAuth 인증 URL 생성</td></tr>
+          <tr><td><code>POST</code></td><td>/api/strava/callback</td><td>OAuth 콜백 + 토큰 저장</td></tr>
+          <tr><td><code>GET</code></td><td>/api/strava/gpx/{activity_id}</td><td>GPX 추출 + S3 저장</td></tr>
+          <tr><td><code>POST</code></td><td>/api/race-plan/generate</td><td>레이스 플랜 생성 (Claude + RAG)</td></tr>
+          <tr><td><code>POST</code></td><td>/api/rag/embed</td><td>케이스 임베딩 + pgvector 저장</td></tr>
+          <tr><td><code>POST</code></td><td>/api/sns/youtube/fetch</td><td>YouTube 수집 트리거 (Apify)</td></tr>
+          <tr><td><code>POST</code></td><td>/api/sns/instagram/fetch</td><td>Instagram 수집 트리거 (Apify)</td></tr>
         </table>
       </div>
     </div>
@@ -1029,16 +1043,16 @@ crew.instagram_cache  upsert 저장
         <h3 class="st" style="margin-top:18px">Apify &nbsp;<span class="badge bp" style="font-family:'Noto Sans KR';text-transform:none;letter-spacing:0;font-size:12px">연동 예정</span></h3>
         <p>클라우드 기반 웹 스크래핑 플랫폼으로 Instagram, YouTube, 네이버 블로그 공개 콘텐츠를 수집합니다. 공식 API 접근이 제한될 때 Fallback으로도 활용합니다.</p>
         <div class="ab" style="white-space:pre-wrap"><span class="hl">사용 Actor</span>
-  Instagram Scraper  → 대회·크루 해시태그
+  Instagram Scraper  → #서울마라톤 #대구마라톤 등 해시태그
   YouTube Scraper    → 대회명 + "후기/리뷰/완주"
-  Naver Blog Scraper → 대회명 키워드 검색
 
 <span class="gn">저장 테이블</span>
-  review.race_sns_contents  대회 후기 콘텐츠
-  crew.instagram_cache      크루 피드 캐시
+  review.youtube_cache      유튜브 수집 (video_id UNIQUE)
+  review.instagram_cache    인스타 수집 (post_id UNIQUE)
+  crew.instagram_cache      크루 @pac-run 피드 (별개)
 
-<span class="wn">비용 모니터링 필수</span>  usage-based 과금
-APScheduler 1일 1회 자동 수집 (CORE)</div>
+<span class="wn">비용 모니터링 필수</span>  월 $5 무료 크레딧
+APScheduler 주 1회 (대회 시즌 전후 집중)</div>
       </div>
 
       <div>
@@ -1068,16 +1082,16 @@ APScheduler 1일 1회 자동 수집 (CORE)</div>
 
 <span class="gn">추출 항목</span>
   video_id / title / description
-  view_count / like_count / published_at
-  transcript (자막 텍스트, 가능 시)
+  view_count / published_at / url
+  <span class="mt">저작권: 영상 자체 저장 금지 · URL+메타데이터만</span>
 
-<span class="gn">저장: review.race_sns_contents</span>
-  source = 'youtube'
+<span class="gn">저장: review.youtube_cache</span>
+  video_id UNIQUE · race_edition_id FK
+  embedding vector(1536) (RAG용)
 
 <span class="hl">AI 파이프라인 연결</span>
-  → Claude API 텍스트 요약
-  → pgvector 임베딩 → RAG 검색
-  → 플랫폼 리뷰 + SNS 통합 종합 분석</div>
+  → pgvector 임베딩 → RAG 유사 케이스 검색
+  → 레이스 플랜 생성 시 SNS 데이터 통합</div>
       </div>
     </div>
   </div>
@@ -1113,29 +1127,35 @@ APScheduler 1일 1회 자동 수집 (CORE)</div>
       <div>
         <h3 class="st">review 스키마</h3>
         <p style="font-size:15px;color:var(--td);margin-bottom:8px">REVIEW 전용 · v2 확장 예정</p>
-        <div class="ab" style="white-space:pre-wrap"><span class="hl">races</span>
-  name, date, location
-  distances text[], ai_race_summary JSONB
-  weather_stn_id (기상청 지점코드)
-  <span class="mt">lat, lng (예정)</span>
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">races</span>  카탈로그 전용 (Phase 5 정제)
+  name, name_en, city, organizer
+  is_certified, wa_label (Platinum/Gold/Elite/Label)
+  is_domestic, ai_race_summary JSONB
 
-<span class="hl">reviews</span>
-  distance_km, rating, sentiment
-  ai_summary, image_urls JSONB
+<span class="hl">race_editions</span>  연도별 개최 이력 (신규 2026-06-13)
+  race_id FK, year, race_date, location
+  entry_fee, weather_stn_id
+  UNIQUE(race_id, year)
 
-<span class="hl">hashtags</span> / <span class="hl">review_hashtags</span>
+<span class="hl">reviews</span>  v2 컬럼 포함
+  distance_km, rating, sentiment, ai_summary
+  race_edition_id FK, finish_time, course_type
+  source (strava/image/manual), is_certified
+
 <span class="hl">race_weather</span>   단일 캐시 방어
-  temp, humidity, wind_speed
-  wind_direction, precipitation
-  weather_condition · stn_id
-  raw_data JSONB · fetched_at
+  temperature, humidity, wind_speed
+  weather_condition · raw_data JSONB
 
-<span class="mt">── v2 예정 ───────────────────</span>
-<span class="mt">weather_stations</span>   측정소 목록
-<span class="mt">weather_observations</span> 시간 관측
-<span class="mt">race_weather_cases</span>  날씨×기록
-<span class="mt">race_ai_summaries</span>  AI 요약 캐시
-<span class="mt">race_sns_contents</span>  SNS 수집</div>
+<span class="hl">completion_records</span>  완주 기록 (신규)
+  race_edition_id FK, finish_time, bib_number
+  certificate_url (S3), verified_at
+
+<span class="mt">── v2 예정 ─────────────────────────</span>
+<span class="mt">race_courses</span>      공식 GPX · 고도 프로파일
+<span class="mt">race_weather_cases</span> 날씨×기록 · vector(1536)
+<span class="mt">strava_tokens</span>     OAuth 토큰 AES-128 암호화
+<span class="mt">youtube_cache</span>     Apify YouTube · RAG
+<span class="mt">instagram_cache</span>   Apify Instagram · RAG</div>
       </div>
       <div>
         <h3 class="st">crew 스키마</h3>
@@ -1206,7 +1226,18 @@ APScheduler 1일 1회 자동 수집 (CORE)</div>
         <h3 class="st">보안 체크리스트</h3>
         <table class="tbl">
           <tr><th>항목</th><th>규칙</th></tr>
-          <tr><td>API 키</td><td>.env 관리 · Git 커밋 금지 · 로그 노출 금지</td></tr>
+          <tr style="background:rgba(229,173,22,.07);outline:1px solid rgba(229,173,22,.25)">
+            <td style="font-weight:700;color:var(--y);white-space:nowrap">
+              API 키
+              <span class="badge bw" style="font-family:'Noto Sans KR',sans-serif;text-transform:none;letter-spacing:0;font-size:11px;margin-left:6px;vertical-align:middle">↑ 업그레이드</span>
+            </td>
+            <td>
+              <strong style="color:var(--tw)">AWS Secrets Manager</strong> 활용 권장
+              <span style="color:var(--tm);font-size:13px;margin-left:4px">— 중앙 집중 관리 · 자동 교체(Rotation) · IAM 접근 제어</span>
+              <br>
+              <span style="font-size:13px;color:var(--tm)">현재: .env 관리 &nbsp;·&nbsp; Git 커밋 금지 &nbsp;·&nbsp; 로그 노출 금지</span>
+            </td>
+          </tr>
           <tr><td>운영 환경</td><td>APP_DEBUG=false · Swagger 비활성화</td></tr>
           <tr><td>CSRF</td><td>모든 POST/PUT/DELETE에 @csrf 필수</td></tr>
           <tr><td>관리자</td><td>/admin/* → auth, verified 미들웨어</td></tr>
@@ -1303,7 +1334,7 @@ APScheduler 1일 1회 자동 수집 (CORE)</div>
   <div class="sh"><div class="s-label">Chapter 11 — Status & Roadmap</div><div class="s-num">12 / 12</div></div>
   <div class="slide-content">
     <div class="stitle">개발 현황 &amp; <span class="acc">로드맵</span></div>
-    <div class="ssub">2026-06-14 기준 · 3개 서비스 통합 진행 현황</div>
+    <div class="ssub">2026-06-15 기준 · 3개 서비스 통합 진행 현황</div>
 
     <div class="g3" style="margin-bottom:16px">
       <div class="card cy">
@@ -1343,39 +1374,46 @@ APScheduler 1일 1회 자동 수집 (CORE)</div>
               <div class="stage-desc">CREW · REVIEW 인증/비밀번호 재설정 · 모바일 반응형 · 주간 뉴스레터 메일링</div>
             </div>
           </div>
+          <div class="stage-item done">
+            <span class="stage-no">✓</span>
+            <div>
+              <div class="stage-ttl">REVIEW EC2 배포 <span style="font-size:14px;color:#3FB950">완료 (2026-06-15)</span></div>
+              <div class="stage-desc">Phase 3-5 race_editions 아키텍처 · migrate · optimize</div>
+            </div>
+          </div>
           <div class="stage-item plan">
             <span class="stage-no">1</span>
             <div>
-              <div class="stage-ttl">REVIEW EC2 배포</div>
-              <div class="stage-desc">Phase 3-5 변경사항 · race_editions 마이그레이션 확인</div>
+              <div class="stage-ttl">REVIEW v2 Phase 1 착수</div>
+              <div class="stage-desc">DB 마이그레이션 — race_courses · race_weather_cases · strava_tokens</div>
             </div>
           </div>
           <div class="stage-item plan">
             <span class="stage-no">2</span>
             <div>
-              <div class="stage-ttl">관리자 엑셀 업로드</div>
-              <div class="stage-desc">UserImport (maatwebsite/excel)</div>
+              <div class="stage-ttl">완주 인증 플로우</div>
+              <div class="stage-desc">completion_records · 기록 사진 AI 파싱 (CORE API 재활용)</div>
             </div>
           </div>
           <div class="stage-item plan">
             <span class="stage-no">3</span>
+            <div>
+              <div class="stage-ttl">관리자 엑셀 업로드</div>
+              <div class="stage-desc">UserImport (maatwebsite/excel) — CREW</div>
+            </div>
+          </div>
+          <div class="stage-item plan">
+            <span class="stage-no">4</span>
             <div>
               <div class="stage-ttl">Instagram 연동</div>
               <div class="stage-desc">Apify → instagram_cache → CREW 대시보드</div>
             </div>
           </div>
           <div class="stage-item plan">
-            <span class="stage-no">4</span>
-            <div>
-              <div class="stage-ttl">완주 인증 플로우</div>
-              <div class="stage-desc">completion_records · 기록 사진 AI 파싱 (REVIEW v2)</div>
-            </div>
-          </div>
-          <div class="stage-item plan">
             <span class="stage-no">5</span>
             <div>
-              <div class="stage-ttl">마라톤 특화 날씨 해석</div>
-              <div class="stage-desc">페이스 전략 AI 메시지 자동 생성 (REVIEW v2 S2)</div>
+              <div class="stage-ttl">대회 목록 UI 개선</div>
+              <div class="stage-desc">국내/해외 탭 분리 · 연도 필터 (REVIEW)</div>
             </div>
           </div>
         </div>
@@ -1386,19 +1424,20 @@ APScheduler 1일 1회 자동 수집 (CORE)</div>
           <tr><th>항목</th><th>내용</th></tr>
           <tr><td>CI/CD</td><td>GitHub Actions 자동 배포</td></tr>
           <tr><td>Resend</td><td>무료 플랜 운영 중 · 유료 전환 시점 미정</td></tr>
-          <tr><td>REVIEW v2</td><td>날씨 × AI · RAG 구현 시작 시점</td></tr>
-          <tr><td>pgvector</td><td>Supabase 벡터 DB 활성화</td></tr>
+          <tr><td>REVIEW v2</td><td>레이스 플랜 · RAG Phase 1 착수 (DB 마이그레이션)</td></tr>
+          <tr><td>Strava</td><td>Developer 앱 등록 선행 필요 (v2 착수 전)</td></tr>
+          <tr><td>pgvector</td><td>Supabase Extensions 탭 활성화 확인 필요</td></tr>
           <tr><td>서비스 연계</td><td>REVIEW ↔ CREW 완주 인증</td></tr>
-          <tr><td>Apify</td><td>SNS 크롤링 비용 범위 확정</td></tr>
+          <tr><td>Apify</td><td>SNS 크롤링 비용 범위 확정 (월 $5 무료)</td></tr>
           <tr><td>2FA</td><td>Google OTP TOTP</td></tr>
         </table>
 
         <div style="margin-top:16px;text-align:center;padding:18px;background:var(--surf);border-radius:8px;border:1px solid var(--br)">
           <div style="font-family:'Barlow Condensed';font-weight:800;font-size:30px;color:var(--y);letter-spacing:-1px">PAC-RUN</div>
           <div style="font-size:15px;color:var(--td);margin-top:6px;line-height:1.9">
-            Project Documentation v2.6<br>
+            Project Documentation v2.7<br>
             김대윤 · dykim10iufc@gmail.com<br>
-            2026-06-14
+            2026-06-15
           </div>
         </div>
       </div>
