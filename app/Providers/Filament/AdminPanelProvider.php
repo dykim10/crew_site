@@ -30,10 +30,10 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->brandName('PAC-RUN CREW')
+            ->brandName('PAC-RUN')
             ->colors([
                 'primary' => Color::hex('#E5AD16'),
-                'gray'    => Color::Zinc,
+                'gray'    => Color::Gray,
                 'danger'  => Color::Red,
                 'success' => Color::Emerald,
                 'warning' => Color::Amber,
