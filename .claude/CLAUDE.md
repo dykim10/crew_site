@@ -2,25 +2,27 @@
 
 @C:\Users\dykim\.claude\plugins\marketplaces\claude-plugins-official\plugins\frontend-design\skills\frontend-design\SKILL.md
 
-> 러닝 크루 구성원 기록 관리 및 이벤트 점수 플랫폼
-> 공통 정의서 참고: ./project-definition.md
+> 러닝 크루 구성원 기록 관리 및 이벤트 점수 플랫폼  
+> **스펙 정본:** `../../.claude/definition/07-crew.md` · **진행:** `../../developer_md/STATUS.md`  
+> `./project-definition.md` · `../project-definition.md`는 **레거시** — 갱신하지 않는다.
+
+@../../developer_md/STATUS.md
+@../../.claude/definition/01-overview.md
+@../../.claude/definition/02-common-rules.md
+@../../.claude/definition/04-api-endpoints.md
+@../../.claude/definition/07-crew.md
 
 ---
 
-## 문서 자동 갱신 규칙
+## 문서 자동 갱신 (doc-sync)
 
-아래 시점에 **반드시** `.claude/project-definition.md` 와 `../project-definition.md` 를 최신 상태로 업데이트한다.
+기능 완료·commit 직전·`/compact` 직전·"문서 갱신" 요청 시:
 
-**트리거 조건**
-1. 기능 구현 완료 후 git commit 직전
-2. 사용자가 `/compact` 를 실행하기 전 (또는 컨텍스트 압축 직전)
-3. 사용자가 "정의서 업데이트", "문서 갱신" 등을 요청할 때
+1. **`../../.claude/definition/07-crew.md`** — CREW 스펙·완료/미완·다음 작업
+2. **`../../developer_md/STATUS.md`** — PLAN/TASK 진행만 (스키마 중복 금지)
+3. 공통 변경 시 `03-db-schema.md` · `04-api-endpoints.md` 등 해당 파일
 
-**업데이트 항목**
-- 개발 우선순위 체크리스트 (완료된 항목에 ✅ 표시)
-- 새로 추가된 DB 컬럼 / 테이블
-- CORE API 호출 엔드포인트 변경
-- 새로운 관리자 기능
+상세 절차: 워크스페이스 루트 `.claude/skills/doc-sync.md` 또는 `/doc-sync`
 
 ---
 
@@ -31,84 +33,43 @@
 | 언어 | PHP 8.3+ |
 | 프레임워크 | Laravel |
 | DB | Supabase PostgreSQL |
-| 프론트 | Blade 템플릿 / CSS / JS |
-| HTTP 클라이언트 | Guzzle (CORE-API 호출) |
-| 이미지 파싱 | Claude Vision API (CORE 경유) |
+| 프론트 | Blade / Tailwind / Filament v4 |
+| HTTP | Guzzle (CORE API) |
+| 이미지 파싱 | Claude Vision (CORE 경유) |
 
 ---
 
-## 디렉토리 (EC2 서버)
+## 경로
 
-```
-/var/www/running-crew/
-```
-
-## 로컬 경로
-
-```
-~/projects/crew/
-```
-
-## GitHub
-
-```
-https://github.com/dykim10/crew_site.git
-```
+| | |
+|---|---|
+| EC2 | `/var/www/crew-site/` |
+| 로컬 | `C:\src\projects\crew\` · 포트 **8300** |
+| GitHub | https://github.com/dykim10/crew_site.git |
 
 ---
 
-## 주요 기능
+## CORE API (로컬)
 
-- 구성원 러닝 이미지 업로드 → CORE API 파싱 → DB 저장
-- 개인 기록 관리 (거리 / 페이스 / 실내외 / 날짜 / 고도)
-- 조별 기록 관리
-- 개인 목표 마일리지 → 달성 시 점수 획득
-- 이벤트 점수 관리
-- 관리자: 통계 / 집계 / 엑셀 다운로드 / 이미지 일괄 다운로드
+```
+CORE_API_URL=http://localhost:8100
+POST /api/parse-image  → 러닝 이미지 파싱 (상세: 04-api-endpoints.md)
+```
 
 ---
 
 ## 조직 계층
 
 ```
-crews    → 크루 (소속 크루)
-branches → 지부 (소속 지부)
-groups   → 그룹 (소속 그룹)
+generations → regions → groups · crews · branches
 ```
 
----
-
-## CORE API 호출 엔드포인트
-
-```
-POST http://localhost:8000/api/parse-image  → 러닝 이미지 파싱
-```
-
----
-
-## DB 스키마
-
-```
-public 스키마 : users / crews / branches / groups  (공통)
-crew   스키마 : running_logs / events / event_scores / user_goals
-```
-
----
-
-## 개발 우선순위 (v1 목표)
-
-```
-1. Laravel 기본 설치 및 Supabase 연결
-2. 회원 인증 (초대 코드 기반 클로즈 베타)
-3. 러닝 이미지 업로드 → CORE API 파싱 연동
-4. 개인 기록 조회 / 관리
-5. 이벤트 점수 관리
-```
+DB·기능·Filament·진행 현황은 import된 **`07-crew.md`** · **`STATUS.md`** 참조.
 
 ---
 
 ## 주의사항
 
-- DB 비밀번호 / API Key 는 .env 관리 / Git 커밋 금지
+- DB/API Key는 `.env` 관리 · Git 커밋 금지
 - CORE API 호출 실패 시 예외 처리 필수
-- 이미지 업로드는 S3 저장 후 URL만 DB에 기록
+- 이미지는 S3 저장 후 URL만 DB 기록

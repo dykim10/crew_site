@@ -1,5 +1,8 @@
 # CREW 프로젝트 정의서
 
+> **⚠️ 레거시 — 갱신하지 않음**  
+> **정본:** `../../.claude/definition/07-crew.md` · **진행:** `../../developer_md/STATUS.md`
+
 > 원본 공통 정의서: `C:\src\projects\.claude\project-definition.md`
 > 최종 수정: 2026-05-19
 > 이 파일은 CREW(Laravel) 프로젝트에 특화된 정의입니다.
