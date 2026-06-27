@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Support\LiveDatabaseGuard;
 use App\Models\PhotoGallery;
 use App\Models\Setting;
 use App\Models\User;
@@ -19,6 +20,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        LiveDatabaseGuard::boot('CREW');
+
         Paginator::defaultView('pagination.custom');
 
         PhotoGallery::observe(PhotoGalleryObserver::class);
