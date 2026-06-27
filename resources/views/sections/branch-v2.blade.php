@@ -13,7 +13,7 @@
           </div>
           <div class="branch-bottom">
             <div class="branch-slogan">한강변을 달리며 자유를 느끼는 반포 러너들</div>
-            <a href="#" class="branch-arrow-btn">지부 보기</a>
+            <a href="{{ route('branch') }}" class="branch-arrow-btn">지부 보기</a>
           </div>
         </div>
       </div>
@@ -26,7 +26,7 @@
           </div>
           <div class="branch-bottom">
             <div class="branch-slogan">캠퍼스와 도심을 누비는 연대 러닝팀</div>
-            <a href="#" class="branch-arrow-btn">지부 보기</a>
+            <a href="{{ route('branch') }}" class="branch-arrow-btn">지부 보기</a>
           </div>
         </div>
       </div>
@@ -39,7 +39,7 @@
           </div>
           <div class="branch-bottom">
             <div class="branch-slogan">수리산 트레일과 함께하는 군포 러너들</div>
-            <a href="#" class="branch-arrow-btn">지부 보기</a>
+            <a href="{{ route('branch') }}" class="branch-arrow-btn">지부 보기</a>
           </div>
         </div>
       </div>
@@ -52,7 +52,7 @@
           </div>
           <div class="branch-bottom">
             <div class="branch-slogan">바다 내음과 함께 달리는 인천 러닝 패밀리</div>
-            <a href="#" class="branch-arrow-btn">지부 보기</a>
+            <a href="{{ route('branch') }}" class="branch-arrow-btn">지부 보기</a>
           </div>
         </div>
       </div>

@@ -7,7 +7,7 @@
  * 인증 관련 라우트는 auth.php 로 분리되어 하단에서 require 로 포함된다.
  *
  * [공개 - 인증 불필요]
- *   GET       /            → /login 으로 리다이렉트
+ *   GET       /            → 홈 (HomeController, v1/v2 스킨)
  *   GET/POST  /apply       → 기수 신청서 (클로즈 베타 가입 전 단계, 누구나 접근 가능)
  *   GET       /apply/done  → 신청 완료 안내
  *

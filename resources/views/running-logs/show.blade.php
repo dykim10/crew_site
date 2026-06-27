@@ -56,7 +56,7 @@
         </div>
 
         {{-- 핵심 수치 3개 --}}
-        <div class="grid grid-cols-3 divide-x divide-pac-black-50 border-b border-pac-black-50">
+        <div class="grid grid-cols-1 sm:grid-cols-3 sm:divide-x divide-y sm:divide-y-0 divide-pac-black-50 border-b border-pac-black-50">
             <div class="p-5 text-center">
                 <p class="font-display text-[10px] font-bold text-pac-black-400 uppercase tracking-widest mb-2">거리</p>
                 <p class="font-display text-3xl font-bold text-pac-yellow-500 leading-none">
@@ -82,7 +82,7 @@
 
         {{-- 부가 수치 --}}
         @if($runningLog->calories || $runningLog->avg_heart_rate || $runningLog->elevation_m)
-            <div class="grid grid-cols-3 divide-x divide-pac-black-50 border-b border-pac-black-50">
+            <div class="grid grid-cols-1 sm:grid-cols-3 sm:divide-x divide-y sm:divide-y-0 divide-pac-black-50 border-b border-pac-black-50">
                 @if($runningLog->calories)
                     <div class="p-4 text-center">
                         <p class="font-display text-[10px] font-bold text-pac-black-400 uppercase tracking-widest mb-1">칼로리</p>

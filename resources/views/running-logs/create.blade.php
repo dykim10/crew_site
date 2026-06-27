@@ -236,7 +236,7 @@
 
                     <template x-if="f.status === 'done'">
                         <div class="p-4 space-y-3">
-                            <div class="grid grid-cols-2 gap-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="block font-display text-[9px] font-bold text-pac-black-500 uppercase tracking-widest mb-1">
                                         날짜 <span class="text-red-400">*</span>
@@ -264,7 +264,7 @@
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <div>
                                     <label class="block font-display text-[9px] font-bold text-pac-black-500 uppercase tracking-widest mb-1">
                                         거리 (km) <span class="text-red-400">*</span>
@@ -296,7 +296,7 @@
                                 </div>
                             </template>
 
-                            <div class="grid grid-cols-3 gap-2">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                 <div>
                                     <label class="block font-display text-[9px] font-bold text-pac-black-500 uppercase tracking-widest mb-1">칼로리</label>
                                     <div class="relative">

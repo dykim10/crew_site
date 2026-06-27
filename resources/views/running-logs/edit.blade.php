@@ -41,7 +41,7 @@
                 </div>
             @endif
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block font-display text-[10px] font-bold text-pac-black-500 uppercase tracking-widest mb-1.5">
                         날짜 <span class="text-pac-pink-500">*</span>
@@ -70,7 +70,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block font-display text-[10px] font-bold text-pac-black-500 uppercase tracking-widest mb-1.5">
                         거리 (km) <span class="text-pac-pink-500">*</span>
@@ -96,7 +96,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label class="block font-display text-[10px] font-bold text-pac-black-500 uppercase tracking-widest mb-1.5">칼로리</label>
                     <div class="relative">

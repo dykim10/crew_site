@@ -46,7 +46,7 @@
   @endif
 
   {{-- 이달 통계 --}}
-  <div class="grid grid-cols-3 gap-3">
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
     <div class="bg-pac-black-900 border border-white/[0.05] border-t-2 border-t-pac-yellow-500 px-5 py-4">
       <p class="font-display text-[9px] font-bold text-pac-black-500 uppercase tracking-[0.2em] mb-2">이번 달 거리</p>
       <p class="font-display text-3xl font-black text-pac-yellow-400 leading-none">

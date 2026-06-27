@@ -64,7 +64,7 @@
 
   {{-- 이벤트 정보 카드 --}}
   <div class="bg-white rounded-2xl shadow-sm divide-y divide-pac-black-100">
-    <div class="px-6 py-4 grid grid-cols-2 gap-4">
+    <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
 
       @if($event->location)
       <div>

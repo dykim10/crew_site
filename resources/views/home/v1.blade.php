@@ -105,6 +105,7 @@
     .ntab.on { background:var(--pac-yellow); border-color:var(--pac-yellow); color:var(--pac-black); }
     .post-list { list-style:none; }
     .post-item { display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-bottom:1px solid rgba(255,255,255,.04); cursor:pointer; }
+    a.post-item { text-decoration:none; color:inherit; }
     .post-item:last-child { border-bottom:none; }
     .post-item:hover .post-name { color:var(--pac-yellow); }
     .post-name { font-size:13px; color:rgba(255,255,255,.75); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:220px; transition:color .2s; }
@@ -139,6 +140,43 @@
     .footer-links a:hover { color:var(--pac-white); }
     .footer-bottom { border-top:1px solid var(--pac-border); padding-top:24px; display:flex; justify-content:space-between; align-items:center; font-size:12px; color:rgba(255,255,255,.2); }
     .footer-bottom a { color:var(--pac-yellow); text-decoration:none; }
+
+    @media (max-width: 767px) {
+      section { padding:60px 20px; }
+
+      .hero { min-height:auto; padding:48px 20px 60px; }
+      .hero-glow { width:300px; height:300px; right:-50px; }
+      .hero-eyebrow { font-size:10px; letter-spacing:3px; line-height:1.6; word-break:keep-all; }
+      .hero-title { font-size:clamp(52px,16vw,90px); word-break:keep-all; }
+      .hero-sub { max-width:none; margin-bottom:32px; word-break:keep-all; }
+      .hero-cta { flex-direction:column; align-items:stretch; width:100%; }
+      .hero-cta .pac-btn, .hero-cta .pac-btn-ghost { justify-content:center; text-align:center; }
+      .hero-stats { flex-wrap:wrap; margin-top:48px; padding-top:32px; }
+      .hero-stat { flex:1 1 50%; min-width:50%; padding:16px 0; margin-right:0; border-right:none; border-bottom:1px solid var(--pac-border); }
+      .hero-stat:nth-child(odd) { padding-right:16px; border-right:1px solid var(--pac-border); }
+      .hero-stat:nth-child(3), .hero-stat:nth-child(4) { border-bottom:none; }
+      .hero-stat-num { font-size:40px; }
+
+      .pac-banner { grid-template-columns:1fr; }
+      .pac-image { height:280px; }
+      .pac-image-big-text { font-size:60px; letter-spacing:4px; }
+      .pac-content { padding:32px 24px; }
+      .pac-content h2 { font-size:36px; word-break:keep-all; }
+      .pac-content p { word-break:keep-all; }
+
+      .event-grid { grid-template-columns:1fr; }
+      .event-title { word-break:keep-all; }
+
+      .community-grid { grid-template-columns:1fr; }
+      .community-card-name { word-break:keep-all; }
+      .notice-tabs { flex-wrap:wrap; }
+      .post-name { max-width:none; flex:1; min-width:0; }
+
+      footer { padding:48px 20px 24px; }
+      .footer-main { grid-template-columns:1fr; gap:32px; }
+      .footer-desc, .footer-links a { word-break:keep-all; }
+      .footer-bottom { flex-direction:column; align-items:flex-start; gap:12px; }
+    }
   </style>
 </head>
 <body class="{{ $skinClass }}">
@@ -183,7 +221,7 @@
       <h2>달리기로 하나 되는<br><em>러닝 크루</em></h2>
       <p>PAC-RUN은 서울과 수도권을 기반으로 활동하는 러닝 크루입니다. 반포, 연대, 군포, 인천 4개 지부가 각 지역의 러너들을 연결하고, 함께 달리며 성장하는 커뮤니티를 만들어갑니다.</p>
       <p>매월 정기 런, 특별 이벤트, 지부 간 교류를 통해 혼자가 아닌 함께 달리는 즐거움을 경험하세요.</p>
-      <a href="#" class="pac-btn-outline" style="margin-top:20px;">자세히 보기 →</a>
+      <a href="{{ route('introduce') }}" class="pac-btn-outline" style="margin-top:20px;">자세히 보기 →</a>
     </div>
   </div>
 </section>
@@ -200,7 +238,7 @@
   <div class="pac-section-heading">커뮤니티</div>
   <div class="community-grid">
     <div class="community-card">
-      <div class="community-card-top"><div class="community-card-name">공지사항</div><a href="#" class="community-card-link">전체보기</a></div>
+      <div class="community-card-top"><div class="community-card-name">공지사항</div><a href="{{ route('notices.index') }}" class="community-card-link">전체보기</a></div>
       <div class="notice-tabs">
         <div class="ntab on" onclick="selectTab(this)">전체</div>
         <div class="ntab" onclick="selectTab(this)">반포</div>
@@ -209,41 +247,53 @@
         <div class="ntab" onclick="selectTab(this)">인천</div>
       </div>
       <ul class="post-list">
-        <li class="post-item"><span class="post-name">[필독] 6월 정기런 일정 안내</span><span class="post-date">06.01</span></li>
-        <li class="post-item"><span class="post-name">2기 모집 마감 및 합격자 발표</span><span class="post-date">05.28</span></li>
-        <li class="post-item"><span class="post-name">여름 챌린지 이벤트 신청 방법</span><span class="post-date">05.25</span></li>
-        <li class="post-item"><span class="post-name">5월 마일리지 집계 결과 공유</span><span class="post-date">05.20</span></li>
-        <li class="post-item"><span class="post-name">크루 운영 규정 업데이트 안내</span><span class="post-date">05.15</span></li>
+        @forelse($notices as $notice)
+        <a href="{{ route('notices.show', $notice) }}" class="post-item">
+          <span class="post-name">{{ Str::limit($notice->title, 40) }}</span>
+          <span class="post-date">{{ $notice->created_at->format('m.d') }}</span>
+        </a>
+        @empty
+        <li class="post-item" style="cursor:default;"><span class="post-name" style="opacity:.5;">등록된 공지가 없습니다</span></li>
+        @endforelse
       </ul>
     </div>
     <div class="community-card">
-      <div class="community-card-top"><div class="community-card-name">자유게시판</div><a href="#" class="community-card-link">전체보기</a></div>
+      <div class="community-card-top"><div class="community-card-name">자유게시판</div><a href="{{ route('boards.free') }}" class="community-card-link">전체보기</a></div>
       <ul class="post-list">
-        <li class="post-item"><span class="post-name">오늘 새벽런 같이 뛰실 분~</span><span class="post-date">06.03</span></li>
-        <li class="post-item"><span class="post-name">나이키 버퍼나이트 어떠셨나요?</span><span class="post-date">06.02</span></li>
-        <li class="post-item"><span class="post-name">러닝화 추천 부탁드려요</span><span class="post-date">06.01</span></li>
-        <li class="post-item"><span class="post-name">한강 새벽 5시 코스 루트 공유</span><span class="post-date">05.31</span></li>
-        <li class="post-item"><span class="post-name">첫 하프마라톤 완주 후기 🏅</span><span class="post-date">05.29</span></li>
+        @forelse($freePosts as $post)
+        <a href="{{ route('boards.show', ['free', $post]) }}" class="post-item">
+          <span class="post-name">{{ Str::limit($post->title, 40) }}</span>
+          <span class="post-date">{{ $post->created_at->format('m.d') }}</span>
+        </a>
+        @empty
+        <li class="post-item" style="cursor:default;"><span class="post-name" style="opacity:.5;">등록된 글이 없습니다</span></li>
+        @endforelse
       </ul>
     </div>
     <div class="community-card">
-      <div class="community-card-top"><div class="community-card-name">포토 갤러리</div><a href="#" class="community-card-link">전체보기</a></div>
+      <div class="community-card-top"><div class="community-card-name">포토 갤러리</div><a href="{{ route('photos.index') }}" class="community-card-link">전체보기</a></div>
       <ul class="post-list">
-        <li class="post-item"><span class="post-name">반포 한강 새벽런 스냅샷 모음</span><span class="post-date">06.02</span></li>
-        <li class="post-item"><span class="post-name">5월 정기런 단체사진 & 기록</span><span class="post-date">05.30</span></li>
-        <li class="post-item"><span class="post-name">인천 오션런 현장 포토</span><span class="post-date">05.25</span></li>
-        <li class="post-item"><span class="post-name">군포 트레일 러닝 스냅</span><span class="post-date">05.18</span></li>
-        <li class="post-item"><span class="post-name">1기 수료식 기념 사진</span><span class="post-date">05.10</span></li>
+        @forelse($photoGalleries as $gallery)
+        <a href="{{ route('photos.show', $gallery) }}" class="post-item">
+          <span class="post-name">{{ Str::limit($gallery->title, 40) }}</span>
+          <span class="post-date">{{ optional($gallery->taken_at)->format('m.d') ?? $gallery->created_at->format('m.d') }}</span>
+        </a>
+        @empty
+        <li class="post-item" style="cursor:default;"><span class="post-name" style="opacity:.5;">등록된 갤러리가 없습니다</span></li>
+        @endforelse
       </ul>
     </div>
     <div class="community-card">
-      <div class="community-card-top"><div class="community-card-name">문의게시판</div><a href="#" class="community-card-link">전체보기</a></div>
+      <div class="community-card-top"><div class="community-card-name">문의게시판</div><a href="{{ route('boards.qna') }}" class="community-card-link">전체보기</a></div>
       <ul class="post-list">
-        <li class="post-item"><span class="post-name">이벤트 환불 정책 문의드립니다</span><span class="post-date">06.03</span></li>
-        <li class="post-item"><span class="post-name">지부 이전 신청은 어떻게?</span><span class="post-date">06.01</span></li>
-        <li class="post-item"><span class="post-name">마일리지 오류 제보</span><span class="post-date">05.28</span></li>
-        <li class="post-item"><span class="post-name">초대코드 재발급 요청</span><span class="post-date">05.27</span></li>
-        <li class="post-item"><span class="post-name">앱 로그인 오류 문의</span><span class="post-date">05.24</span></li>
+        @forelse($qnaPosts as $post)
+        <a href="{{ route('boards.show', ['qna', $post]) }}" class="post-item">
+          <span class="post-name">{{ Str::limit($post->title, 40) }}</span>
+          <span class="post-date">{{ $post->created_at->format('m.d') }}</span>
+        </a>
+        @empty
+        <li class="post-item" style="cursor:default;"><span class="post-name" style="opacity:.5;">등록된 문의가 없습니다</span></li>
+        @endforelse
       </ul>
     </div>
   </div>
@@ -256,13 +306,13 @@
 <footer>
   <div class="footer-main">
     <div><img src="{{ asset('images/logo-footer.webp') }}" alt="PAC RUN" style="height:36px;width:auto;margin-bottom:14px;"><div class="footer-desc">함께 달리고, 함께 성장하는<br>서울 러닝 크루 PAC-RUN.<br>반포 · 연대 · 군포 · 인천</div></div>
-    <div><div class="footer-col-title">소개</div><ul class="footer-links"><li><a href="#">PAC-RUN 소개</a></li><li><a href="#">지부 안내</a></li><li><a href="#">운영진</a></li><li><a href="{{ route('apply') }}">가입 안내</a></li></ul></div>
-    <div><div class="footer-col-title">활동</div><ul class="footer-links"><li><a href="#">이벤트</a></li><li><a href="#">기록 관리</a></li><li><a href="#">포토 갤러리</a></li><li><a href="#">랭킹</a></li></ul></div>
-    <div><div class="footer-col-title">고객지원</div><ul class="footer-links"><li><a href="#">공지사항</a></li><li><a href="#">문의하기</a></li><li><a href="#">버그 제보</a></li><li><a href="#">개인정보처리방침</a></li></ul></div>
+    <div><div class="footer-col-title">소개</div><ul class="footer-links"><li><a href="{{ route('introduce') }}">PAC-RUN 소개</a></li><li><a href="{{ route('branch') }}">지부 안내</a></li><li><a href="{{ route('introduce') }}">운영진</a></li><li><a href="{{ route('apply') }}">가입 안내</a></li></ul></div>
+    <div><div class="footer-col-title">활동</div><ul class="footer-links"><li><a href="{{ route('events.index') }}">이벤트</a></li><li><a href="{{ auth()->check() ? route('running-logs.index') : route('login') }}">기록 관리</a></li><li><a href="{{ route('photos.index') }}">포토 갤러리</a></li><li><a href="{{ route('ranking.index') }}">랭킹</a></li></ul></div>
+    <div><div class="footer-col-title">고객지원</div><ul class="footer-links"><li><a href="{{ route('notices.index') }}">공지사항</a></li><li><a href="{{ route('boards.qna') }}">문의하기</a></li><li><a href="{{ route('bug-reports.create') }}">버그 제보</a></li><li><a href="{{ route('apply') }}">개인정보처리방침</a></li></ul></div>
   </div>
   <div class="footer-bottom">
     <span>© 2026 PAC-RUN. All rights reserved.</span>
-    <a href="#">Instagram @pac_run</a>
+    <a href="https://www.instagram.com/pac_run/" target="_blank" rel="noopener noreferrer">Instagram @pac_run</a>
   </div>
 </footer>
 

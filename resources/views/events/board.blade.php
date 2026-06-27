@@ -49,7 +49,7 @@
         </div>
 
         {{-- 3개 수치 카드 --}}
-        <div class="grid grid-cols-3 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div class="bg-pac-black-50 rounded-lg px-4 py-3 text-center">
             <p class="font-display text-[9px] font-bold text-pac-black-500 uppercase tracking-wider mb-1">내 인증km</p>
             <p class="font-display text-2xl font-black text-pac-black-900 leading-none">
@@ -276,7 +276,8 @@
           $maxDailyKm = max($maxDailyKm, 5); // 최소 5km 스케일
         @endphp
 
-        <div class="grid grid-cols-7 gap-2 md:gap-3">
+        <div class="overflow-x-auto -mx-2 px-2">
+        <div class="grid grid-cols-7 gap-2 md:gap-3 min-w-[28rem]">
           @foreach($dailyStats as $stat)
             @php
               $percentage = ($stat['km'] / $maxDailyKm) * 100;
@@ -301,6 +302,7 @@
               </div>
             </div>
           @endforeach
+        </div>
         </div>
 
         {{-- 주석 --}}

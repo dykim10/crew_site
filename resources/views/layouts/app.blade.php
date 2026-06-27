@@ -115,7 +115,7 @@
         </style>
     </head>
 
-    <body class="_skin_v1 font-body antialiased bg-pac-black-50 text-pac-black-900 min-h-screen">
+    <body class="_skin_v1 font-body antialiased bg-pac-black-50 text-pac-black-900 min-h-screen overflow-x-hidden">
 
         @include('layouts.navigation')
 

@@ -411,6 +411,7 @@
 @media (max-width: 767px) {
   /* Tailwind hidden/md:inline-flex보다 늦게 선언되므로 명시적으로 숨김 */
   .pac-nav-cta { display: none; }
+  .pac-section-heading { margin-bottom: 32px; word-break: keep-all; }
 }
 @media (max-width: 1023px) {
   .pac-nav { padding: 0 20px; }

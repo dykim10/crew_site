@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Board;
 use App\Models\Event;
+use App\Models\Notice;
+use App\Models\PhotoGallery;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 
@@ -28,7 +31,45 @@ class HomeController extends Controller
             ->limit(4)
             ->get();
 
-        return view("home.{$activeTheme}", compact('skinClass', 'activeTheme', 'events'));
+        $notices = collect();
+        $freePosts = collect();
+        $qnaPosts = collect();
+        $photoGalleries = collect();
+
+        try {
+            $notices = Notice::where('target_type', 'all')
+                ->orderByDesc('is_pinned')
+                ->orderByDesc('created_at')
+                ->limit(5)
+                ->get();
+
+            $freePosts = Board::where('board_type', 'free')
+                ->orderByDesc('created_at')
+                ->limit(5)
+                ->get();
+
+            $qnaPosts = Board::where('board_type', 'qna')
+                ->orderByDesc('created_at')
+                ->limit(5)
+                ->get();
+
+            $photoGalleries = PhotoGallery::orderByDesc('taken_at')
+                ->orderByDesc('sort_order')
+                ->limit(5)
+                ->get();
+        } catch (\Throwable) {
+            // 테스트/DB 미연결 시 홈은 목업 없이 빈 목록
+        }
+
+        return view("home.{$activeTheme}", compact(
+            'skinClass',
+            'activeTheme',
+            'events',
+            'notices',
+            'freePosts',
+            'qnaPosts',
+            'photoGalleries',
+        ));
     }
 
     public function switchTheme(Request $request)

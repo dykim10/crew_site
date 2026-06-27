@@ -162,7 +162,7 @@
   {{-- ══════════════════════════════════════════════
        빠른 이동
        ══════════════════════════════════════════════ --}}
-  <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
+  <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
     @php
       $quickLinks = [
         ['href' => route('running-logs.index'), 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', 'label' => '기록'],
@@ -230,8 +230,8 @@
       @endif
 
       {{-- 3개 수치 카드: 인증km / 대기km / 목표km --}}
-      <div class="grid grid-cols-3 gap-0 px-5 py-4">
-        <div class="text-center pr-3 border-r border-white/[0.06]">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-0 px-5 py-4">
+        <div class="text-center sm:pr-3 sm:border-r border-white/[0.06] pb-3 sm:pb-0 border-b sm:border-b-0 border-white/[0.06]">
           <p class="font-display text-[9px] font-bold uppercase tracking-widest text-pac-black-500 mb-1">
             인증 km
           </p>
@@ -241,7 +241,7 @@
           <p class="font-body text-[10px] text-pac-black-500 mt-1">{{ (int)$myConfirmedKm }}km</p>
         </div>
 
-        <div class="text-center px-3 border-r border-white/[0.06]">
+        <div class="text-center sm:px-3 sm:border-r border-white/[0.06] pb-3 sm:pb-0 border-b sm:border-b-0 border-white/[0.06]">
           <p class="font-display text-[9px] font-bold uppercase tracking-widest text-pac-black-500 mb-1">
             대기 km
           </p>
@@ -251,7 +251,7 @@
           <p class="font-body text-[10px] text-pac-black-500 mt-1">검수 대기</p>
         </div>
 
-        <div class="text-center pl-3">
+        <div class="text-center sm:pl-3">
           <p class="font-display text-[9px] font-bold uppercase tracking-widest text-pac-black-500 mb-1">
             목표 km
           </p>

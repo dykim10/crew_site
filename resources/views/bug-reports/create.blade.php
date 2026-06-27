@@ -72,7 +72,7 @@
                 <label class="block font-body text-sm font-semibold text-pac-black-700 mb-1.5">
                     심각도 <span class="text-red-500">*</span>
                 </label>
-                <div class="grid grid-cols-3 gap-2">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     @foreach([
                         ['value' => 'low',    'label' => '낮음',  'desc' => '사소한 불편',
                          'active' => 'border-pac-black-600 bg-pac-black-900 text-white',
