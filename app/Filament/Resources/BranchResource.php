@@ -16,7 +16,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\BadgeColumn;
+use Illuminate\Support\HtmlString;
+use Filament\Forms\Components\Placeholder;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -83,6 +85,17 @@ class BranchResource extends Resource
 
             Section::make('지부 소개')
                 ->schema([
+                    Placeholder::make('image_preview')
+                        ->label('현재 이미지')
+                        ->content(fn (?Branch $record) => filled($record?->getAttributes()['image_url'] ?? null)
+                            ? new HtmlString(
+                                '<img src="' . e(Branch::resolveImageUrl($record->getAttributes()['image_url'])) . '" '
+                                . 'class="max-w-md rounded-lg shadow" style="max-height:240px;object-fit:cover;" alt="지부 대표 이미지">'
+                            )
+                            : new HtmlString('<span class="text-gray-400 text-sm">등록된 이미지가 없습니다.</span>')
+                        )
+                        ->visible(fn (?Branch $record) => filled($record?->getAttributes()['image_url'] ?? null)),
+
                     FileUpload::make('image_url')
                         ->label('대표 이미지')
                         ->image()
@@ -91,7 +104,8 @@ class BranchResource extends Resource
                         ->visibility('public')
                         ->maxSize(5120)
                         ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                        ->helperText('권장 크기: 800×500px, 최대 5MB'),
+                        ->imagePreviewHeight('160')
+                        ->helperText('권장 크기: 800×500px, 최대 5MB. S3(cdn.pac-run.com)에 저장됩니다.'),
 
                     Textarea::make('branch_desc')
                         ->label('간략 소개')
@@ -124,6 +138,12 @@ class BranchResource extends Resource
     {
         return $table
             ->columns([
+                ImageColumn::make('image_url')
+                    ->label('이미지')
+                    ->getStateUsing(fn (Branch $record) => Branch::resolveImageUrl($record->getAttributes()['image_url'] ?? null))
+                    ->width(72)
+                    ->height(48),
+
                 TextColumn::make('name')
                     ->label('지부명')
                     ->searchable()

@@ -36,8 +36,8 @@
 
       {{-- 이미지 / 배경 영역 --}}
       <div class="h-48 relative overflow-hidden">
-        @if($branch->image_url)
-          <img src="{{ $branch->image_url }}" alt="{{ $branch->name }}"
+        @if($branch->public_image_url)
+          <img src="{{ $branch->public_image_url }}" alt="{{ $branch->name }}"
                class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
           <div class="absolute inset-0 bg-gradient-to-t from-pac-black-900/80 via-transparent to-transparent"></div>
         @else
