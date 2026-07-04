@@ -13,7 +13,12 @@
       $grad = $gradients[$idx % 4];
     @endphp
     <a href="{{ route('events.show', $ev) }}" class="event-card" style="text-decoration:none;color:inherit;">
-      <div class="event-thumb {{ $grad }}" style="{{ $thumb ? 'background:url('.e($thumb).') center/cover no-repeat;' : '' }}">
+      <div class="event-thumb {{ $thumb ? 'event-thumb--has-image' : $grad }}">
+        @if($thumb)
+          <div class="event-thumb-media">
+            <img src="{{ $thumb }}" alt="{{ $ev->name }}" class="event-thumb-img" loading="lazy" decoding="async">
+          </div>
+        @endif
         <div class="event-thumb-num">{{ str_pad($idx+1,2,'0',STR_PAD_LEFT) }}</div>
         <div class="event-date-badge">{{ $ev->start_date->format('Y.m.d') }}</div>
         @if($ev->status === 'active')

@@ -12,22 +12,19 @@
           hover:shadow-md hover:-translate-y-1 transition-all duration-200 {{ $isEnded ? 'opacity-70' : '' }}">
 
   {{-- 썸네일 --}}
-  <div class="relative h-44 bg-pac-black-900 overflow-hidden flex-shrink-0">
-    @if($thumb)
-      <img src="{{ $thumb }}" alt="{{ $event->name }}"
-           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-    @else
+  <x-event-thumbnail :url="$thumb" :alt="$event->name" class="h-44 flex-shrink-0">
+    @unless($thumb)
       {{-- 플레이스홀더: 그라디언트 + 이벤트명 --}}
-      <div class="absolute inset-0 flex items-end p-4"
+      <div class="absolute inset-0 flex items-end p-4 z-0"
            style="background: linear-gradient(135deg,#2d1a00 0%,#1a1212 100%);">
         <span class="font-display text-white text-lg font-bold uppercase leading-tight opacity-30 tracking-widest">
           EVENT
         </span>
       </div>
-    @endif
+    @endunless
 
     {{-- 상태 배지 --}}
-    <div class="absolute top-3 left-3">
+    <div class="absolute top-3 left-3 z-[2]">
       @if($event->status === 'active')
         <span class="inline-flex items-center gap-1.5 bg-pac-pink-500 text-white text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
           <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> LIVE
@@ -44,12 +41,12 @@
     </div>
 
     {{-- 신청자 수 --}}
-    <div class="absolute bottom-3 right-3">
+    <div class="absolute bottom-3 right-3 z-[2]">
       <span class="bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded-full backdrop-blur-sm">
         {{ $event->registrations_count ?? $event->registrations()->count() }}명 참가
       </span>
     </div>
-  </div>
+  </x-event-thumbnail>
 
   {{-- 정보 --}}
   <div class="flex-1 flex flex-col p-4 gap-2">

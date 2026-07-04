@@ -5,13 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\Board;
 use App\Models\Branch;
 use App\Models\Event;
+use App\Models\MainHeroImage;
 use App\Models\Notice;
 use App\Models\PhotoGallery;
 use App\Models\Setting;
+use App\Services\CrewStatsService;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
+    public function __construct(private CrewStatsService $crewStats) {}
+
     public function index()
     {
         // 스킨: 로그인 사용자 DB → 기본값 _skin_v1
@@ -67,6 +71,25 @@ class HomeController extends Controller
             // 테스트/DB 미연결 시 홈은 목업 없이 빈 목록
         }
 
+        try {
+            $mainPacImageDisplay = MainHeroImage::activeDisplay();
+        } catch (\Throwable) {
+            $mainPacImageDisplay = ['url' => asset('images/main_default_img.jpg')];
+        }
+
+        $stats = [
+            'runners'  => '0',
+            'branches' => '0',
+            'events'   => '0',
+            'total_km' => '0km',
+        ];
+
+        try {
+            $stats = $this->crewStats->getPublicStats();
+        } catch (\Throwable) {
+            // DB 미연결 시 introduce 페이지와 동일한 기본값
+        }
+
         return view("home.{$activeTheme}", compact(
             'skinClass',
             'activeTheme',
@@ -76,6 +99,8 @@ class HomeController extends Controller
             'qnaPosts',
             'photoGalleries',
             'branches',
+            'mainPacImageDisplay',
+            'stats',
         ));
     }
 

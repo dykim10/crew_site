@@ -14,10 +14,12 @@
           $fallbackBg = $fallbackBgs[$i % count($fallbackBgs)];
         @endphp
         <div class="swiper-slide" style="width:340px">
-          <a href="{{ route('branch') }}" class="branch-card" style="display:block;text-decoration:none;color:inherit;">
-            <div class="branch-bg {{ $branch->public_image_url ? '' : $fallbackBg }}">
+          <a href="{{ route('branch.show', $branch) }}" class="branch-card" style="display:block;text-decoration:none;color:inherit;">
+            <div class="branch-bg {{ $branch->public_image_url ? 'branch-bg--has-image' : $fallbackBg }}">
               @if($branch->public_image_url)
-                <img src="{{ $branch->public_image_url }}" alt="{{ $branch->name }}" loading="lazy">
+                <div class="branch-thumb-media">
+                  <img src="{{ $branch->public_image_url }}" alt="{{ $branch->name }}" class="branch-thumb-img" loading="lazy" decoding="async">
+                </div>
               @endif
             </div>
             <div class="branch-overlay"></div>

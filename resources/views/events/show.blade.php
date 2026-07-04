@@ -23,10 +23,9 @@
 
   {{-- 썸네일 히어로 --}}
   @if($thumb)
-  <div class="relative rounded-2xl overflow-hidden h-56 md:h-72">
-    <img src="{{ $thumb }}" alt="{{ $event->name }}" class="w-full h-full object-cover">
-    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-    <div class="absolute bottom-0 left-0 p-6">
+  <x-event-thumbnail :url="$thumb" :alt="$event->name" class="rounded-2xl h-56 md:h-72">
+    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none z-[2]"></div>
+    <div class="absolute bottom-0 left-0 p-6 z-[3]">
       <span class="inline-flex items-center gap-1.5 mb-2
         {{ $event->status === 'active' ? 'bg-pac-pink-500 text-white' : ($event->status === 'upcoming' ? 'bg-pac-yellow-500 text-pac-black-900' : 'bg-white/20 text-white') }}
         text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full">
@@ -38,7 +37,7 @@
         {{ $event->name }}
       </h1>
     </div>
-  </div>
+  </x-event-thumbnail>
   @else
   {{-- 썸네일 없는 헤더 --}}
   <div>

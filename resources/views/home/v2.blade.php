@@ -47,9 +47,11 @@
     .pac-section { background:var(--white); }
     .pac-banner { display:grid; grid-template-columns:1fr 1fr; border:3px solid var(--black); overflow:hidden; }
     .pac-image { min-height:460px; background:var(--black); position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
-    .pac-image-pattern { position:absolute; inset:0; background-image:repeating-linear-gradient(0deg, transparent, transparent 48px, rgba(229,173,22,.08) 48px, rgba(229,173,22,.08) 49px), repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(229,173,22,.08) 48px, rgba(229,173,22,.08) 49px); }
-    .pac-image-big { font-family:'Anton',sans-serif; font-size:110px; letter-spacing:8px; color:rgba(229,173,22,.15); position:absolute; }
-    .pac-image-badge { position:absolute; bottom:0; left:0; right:0; background:var(--yellow); color:var(--black); padding:14px 28px; font-family:'Anton',sans-serif; font-size:20px; letter-spacing:3px; }
+    .pac-image-photo { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; z-index:0; }
+    .pac-image-pattern { position:absolute; inset:0; background-image:repeating-linear-gradient(0deg, transparent, transparent 48px, rgba(229,173,22,.08) 48px, rgba(229,173,22,.08) 49px), repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(229,173,22,.08) 48px, rgba(229,173,22,.08) 49px); z-index:1; pointer-events:none; }
+    .pac-image--photo .pac-image-pattern { background:linear-gradient(135deg, rgba(26,18,18,.30) 0%, rgba(61,40,0,.18) 60%, rgba(26,18,18,.30) 100%); }
+    .pac-image-big { font-family:'Anton',sans-serif; font-size:110px; letter-spacing:8px; color:rgba(229,173,22,.15); position:absolute; z-index:2; }
+    .pac-image-badge { position:absolute; bottom:0; left:0; right:0; background:var(--yellow); color:var(--black); padding:14px 28px; font-family:'Anton',sans-serif; font-size:20px; letter-spacing:3px; z-index:2; }
     .pac-content { padding:64px 56px; background:var(--light); display:flex; flex-direction:column; justify-content:center; }
     .pac-content-tag { display:inline-block; background:var(--pink); color:var(--white); font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; padding:4px 12px; margin-bottom:20px; }
     .pac-content h2 { font-family:'Anton',sans-serif; font-size:48px; letter-spacing:1px; line-height:1.05; margin-bottom:20px; }
@@ -62,8 +64,10 @@
     .branch-card { border:2px solid var(--black); overflow:hidden; position:relative; cursor:pointer; height:320px; transition:transform .3s; }
     .branch-card:hover { transform:translateY(-8px); }
     .branch-top { padding:20px 24px; position:relative; overflow:hidden; height:200px; display:flex; flex-direction:column; justify-content:flex-end; }
-    .branch-top-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; }
-    .branch-top-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.88) 0%, rgba(0,0,0,.2) 55%); }
+    .branch-top--has-image { background:#0d0d0d; }
+    .branch-thumb-media { position:absolute; inset:5%; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:1; }
+    .branch-thumb-img { display:block; max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; }
+    .branch-top-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.88) 0%, rgba(0,0,0,.2) 55%); z-index:2; pointer-events:none; }
     .branch-top-num { position:absolute; top:-10px; right:10px; font-family:'Anton',sans-serif; font-size:88px; line-height:1; color:rgba(255,255,255,.05); z-index:2; }
     .branch-top-region { font-size:10px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--yellow); margin-bottom:6px; position:relative; z-index:2; }
     .branch-top-name { font-family:'Anton',sans-serif; font-size:36px; letter-spacing:2px; color:var(--white); position:relative; z-index:2; }
@@ -83,13 +87,16 @@
     .event-card { border-right:1px solid rgba(255,255,255,.1); overflow:hidden; cursor:pointer; transition:background .3s; }
     .event-card:last-child { border-right:none; }
     .event-card:hover { background:rgba(229,173,22,.05); }
-    .event-thumb { height:220px; position:relative; overflow:hidden; }
+    .event-thumb { height:220px; position:relative; overflow:hidden; flex-shrink:0; }
+    .event-thumb--has-image { background:#0d0d0d; }
+    .event-thumb-media { position:absolute; inset:5%; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:1; }
+    .event-thumb-img { display:block; max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; }
     .et-1 { background:linear-gradient(160deg,#3d2800,#1a1212); }
     .et-2 { background:linear-gradient(160deg,#001838,#1a1212); }
     .et-3 { background:linear-gradient(160deg,#2d0028,#1a1212); }
     .et-4 { background:linear-gradient(160deg,#002d1a,#1a1212); }
-    .event-thumb-num { position:absolute; bottom:-10px; right:10px; font-family:'Anton',sans-serif; font-size:80px; color:rgba(255,255,255,.05); line-height:1; }
-    .event-date-badge { position:absolute; top:0; left:0; background:var(--yellow); color:var(--black); font-family:'Anton',sans-serif; font-size:13px; letter-spacing:1px; padding:6px 14px; }
+    .event-thumb-num { position:absolute; bottom:-10px; right:10px; font-family:'Anton',sans-serif; font-size:80px; color:rgba(255,255,255,.05); line-height:1; z-index:0; pointer-events:none; }
+    .event-date-badge { position:absolute; top:0; left:0; background:var(--yellow); color:var(--black); font-family:'Anton',sans-serif; font-size:13px; letter-spacing:1px; padding:6px 14px; z-index:2; }
     .event-body { padding:24px 20px; border-top:1px solid rgba(255,255,255,.08); }
     .event-region-tag { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--pink); margin-bottom:10px; }
     .event-title { font-family:'Anton',sans-serif; font-size:22px; letter-spacing:.5px; color:var(--white); margin-bottom:14px; line-height:1.2; }
@@ -217,10 +224,17 @@
     </div>
   </div>
   <div class="hero-stats-bar">
-    <div class="hero-stat-item"><div class="hero-stat-num">240+</div><div class="hero-stat-label">Active Runners</div></div>
-    <div class="hero-stat-item"><div class="hero-stat-num">4</div><div class="hero-stat-label">지부</div></div>
-    <div class="hero-stat-item"><div class="hero-stat-num">12</div><div class="hero-stat-label">이벤트</div></div>
-    <div class="hero-stat-item"><div class="hero-stat-num">1,840</div><div class="hero-stat-label">Total KM</div></div>
+    @foreach([
+      [$stats['runners'], 'Active Runners'],
+      [$stats['branches'], '지부'],
+      [$stats['events'], '등록된 이벤트'],
+      [$stats['total_km'], 'Total Distance'],
+    ] as $stat)
+    <div class="hero-stat-item">
+      <div class="hero-stat-num">{{ $stat[0] }}</div>
+      <div class="hero-stat-label">{{ $stat[1] }}</div>
+    </div>
+    @endforeach
   </div>
 </section>
 
@@ -229,7 +243,8 @@
   <div class="section-eyebrow">About PAC-RUN</div>
   <div class="section-heading">우리는 왜<br>함께 <em>달리나</em></div>
   <div class="pac-banner">
-    <div class="pac-image">
+    <div class="pac-image pac-image--photo">
+      <img class="pac-image-photo" src="{{ $mainPacImageDisplay['url'] }}" alt="" loading="eager" decoding="async">
       <div class="pac-image-pattern"></div>
       <div class="pac-image-big">PAC</div>
       <div class="pac-image-badge">PAC-RUN CREW 2024</div>

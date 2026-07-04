@@ -11,7 +11,12 @@
         : null;
     @endphp
     <a href="{{ route('events.show', $ev) }}" class="event-card" style="text-decoration:none;color:inherit;">
-      <div class="event-thumb" style="{{ $thumb ? 'background:url('.e($thumb).') center/cover no-repeat;' : 'background:linear-gradient(135deg,#2d1a00,#0d0d0d);' }}">
+      <div class="event-thumb {{ $thumb ? 'event-thumb--has-image' : 'event-thumb--placeholder' }}">
+        @if($thumb)
+          <div class="event-thumb-media">
+            <img src="{{ $thumb }}" alt="{{ $ev->name }}" class="event-thumb-img" loading="lazy" decoding="async">
+          </div>
+        @endif
         <div class="event-date-tag">{{ $ev->start_date->format('Y.m.d') }}</div>
         @if($ev->status === 'active')
           <div style="position:absolute;top:14px;right:14px;background:#E80043;color:white;font-size:9px;font-weight:700;padding:3px 8px;letter-spacing:2px;">LIVE</div>

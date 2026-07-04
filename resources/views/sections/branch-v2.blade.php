@@ -15,9 +15,11 @@
         @endphp
         <div class="swiper-slide" style="width:300px">
           <div class="branch-card">
-            <div class="branch-top {{ $branch->public_image_url ? '' : $fallbackBg }}">
+            <div class="branch-top {{ $branch->public_image_url ? 'branch-top--has-image' : $fallbackBg }}">
               @if($branch->public_image_url)
-                <img class="branch-top-img" src="{{ $branch->public_image_url }}" alt="{{ $branch->name }}" loading="lazy">
+                <div class="branch-thumb-media">
+                  <img class="branch-thumb-img" src="{{ $branch->public_image_url }}" alt="{{ $branch->name }}" loading="lazy" decoding="async">
+                </div>
                 <div class="branch-top-overlay"></div>
               @endif
               <div class="branch-top-num">{{ $num }}</div>
@@ -26,7 +28,7 @@
             </div>
             <div class="branch-bottom">
               <div class="branch-slogan">{{ $branch->branch_desc ?: '소개 준비 중' }}</div>
-              <a href="{{ route('branch') }}" class="branch-arrow-btn">지부 보기</a>
+              <a href="{{ route('branch.show', $branch) }}" class="branch-arrow-btn">지부 보기</a>
             </div>
           </div>
         </div>
@@ -37,7 +39,7 @@
               <div class="branch-top-name">지부 정보 준비 중</div>
             </div>
             <div class="branch-bottom">
-              <a href="{{ route('branch') }}" class="branch-arrow-btn">지부 보기</a>
+              <a href="{{ route('branch.show', $branch) }}" class="branch-arrow-btn">지부 보기</a>
             </div>
           </div>
         </div>

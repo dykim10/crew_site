@@ -43,11 +43,14 @@
 
     /* ── PAC 소개 ── */
     .pac-intro-section { background:var(--pac-bg2); }
-    .pac-banner { display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--pac-border); overflow:hidden; }
-    .pac-image { height:420px; background:linear-gradient(135deg, #1a1212 0%, #3d2800 60%, #1a1212 100%); position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-    .pac-image::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(229,173,22,0.03) 30px, rgba(229,173,22,0.03) 31px); }
-    .pac-image-big-text { font-family:'Bebas Neue',sans-serif; font-size:100px; letter-spacing:10px; color:rgba(229,173,22,0.12); position:absolute; }
-    .pac-image-tag { position:absolute; bottom:24px; left:24px; background:var(--pac-yellow); color:var(--pac-black); font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; padding:6px 14px; }
+    .pac-banner { display:grid; grid-template-columns:1fr 1fr; align-items:stretch; border:1px solid var(--pac-border); overflow:hidden; }
+    /* 업로드 크롭 비율 10:7 (MainHeroImageResource::PAC_IMAGE_ASPECT)과 동일 */
+    .pac-image { aspect-ratio:10/7; width:100%; background:linear-gradient(135deg, #1a1212 0%, #3d2800 60%, #1a1212 100%); position:relative; overflow:hidden; }
+    .pac-image-photo { position:absolute; inset:0; width:100%; height:100%; object-fit:fill; z-index:0; }
+    .pac-image::before { content:''; position:absolute; inset:0; background:repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(229,173,22,0.03) 30px, rgba(229,173,22,0.03) 31px); z-index:1; pointer-events:none; }
+    .pac-image--photo::before { background:linear-gradient(135deg, rgba(26,18,18,.30) 0%, rgba(61,40,0,.18) 60%, rgba(26,18,18,.30) 100%); }
+    .pac-image-big-text { font-family:'Bebas Neue',sans-serif; font-size:100px; letter-spacing:10px; color:rgba(229,173,22,0.12); position:absolute; z-index:2; }
+    .pac-image-tag { position:absolute; bottom:24px; left:24px; background:var(--pac-yellow); color:var(--pac-black); font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; padding:6px 14px; z-index:2; }
     .pac-content { padding:64px; display:flex; flex-direction:column; justify-content:center; }
     .pac-content h2 { font-family:'Bebas Neue',sans-serif; font-size:52px; line-height:1.05; margin-bottom:20px; }
     .pac-content h2 em { color:var(--pac-yellow); font-style:normal; }
@@ -62,8 +65,10 @@
     .branch-card { height:300px; position:relative; overflow:hidden; cursor:pointer; border:1px solid var(--pac-border); transition:border-color .3s; }
     .branch-card:hover { border-color:var(--pac-yellow); }
     .branch-bg { position:absolute; inset:0; transition:transform .6s ease; }
-    .branch-bg img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; }
-    .branch-card:hover .branch-bg { transform:scale(1.06); }
+    .branch-bg--has-image { background:#0d0d0d; }
+    .branch-thumb-media { position:absolute; inset:5%; display:flex; align-items:center; justify-content:center; pointer-events:none; }
+    .branch-thumb-img { display:block; max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; }
+    .branch-card:hover .branch-bg { transform:scale(1.03); }
     .branch-banpo   { background:linear-gradient(160deg, #2d1a00, #0d0d0d); }
     .branch-yonsei  { background:linear-gradient(160deg, #001a2d, #0d0d0d); }
     .branch-gunpo   { background:linear-gradient(160deg, #0d2200, #0d0d0d); }
@@ -82,13 +87,17 @@
     .event-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
     .event-card { border:1px solid var(--pac-border); overflow:hidden; cursor:pointer; transition:border-color .3s, transform .3s; }
     .event-card:hover { border-color:var(--pac-yellow); transform:translateY(-6px); }
-    .event-thumb { height:200px; position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+    .event-thumb { height:200px; position:relative; overflow:hidden; flex-shrink:0; }
+    .event-thumb--has-image { background:#0d0d0d; }
+    .event-thumb--placeholder { background:linear-gradient(135deg,#2d1a00,#0d0d0d); }
+    .event-thumb-media { position:absolute; inset:5%; display:flex; align-items:center; justify-content:center; pointer-events:none; z-index:1; }
+    .event-thumb-img { display:block; max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; }
     .et-1 { background:linear-gradient(135deg, #2d1a00, #0d0d0d); }
     .et-2 { background:linear-gradient(135deg, #00122d, #0d0d0d); }
     .et-3 { background:linear-gradient(135deg, #2d001a, #0d0d0d); }
     .et-4 { background:linear-gradient(135deg, #001a15, #0d0d0d); }
-    .event-thumb::after { content:'EVENT'; font-family:'Bebas Neue',sans-serif; font-size:52px; letter-spacing:8px; color:rgba(255,255,255,0.05); position:absolute; }
-    .event-date-tag { position:absolute; top:14px; left:14px; background:var(--pac-yellow); color:var(--pac-black); font-size:10px; font-weight:700; letter-spacing:1px; padding:4px 10px; z-index:1; }
+    .event-thumb::after { content:'EVENT'; font-family:'Bebas Neue',sans-serif; font-size:52px; letter-spacing:8px; color:rgba(255,255,255,0.05); position:absolute; z-index:0; pointer-events:none; }
+    .event-date-tag { position:absolute; top:14px; left:14px; background:var(--pac-yellow); color:var(--pac-black); font-size:10px; font-weight:700; letter-spacing:1px; padding:4px 10px; z-index:2; }
     .event-info { padding:18px 20px 22px; }
     .event-type-tag { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--pac-yellow); margin-bottom:8px; }
     .event-title { font-size:15px; font-weight:700; margin-bottom:12px; line-height:1.4; }
@@ -163,7 +172,6 @@
       .hero-stat-num { font-size:40px; }
 
       .pac-banner { grid-template-columns:1fr; }
-      .pac-image { height:280px; }
       .pac-image-big-text { font-size:60px; letter-spacing:4px; }
       .pac-content { padding:32px 24px; }
       .pac-content h2 { font-size:36px; word-break:keep-all; }
@@ -207,10 +215,17 @@
     <a href="#about" class="pac-btn-ghost">크루 소개</a>
   </div>
   <div class="hero-stats">
-    <div class="hero-stat"><div class="hero-stat-num">240+</div><div class="hero-stat-label">Active Runners</div></div>
-    <div class="hero-stat"><div class="hero-stat-num">4</div><div class="hero-stat-label">지부</div></div>
-    <div class="hero-stat"><div class="hero-stat-num">12</div><div class="hero-stat-label">이벤트</div></div>
-    <div class="hero-stat"><div class="hero-stat-num">1,840</div><div class="hero-stat-label">Total KM</div></div>
+    @foreach([
+      [$stats['runners'], 'Active Runners'],
+      [$stats['branches'], '지부'],
+      [$stats['events'], '등록된 이벤트'],
+      [$stats['total_km'], 'Total Distance'],
+    ] as $stat)
+    <div class="hero-stat">
+      <div class="hero-stat-num">{{ $stat[0] }}</div>
+      <div class="hero-stat-label">{{ $stat[1] }}</div>
+    </div>
+    @endforeach
   </div>
 </section>
 
@@ -219,7 +234,8 @@
   <div class="pac-section-label">About TEAM PAC</div>
   <div class="pac-section-heading">Eat miles, pac run</div>
   <div class="pac-banner">
-    <div class="pac-image">
+    <div class="pac-image pac-image--photo">
+      <img class="pac-image-photo" src="{{ $mainPacImageDisplay['url'] }}" alt="" loading="eager" decoding="async">
       <div class="pac-image-big-text">PAC</div>
       <div class="pac-image-tag">Birds fly · Fish swim · Pac run</div>
     </div>

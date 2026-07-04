@@ -398,6 +398,32 @@
 .tiptap-output a          { color: #E5AD16; text-decoration: underline; }
 .tiptap-output img        { max-width: 100%; border-radius: 2px; margin: 0.5em 0; display: block; }
 
+/* ── EVENT THUMBNAIL (contain + 5% margin) ─────────── */
+.event-thumb-frame {
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.event-thumb-media {
+  position: absolute;
+  inset: 5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.event-thumb-img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
 /* ── LOADING BAR ────────────────────────────────────── */
 @keyframes pac-slide {
   0%   { left: -60%; width: 60%; }

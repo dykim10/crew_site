@@ -18,8 +18,8 @@
     </p>
   </div>
 
-  {{-- 가치 카드 --}}
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-px bg-pac-black-100 border border-pac-black-100 mb-16">
+  {{-- 가치 카드 3단 --}}
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-px bg-pac-black-100 border border-pac-black-100 mb-4">
     <div class="bg-pac-black-900 p-8">
       <div class="font-display text-[11px] tracking-[4px] uppercase text-pac-yellow-500 mb-3">INTENSITY</div>
       <h3 class="font-display text-3xl uppercase text-pac-black-900 mb-4">고강도 훈련</h3>
@@ -36,11 +36,24 @@
     </div>
     <div class="bg-pac-black-900 p-8">
       <div class="font-display text-[11px] tracking-[4px] uppercase text-pac-yellow-500 mb-3">ACTIVATION</div>
-      <h3 class="font-display text-3xl uppercase text-pac-black-900 mb-4">마라톤 & 기록 경신</h3>
+      <h3 class="font-display text-[clamp(1.25rem,2.5vw,1.75rem)] uppercase text-pac-black-900 mb-4 leading-snug">
+        Respec Perfect <span class="text-pac-yellow-500">|</span> 우리는 팀팩!
+      </h3>
       <p class="font-body text-sm text-pac-black-600 leading-relaxed">
-        러닝 훈련팀으로 매주 달리며 마라톤 풀코스 완주를 목표로 합니다. 트랙 인터벌부터 장거리 러닝까지, 개인 기록(PB) 경신과 대회 완주를 함께 이뤄갑니다.
+        TEAM PAC의 팀 구호입니다. 마라톤 대회 출발에 앞서 「Respec Perfect 우리는 팀팩!」를 외치고, 각자의 출발선 앞에 서서 목표한 결과를 향해 최선을 다합니다.
       </p>
     </div>
+  </div>
+
+  {{-- 명언 카드 --}}
+  <div class="border border-pac-black-100 bg-pac-black-900 px-8 py-10 mb-16 text-center">
+    <p class="font-body text-base md:text-lg text-pac-black-500 leading-relaxed italic max-w-3xl mx-auto">
+      「승리도 위대하지만, 우정은 더 위대하다.」
+    </p>
+    <p class="font-body text-sm text-pac-black-600 mt-2">— 에밀 자토팩</p>
+    <p class="font-body text-xs text-pac-black-500 leading-relaxed mt-4 max-w-2xl mx-auto">
+      코스 · 동료 · 그리고 오늘의 나를 존중하는 마음 — Respec Perfect의 뜻입니다.
+    </p>
   </div>
 
   {{-- 수치 (DB 자동 집계) --}}

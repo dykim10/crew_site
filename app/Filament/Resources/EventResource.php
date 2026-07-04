@@ -279,12 +279,12 @@ class EventResource extends Resource
                                 ->helperText('목표 km 달성 시 자동 부여할 점수'),
                         ])
                         ->columns(3)
-                        ->defaultItems(3)
-                        ->default([
+                        ->defaultItems(fn (string $operation): int => $operation === 'create' ? 3 : 0)
+                        ->default(fn (string $operation): array => $operation === 'create' ? [
                             ['grade' => 'A', 'target_km' => 120, 'reward_score' => 10],
                             ['grade' => 'B', 'target_km' => 100, 'reward_score' => 8],
                             ['grade' => 'C', 'target_km' => 80,  'reward_score' => 6],
-                        ])
+                        ] : [])
                         ->addActionLabel('등급 추가')
                         ->reorderable()
                         ->visible(fn ($get) => $get('score_type') === 'mileage_grade'),

@@ -58,6 +58,7 @@ Route::get('/introduce', [IntroduceController::class, 'index'])->name('introduce
 
 // 지부 소개 (공개)
 Route::get('/branch', [BranchController::class, 'index'])->name('branch');
+Route::get('/branch/{branch}', [BranchController::class, 'show'])->name('branch.show');
 
 // 운영진 소개 (공개)
 Route::get('/administrator', [AdministratorController::class, 'index'])->name('administrator');

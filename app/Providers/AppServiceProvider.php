@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Filament\Resources\MainHeroImageResource;
 use App\Support\LiveDatabaseGuard;
 use App\Models\PhotoGallery;
 use App\Models\Setting;
@@ -21,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         LiveDatabaseGuard::boot('CREW');
+
+        // Filament FileUpload: 크롭 전 원본 임시 업로드 (메인 배경 최대 20MB)
+        config(['livewire.temporary_file_upload.rules' => ['required', 'file', 'max:' . MainHeroImageResource::MAX_UPLOAD_KB]]);
 
         Paginator::defaultView('pagination.custom');
 

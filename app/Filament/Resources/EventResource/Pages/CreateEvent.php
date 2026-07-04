@@ -4,11 +4,11 @@ namespace App\Filament\Resources\EventResource\Pages;
 
 use App\Filament\Resources\EventResource;
 use App\Models\Event;
+use App\Support\EventFormSchema;
 use App\Models\EventScore;
 use App\Models\Generation;
 use App\Models\UserGeneration;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Str;
 
 class CreateEvent extends CreateRecord
 {
@@ -53,37 +53,9 @@ class CreateEvent extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         if (($data['event_type'] ?? 'B') === 'B') {
-            $data['form_schema'] = $this->normalizeFormSchema($data['form_schema'] ?? []);
+            $data['form_schema'] = EventFormSchema::fromBuilderBlocks($data['form_schema'] ?? []);
         }
 
         return $data;
-    }
-
-    private function normalizeFormSchema(array $blocks): array
-    {
-        $defaults = Event::defaultFormSchema();
-
-        $custom = [];
-        foreach ($blocks as $block) {
-            $type  = $block['type'] ?? 'text';
-            $bdata = $block['data'] ?? [];
-            $label = $bdata['label'] ?? '항목';
-            $key   = Str::snake(Str::ascii($label)) ?: ('field_' . count($custom));
-
-            // name/phone 키 충돌 방지
-            if (in_array($key, ['name', 'phone'])) {
-                $key = 'custom_' . $key;
-            }
-
-            $custom[] = [
-                'key'      => $key,
-                'label'    => $label,
-                'type'     => $type,
-                'required' => (bool) ($bdata['required'] ?? false),
-                'data'     => $bdata,
-            ];
-        }
-
-        return array_merge($defaults, $custom);
     }
 }
