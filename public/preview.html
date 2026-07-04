@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- PAC-RUN 공개 포트폴리오 — IP·포트·API 경로·DB 호스트·.env 값은 definition 전용. 본 파일에 실값 기재 금지. -->
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -367,7 +368,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
       </div>
       <div style="text-align:right">
         <div class="cov-year">2026</div>
-        <div class="cov-ver">Project Docs v3.1</div>
+        <div class="cov-ver">Project Docs v3.2</div>
         <div class="s-num" id="snum" style="margin-top:4px;font-size:11px;color:var(--td);letter-spacing:2px">01 / 14</div>
       </div>
     </div>
@@ -438,22 +439,22 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
         <div class="cov-zb">
           <div class="cov-zb-label">핵심 기능</div>
           <div class="cov-feats">
-            <div class="cov-feat"><span class="cov-feat-dot" style="color:#FF6B8A">▸</span>러닝 크루 기록 · 이벤트 점수 관리 (A타입 / 고정점수)</div>
-            <div class="cov-feat"><span class="cov-feat-dot" style="color:#FF6B8A">▸</span>이미지 AI 파싱 → 2단계 확정 · 관리자 검수 플로우</div>
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:#FF6B8A">▸</span>메인 PAC 이미지 · 지부 상세 · 운영진 소개 · 동적 통계</div>
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:#FF6B8A">▸</span>이벤트 B타입 동적 폼 · 썸네일 contain(inset 5%) 통일</div>
             <div class="cov-feat"><span class="cov-feat-dot" style="color:#FF6B8A">▸</span>Filament v4 어드민 · 단체 SMS · 기수 신청서</div>
-            <div class="cov-feat"><span class="cov-feat-dot" style="color:#FF6B8A">▸</span>스킨 시스템 · 게시판 TipTap · 포토갤러리</div>
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:#FF6B8A">▸</span>스킨 v1 · 게시판 TipTap · 포토갤러리 · /privacy</div>
           </div>
         </div>
 
         <!-- Zone C: Evidence (dense) -->
         <div class="cov-zc">
           <div class="cov-zc-kpi">
-            <span class="cov-kpi-val" style="color:#FF6B8A">15+</span>
+            <span class="cov-kpi-val" style="color:#FF6B8A">19</span>
             <span class="cov-kpi-lbl">Filament<br>관리자 리소스</span>
           </div>
           <div class="cov-zc-badges">
             <span class="badge bd">배포 완료</span>
-            <span class="badge bpk">v1 개발 중</span>
+            <span class="badge bd">v1 운영</span>
           </div>
           <div class="cov-zc-sep"></div>
           <div class="cov-techs">
@@ -485,7 +486,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
           <div class="cov-zb-label">핵심 기능</div>
           <div class="cov-feats">
             <div class="cov-feat"><span class="cov-feat-dot" style="color:rgba(255,255,255,.3)">▸</span>Claude Vision 이미지 파싱 · AI 요약 · 감성분석</div>
-            <div class="cov-feat"><span class="cov-feat-dot" style="color:rgba(255,255,255,.3)">▸</span>기상청 ASOS 날씨 수집 · S3 WebP 변환 · CDN</div>
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:rgba(255,255,255,.3)">▸</span>기상청 ASOS 날씨 · S3 WebP 변환(용도별 max) · CDN</div>
             <div class="cov-feat"><span class="cov-feat-dot" style="color:rgba(255,255,255,.3)">▸</span>세계육상연맹 대회 크롤링 (2종 파서)</div>
             <div class="cov-feat"><span class="cov-feat-dot" style="color:rgba(255,255,255,.3)">▸</span>APScheduler 백업 · SMS · 주간 뉴스레터 메일링 (월 06:00)</div>
           </div>
@@ -521,9 +522,9 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
       <div class="cov-author"><span>김대윤</span> &nbsp;·&nbsp; dykim10iufc@gmail.com</div>
       <div class="cov-live">
         <div class="cov-live-dot"></div>
-        <div class="cov-live-txt">All Services Live</div>
+        <div class="cov-live-txt">All Services Live · 공개 문서 (접속정보 생략)</div>
       </div>
-      <div class="cov-date">2026 — 06 — 21</div>
+      <div class="cov-date">2026 — 07 — 04</div>
     </div>
 
   </div>
@@ -534,7 +535,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
   <div class="sh"><div class="s-label">Chapter 01 — Architecture</div><div class="s-num">02 / 14</div></div>
   <div class="slide-content">
     <div class="stitle">시스템 <span class="acc">아키텍처</span></div>
-    <div class="ssub">3개 독립 서비스 + 공유 Supabase DB · EC2 단일 호스트 운영</div>
+    <div class="ssub">3개 독립 서비스 + 공유 Supabase DB(서울) · EC2 단일 호스트 운영</div>
 
     <div class="ab"><span class="mt">┌─────────────────── 사용자 브라우저 ───────────────────┐</span>
                    │ HTTPS
@@ -542,33 +543,38 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
 <span class="hl">       AWS Route 53</span>  →  DNS 라우팅
                    │
                    ▼
-<span class="hl">    Nginx  (EC2 · Ubuntu 24.04 · t2.micro · ***.***.***.***)</span>
+<span class="hl">    Nginx  (EC2 · Ubuntu 24.04 · t2.micro · ap-northeast-2 · ***.***.***.***)</span>
      ├── review.pac-run.com ──▶ <span class="gn">REVIEW</span>  Laravel  (내부 포트)
      ├── crew.pac-run.com   ──▶ <span class="pk">CREW</span>    Laravel  (내부 포트)
      └── api.pac-run.com    ──▶ <span class="hl">CORE</span>    FastAPI  (내부 포트)
-<span class="mt">──── 내부 통신 (동일 EC2, localhost API 호출) ──────</span>
-     REVIEW / CREW  ──▶  CORE API (내부 엔드포인트)
+<span class="mt">──── 내부 통신 (동일 EC2 호스트) ──────</span>
+     REVIEW / CREW  ──▶  CORE API (내부 엔드포인트 · 경로 비공개)
                    ▼
-<span class="hl">    Supabase PostgreSQL</span>  (스키마 분리 운영)
+<span class="hl">    Supabase PostgreSQL</span>  <span class="gn">ap-northeast-2 (서울)</span> — 스키마 분리
      ├── public : users · crews · generations · regions · branches
-     ├── review : races · race_editions · reviews · race_weather · completion_records
-     └── crew   : running_logs · events · boards · sms_logs ...
+     ├── review : races · race_editions · reviews · race_weather · race_plans ...
+     └── crew   : running_logs · events · boards · main_hero_images · administrators ...
                    ▼
-<span class="hl">    AWS S3 + CloudFront</span>  (이미지 CDN, ACL public-read)</div>
+<span class="hl">    AWS S3 + CloudFront</span>  <span class="gn">ap-northeast-2 (서울)</span> — 이미지 CDN</div>
 
     <div class="g3" style="margin-top:14px">
       <div class="card cy">
         <div class="ctitle">EC2 인스턴스</div>
-        <p>t2.micro · Ubuntu 24.04<br>IP: ***.***.***.***<br>SSL: Let's Encrypt + ACM<br>배포: GitHub → git pull 수동</p>
+        <p>t2.micro · Ubuntu 24.04 · ap-northeast-2<br>IP: ***.***.***.***<br>SSL: Let's Encrypt + ACM<br>배포: GitHub → git pull 수동</p>
       </div>
       <div class="card cy">
         <div class="ctitle">데이터베이스</div>
-        <p>Supabase PostgreSQL<br>3개 스키마 분리 운영<br>TIMESTAMPTZ(6) 통일<br>플랜 분리 운영 · 전용 백업 솔루션</p>
+        <p>Supabase PostgreSQL<br><strong style="color:var(--y)">리전 ap-northeast-2 (서울)</strong><br>2026-07 싱가포르→서울 이전<br>3개 스키마 분리 · TIMESTAMPTZ(6) 통일</p>
       </div>
       <div class="card cy">
         <div class="ctitle">외부 서비스</div>
-        <p>AWS S3 + CloudFront (CDN)<br>Resend (이메일 발송)<br>솔라피 (SMS · HMAC 인증)<br>Claude API (Vision/요약/분석)</p>
+        <p>AWS S3 + CloudFront (CDN · <strong style="color:var(--y)">서울</strong>)<br>Resend (이메일 발송)<br>솔라피 (SMS · HMAC 인증)<br>Claude API (Vision/요약/분석)</p>
       </div>
+    </div>
+
+    <div class="co info" style="margin-top:12px">
+      <strong>2026-07 리전 이전</strong>
+      Supabase PostgreSQL · AWS S3가 싱가포르(ap-southeast-1)에서 <strong style="color:var(--y)">서울(ap-northeast-2)</strong>로 이전됨. 접속 정보·포트·API 경로는 공개 문서에 기재하지 않음 (내부 definition·.env 전용).
     </div>
   </div>
   <div class="bg-num">02</div>
@@ -588,9 +594,9 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
           <tr><th>구분</th><th>기술</th><th>비고</th></tr>
           <tr><td>서버</td><td>AWS EC2 t2.micro</td><td>Ubuntu 24.04</td></tr>
           <tr><td>웹서버</td><td>Nginx</td><td>Virtual Host</td></tr>
-          <tr><td>DB</td><td>Supabase PostgreSQL</td><td>스키마 분리</td></tr>
+          <tr><td>DB</td><td>Supabase PostgreSQL</td><td><strong style="color:var(--y)">ap-northeast-2 서울</strong> · 스키마 분리</td></tr>
+          <tr><td>스토리지</td><td>AWS S3 + CloudFront</td><td>ap-northeast-2 서울</td></tr>
           <tr><td>벡터 DB</td><td>pgvector (Supabase)</td><td>v2 RAG 임베딩용</td></tr>
-          <tr><td>파일</td><td>AWS S3 + CloudFront</td><td>이미지 / GPX</td></tr>
           <tr><td>이메일</td><td>Resend</td><td>무료 100건/일</td></tr>
           <tr><td>SMS</td><td>솔라피</td><td>HMAC 인증</td></tr>
           <tr><td>AI</td><td>Claude API</td><td>티어링: 경량(요약·파싱) / Opus(플랜)</td></tr>
@@ -610,7 +616,8 @@ php artisan serve --port=<span class="hl">[REVIEW]</span>
 
 <span class="mt"># 터미널 3 — CREW</span>
 cd ./crew
-php artisan serve --port=<span class="hl">[CREW]</span></div>
+php artisan serve --port=<span class="hl">[CREW]</span>
+<span class="mt"># 포트·호스트·IP·API URL — 내부 definition 및 .env만 참조</span></div>
       </div>
       <div>
         <h3 class="st">서비스별 스택</h3>
@@ -749,7 +756,7 @@ php artisan serve --port=<span class="hl">[CREW]</span></div>
 ├── RaceCourseService.php    GPX upload/update · coordinates/markers
 ├── SummaryService.php       ← CORE API · dirty 배치 연동
 ├── WeatherService.php       기상청 ASOS · race_editions 기반
-└── RacePlanService.php      ← CORE /api/race-plan/generate (v2 신규)
+└── RacePlanService.php      ← CORE 레이스 플랜 API [비공개] (v2 신규)
 
 app/Models/
 ├── Race.php          latestEdition() · listWithReviewStats()
@@ -836,13 +843,13 @@ app/Models/
         <h3 class="st">CORE API v2 구현 완료 엔드포인트</h3>
         <table class="tbl">
           <tr><th>Method</th><th>경로</th><th>설명</th></tr>
-          <tr><td><code>POST</code></td><td>/api/race-plan/generate</td><td>레이스 플랜 생성 (Claude claude-opus-4-8 + RAG)</td></tr>
-          <tr><td><code>POST</code></td><td>/api/rag/embed</td><td>race_weather_cases 임베딩 + pgvector 저장</td></tr>
-          <tr><td><code>POST</code></td><td>/api/rag/search</td><td>유사 케이스 검색 (match_race_weather_cases)</td></tr>
-          <tr><td><code>POST</code></td><td>/api/sns/youtube/fetch</td><td>YouTube 수집 트리거 (Apify)</td></tr>
-          <tr><td><code>GET</code></td><td>/api/sns/youtube/{edition_id}</td><td>대회별 YouTube 캐시 반환</td></tr>
-          <tr><td><code>POST</code></td><td>/api/sns/instagram/fetch</td><td>Instagram 수집 트리거 (Apify)</td></tr>
-          <tr><td><code>GET</code></td><td>/api/sns/instagram/{edition_id}</td><td>대회별 Instagram 캐시 반환</td></tr>
+          <tr><td><code>POST</code></td><td>[비공개]</td><td>레이스 플랜 생성 (Claude claude-opus-4-8 + RAG)</td></tr>
+          <tr><td><code>POST</code></td><td>[비공개]</td><td>race_weather_cases 임베딩 + pgvector 저장</td></tr>
+          <tr><td><code>POST</code></td><td>[비공개]</td><td>유사 케이스 검색 (match_race_weather_cases)</td></tr>
+          <tr><td><code>POST</code></td><td>[비공개]</td><td>YouTube 수집 트리거 (Apify)</td></tr>
+          <tr><td><code>GET</code></td><td>[비공개]</td><td>대회별 YouTube 캐시 반환</td></tr>
+          <tr><td><code>POST</code></td><td>[비공개]</td><td>Instagram 수집 트리거 (Apify)</td></tr>
+          <tr><td><code>GET</code></td><td>[비공개]</td><td>대회별 Instagram 캐시 반환</td></tr>
         </table>
       </div>
     </div>
@@ -919,7 +926,7 @@ crew.instagram_cache  upsert 저장
   <div class="sh"><div class="s-label">Chapter 06 — CREW</div><div class="s-num">07 / 14</div></div>
   <div class="slide-content">
     <div class="stitle">CREW <span class="dim">· crew.pac-run.com</span></div>
-    <div class="ssub">러닝 크루 기록 · 이벤트 · 관리 통합 플랫폼 &nbsp;<span class="badge bd">v1 배포 완료</span></div>
+    <div class="ssub">러닝 크루 기록 · 이벤트 · 관리 통합 플랫폼 &nbsp;<span class="badge bd">v1 운영</span> &nbsp;<span class="badge bw">2026-07-04 공개 UX</span></div>
 
     <div class="g2">
       <div>
@@ -934,10 +941,10 @@ crew.instagram_cache  upsert 저장
 
         <h3 class="st">러닝 이미지 파싱 플로우</h3>
         <div class="flow">
-          <div class="fs"><div class="fn">1</div><div class="fc"><strong>이미지 업로드</strong><span>AJAX POST /running-logs/parse-image</span></div></div>
+          <div class="fs"><div class="fn">1</div><div class="fc"><strong>이미지 업로드</strong><span>AJAX → CORE 이미지 파싱 API [비공개]</span></div></div>
           <div class="fs"><div class="fn">2</div><div class="fc"><strong>AI 파싱</strong><span>CORE → S3 업로드 → Claude Vision → JSON 리턴</span></div></div>
           <div class="fs"><div class="fn">3</div><div class="fc"><strong>Draft 저장</strong><span>createDraft() → is_confirmed=false INSERT</span></div></div>
-          <div class="fs"><div class="fn">4</div><div class="fc"><strong>사용자 확정</strong><span>결과 확인·수정 → POST /running-logs/{id}/confirm</span></div></div>
+          <div class="fs"><div class="fn">4</div><div class="fc"><strong>사용자 확정</strong><span>결과 확인·수정 → 확정 API [비공개]</span></div></div>
           <div class="fs"><div class="fn">5</div><div class="fc"><strong>관리자 검수</strong><span>Filament /admin → is_confirmed=true → 마일리지 반영</span></div></div>
         </div>
 
@@ -957,25 +964,20 @@ crew.instagram_cache  upsert 저장
           <li>러닝 이미지 2단계 파싱 플로우 + 다중 일괄 업로드</li>
           <li>기록 삭제 시 S3 자동 삭제 (Observer 패턴)</li>
           <li>EC2 배포 + Nginx HTTPS 설정</li>
-          <li>Filament v4 완전 어드민 (15+ 리소스)</li>
-          <li>이벤트 A/B타입 (조 편성·현황 보드·고정점수·엑셀)</li>
-          <li>단체 문자 (솔라피 + 웹훅 수신 상태 추적)</li>
-          <li>스킨 시스템 (v1 Dark Editorial · v2 Energy Burst)</li>
-          <li>GNB 통일 (커뮤니티·사용자 아바타 드롭다운)</li>
-          <li>게시판 boards/board_comments + 2depth 댓글 + Policy</li>
-          <li>TipTap v3 에디터 컴포넌트화 (x-tiptap-editor)</li>
-          <li>타임존 Asia/Seoul 전환 (config/app.php)</li>
-          <li>관리자 로그 시스템 (AdminLogResource 읽기전용)</li>
-          <li>통합 배포 스크립트 (EC2 SSH 자동화)</li>
-          <li>프로필 페이지 재설계 (아바타 S3 업로드)</li>
-          <li>비밀번호 찾기 email_hash 기반 토큰 수정</li>
-          <li>XSS 방어 (mews/purifier · Symfony 보안 패치)</li>
-          <li>커스텀 이메일 템플릿 (인증/비밀번호 재설정 · Bebas Neue 다크 에디토리얼 · 모바일 반응형)</li>
+          <li>Filament v4 완전 어드민 (<strong style="color:var(--y)">19</strong> 리소스)</li>
+          <li>게시판 boards/board_comments + TipTap + list/show/form 완성</li>
+          <li>스킨 v1 Dark Editorial (v2 코드 유지, 운영 v1 기준)</li>
+          <li>공개 페이지: /introduce · /branch · /branch/{id} · /administrator · /privacy</li>
+          <li>메인 PAC 이미지 (main_hero_images · 10:7 · CORE WebP)</li>
+          <li>홈·소개 동적 통계 (CrewStatsService · 캐시 10분)</li>
+          <li>썸네일 contain + inset 5% (<code>x-event-thumbnail</code>) — 이벤트·지부</li>
+          <li>이벤트 B타입 form_schema Builder ↔ flat 변환 (수정 버그 수정)</li>
+          <li>타임존 Asia/Seoul · 관리자 로그 · 통합 배포 스크립트</li>
+          <li>프로필 재설계 · 커스텀 이메일 템플릿 · XSS 방어</li>
         </ul>
 
         <h3 class="st">다음 작업 (우선순위)</h3>
         <ul class="cl">
-          <li class="pend">게시판 Blade 뷰 (list · show · form, skin v1/v2)</li>
           <li class="pend">관리자 엑셀 업로드 (UserImport)</li>
           <li class="pend">Instagram 연동 (Apify → instagram_cache → 대시보드)</li>
         </ul>
@@ -1003,7 +1005,7 @@ crew.instagram_cache  upsert 저장
       </div>
       <div class="card cd">
         <div class="ctitle">S3 업로드</div>
-        <p>ACL="public-read" 적용<br>running-logs/ · boards/ · avatars/<br>WebP 변환 (Pillow, max 800px)<br>7일 자동 백업 (APScheduler)</p>
+        <p>ACL="public-read" 적용<br>running-logs/ · boards/ · avatars/ · main/<br>WebP 변환 (Pillow, 용도별 max)<br>7일 자동 백업 (APScheduler)</p>
       </div>
     </div>
 
@@ -1018,7 +1020,7 @@ crew.instagram_cache  upsert 저장
       <tr><td><code>POST</code></td><td>[비공개]</td><td>솔라피 단체 문자 발송</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
       <tr><td><code>GET</code></td><td>[비공개]</td><td>SMS 수신 결과 집계</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
       <tr><td><code>DELETE</code></td><td>[비공개]</td><td>S3 이미지 삭제</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
-      <tr><td><code>POST</code></td><td>[비공개]</td><td>이미지 → WebP 변환 + S3</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
+      <tr><td><code>POST</code></td><td>[비공개]</td><td>이미지 → WebP (max_width/height/size)</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
       <tr><td><code>POST</code></td><td>[비공개]</td><td>DB 전체 백업 즉시 실행</td><td>내부</td><td><span class="badge bd">구현</span></td></tr>
       <tr><td><code>GET</code></td><td>[비공개]</td><td>인스타그램 캐시 반환</td><td>CREW</td><td><span class="badge bd">구현</span></td></tr>
       <tr><td><code>POST</code></td><td>[비공개]</td><td>대회 날씨 수집 (기상청 ASOS) + DB 저장</td><td>REVIEW</td><td><span class="badge bd">구현</span></td></tr>
@@ -1122,7 +1124,7 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
   <div class="sh"><div class="s-label">Chapter 09 — Database</div><div class="s-num">10 / 14</div></div>
   <div class="slide-content">
     <div class="stitle">DB <span class="acc">스키마</span></div>
-    <div class="ssub">Supabase PostgreSQL · 3개 스키마 분리 운영 · TIMESTAMPTZ(6) 통일</div>
+    <div class="ssub">Supabase PostgreSQL · ap-northeast-2 (서울) · 3개 스키마 분리 · TIMESTAMPTZ(6) 통일</div>
 
     <div class="g3">
       <div>
@@ -1140,7 +1142,7 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
   is_recruiting, max_members
 
 <span class="hl">regions</span>        지역 (반포/연대/인천/군포)
-<span class="hl">branches</span>       지부
+<span class="hl">branches</span>       지부 (image_url, branch_desc, admin/operator)
 <span class="hl">groups</span>         그룹</div>
       </div>
       <div>
@@ -1195,6 +1197,8 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
 <span class="hl">board_comments</span>    parent_id (2depth)
 <span class="hl">sms_logs</span>          group_id 인덱스
 <span class="hl">instagram_cache</span>
+<span class="hl">main_hero_images</span>  홈 PAC (10:7 WebP)
+<span class="hl">administrators</span>    공개 운영진 (/administrator)
 <span class="hl">admin_logs</span>        읽기전용 감사</div>
       </div>
     </div>
@@ -1321,25 +1325,19 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
       </div>
       <div>
         <h3 class="st">Filament v4 어드민 패널</h3>
-        <p style="font-size:15px;color:var(--td);margin-bottom:10px">CREW /admin · 15+ 리소스 · PAC 컬러 테마 적용</p>
+        <p style="font-size:15px;color:var(--td);margin-bottom:10px">CREW /admin · <strong style="color:var(--y)">19</strong> 리소스 · PAC 컬러 테마 적용</p>
         <ul class="cl">
-          <li>UserResource — 이메일 복호화, 비밀번호 초기화</li>
+          <li>UserResource — 이메일 복호화, 비밀번호 초기화, 운영진 임명</li>
           <li>RunningLogResource — 검수 확인/취소, 마일리지 반영</li>
           <li>EventResource — A/B타입 동적 폼 빌더 + 조 편성</li>
+          <li>MainHeroImageResource — 홈 PAC 이미지 (10:7 크롭 · WebP)</li>
+          <li>AdministratorResource — 공개 운영진 프로필</li>
+          <li>BranchResource — 지부 이미지/소개/담당자</li>
           <li>EventFixedSubmissionResource — 승인/반려 + 점수 지급</li>
-          <li>BugReportResource — 제보/심각도/관리자 응답</li>
-          <li>NoticeResource — 공지사항 CRUD</li>
-          <li>MeetingMinuteResource — 회의록</li>
-          <li>PhotoGalleryResource — 포토갤러리 (WebP 썸네일)</li>
-          <li>ApplicationFormResource — 신청서 빌더</li>
-          <li>ApplicationResource — 신청 기록 관리</li>
-          <li>GoogleFormResource — Google Forms 연동</li>
-          <li>GenerationResource — 기수 관리</li>
-          <li>BranchResource — 지부 관리 (이미지/설명 편집)</li>
-          <li>SmsResource — 단체 문자 + 웹훅 상태 추적</li>
-          <li>AdminLogResource — 관리자 행위 감사 로그 (읽기전용)</li>
+          <li>BoardResource · PhotoGalleryResource · NoticeResource</li>
+          <li>ApplicationFormResource · ApplicationResource · GenerationResource</li>
+          <li>BugReportResource · SmsResource · AdminLogResource (읽기전용)</li>
           <li>StatsOverview 위젯, 엑셀 다운로드</li>
-          <li class="pend">게시판 관리 (Blade 뷰 미완)</li>
           <li class="pend">관리자 엑셀 업로드 (UserImport)</li>
         </ul>
       </div>
@@ -1353,7 +1351,7 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
   <div class="sh"><div class="s-label">Chapter 12 — Status & Roadmap</div><div class="s-num">13 / 14</div></div>
   <div class="slide-content">
     <div class="stitle">개발 현황 &amp; <span class="acc">로드맵</span></div>
-    <div class="ssub">2026-06-21 기준 · developer_md/STATUS.md 종합 반영</div>
+    <div class="ssub">2026-07-04 기준 · developer_md/STATUS.md 종합 반영</div>
 
     <div class="g3" style="margin-bottom:16px">
       <div class="card cy">
@@ -1367,10 +1365,10 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
       <div class="card cp">
         <div class="ctitle">CREW</div>
         <div style="display:flex;align-items:center;gap:8px;margin:8px 0">
-          <div class="sbar" style="flex:1"><div class="fill" style="width:90%;background:var(--p)"></div></div>
-          <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:800;color:var(--p)">90%</span>
+          <div class="sbar" style="flex:1"><div class="fill" style="width:93%;background:var(--p)"></div></div>
+          <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:800;color:var(--p)">93%</span>
         </div>
-        <p><span class="badge bd">배포 완료</span><br>커스텀 이메일 템플릿 · Filament 어드민 PAC 테마 정비</p>
+        <p><span class="badge bd">v1 운영</span><br>지부 상세 · 운영진 · 메인 PAC · 썸네일 UX · 서울 리전</p>
       </div>
       <div class="card cd">
         <div class="ctitle">CORE API</div>
@@ -1398,6 +1396,13 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
             <div>
               <div class="stage-ttl">코스 지도 + GPX 관리 수정 <span style="font-size:14px;color:#3FB950">완료 (2026-06-21)</span></div>
               <div class="stage-desc">Kakao 폴리라인 · km 고도 · admin race-courses edit · AI summary UI</div>
+            </div>
+          </div>
+          <div class="stage-item done">
+            <span class="stage-no">✓</span>
+            <div>
+              <div class="stage-ttl">CREW 공개 UX + 인프라 <span style="font-size:14px;color:#3FB950">완료 (2026-07-04)</span></div>
+              <div class="stage-desc">지부 상세 · 운영진 · 메인 PAC · 썸네일 · Supabase/S3 서울 리전 이전</div>
             </div>
           </div>
           <div class="stage-item plan">
@@ -1446,9 +1451,9 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
         <div style="margin-top:16px;text-align:center;padding:18px;background:var(--surf);border-radius:8px;border:1px solid var(--br)">
           <div style="font-family:'Barlow Condensed';font-weight:800;font-size:30px;color:var(--y);letter-spacing:-1px">PAC-RUN</div>
           <div style="font-size:15px;color:var(--td);margin-top:6px;line-height:1.9">
-            Project Documentation v3.1<br>
+            Project Documentation v3.2<br>
             김대윤 · dykim10iufc@gmail.com<br>
-            2026-06-21
+            2026-07-04
           </div>
         </div>
       </div>
@@ -1487,7 +1492,7 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
       </div>
       <div>
         <h3 class="st">Hook 설정 구조</h3>
-        <div class="ab" style="white-space:pre-wrap"><span class="mt">// .claude/settings.json</span>
+        <div class="ab" style="white-space:pre-wrap"><span class="mt">// Hook 설정 파일 (내부 · 비공개)</span>
 {
   <span class="hl">"hooks"</span>: {
     <span class="gn">"PostToolUse"</span>: [{
