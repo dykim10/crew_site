@@ -4,9 +4,12 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers\GenerationsRelationManager;
+use App\Models\Administrator;
 use App\Models\Generation;
 use App\Models\User;
 use App\Models\UserGeneration;
+use App\Services\AdminLogService;
+use App\Services\AdministratorService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -25,8 +28,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
-use App\Services\AdminLogService;
-use Illuminate\Support\Facades\Password;
 
 class UserResource extends Resource
 {
@@ -111,12 +112,32 @@ class UserResource extends Resource
                 ])
                 ->columns(3)
                 ->visibleOn('edit'),
+
+            Section::make('운영진')
+                ->description('공개 운영진 소개 페이지(/administrator)에 노출되는 프로필입니다.')
+                ->schema([
+                    \Filament\Forms\Components\Placeholder::make('administrator_status')
+                        ->label('상태')
+                        ->content(function (?User $record) {
+                            if (!$record?->administrator) {
+                                return '운영진 미등록';
+                            }
+                            $admin = $record->administrator;
+                            $role = Administrator::ROLES[$admin->role] ?? $admin->role;
+                            $active = $admin->is_active ? '공개' : '비공개';
+
+                            return "{$role} · {$active}";
+                        }),
+                ])
+                ->visibleOn('edit')
+                ->visible(fn (?User $record) => (bool) $record?->administrator),
         ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->with('administrator'))
             ->columns([
                 TextColumn::make('nickname')
                     ->label('닉네임')
@@ -150,6 +171,19 @@ class UserResource extends Resource
                     ->label('베타')
                     ->boolean(),
 
+                TextColumn::make('administrator.role')
+                    ->label('운영진')
+                    ->badge()
+                    ->placeholder('—')
+                    ->formatStateUsing(fn (?string $state) => $state ? (Administrator::ROLES[$state] ?? $state) : null)
+                    ->color(fn (?string $state) => $state ? match ($state) {
+                        'branch_leader' => 'warning',
+                        'crew_ops'      => 'success',
+                        'photo'         => 'info',
+                        default         => 'gray',
+                    } : null)
+                    ->toggleable(),
+
                 TextColumn::make('last_login_at')
                     ->label('최근 로그인')
                     ->dateTime('Y.m.d H:i')
@@ -173,6 +207,60 @@ class UserResource extends Resource
             ])
             ->actions([
                 EditAction::make()->label('수정'),
+                Action::make('appoint_administrator')
+                    ->label('운영진 임명')
+                    ->icon('heroicon-o-user-circle')
+                    ->color('success')
+                    ->visible(fn (User $record) => in_array(auth()->user()->role, ['super_admin', 'region_admin'])
+                        && !$record->administrator)
+                    ->modalHeading('운영진 임명')
+                    ->modalDescription(fn (User $record) => ($record->name ?? $record->nickname) . ' (@' . $record->nickname . ') 님을 운영진으로 등록합니다.')
+                    ->modalSubmitActionLabel('임명')
+                    ->form(fn (User $record) => AdministratorResource::staffProfileFormFields(includeUserSelect: false))
+                    ->fillForm(fn (User $record) => [
+                        'role'      => 'crew_ops',
+                        'branch_id' => $record->branch_id,
+                        'is_active' => true,
+                        'sort_order' => 0,
+                    ])
+                    ->action(function (User $record, array $data) {
+                        app(AdministratorService::class)->appoint($record, $data);
+                        AdminLogService::log('administrator_appoint', 'User', $record->id,
+                            "운영진 임명 → {$record->nickname}");
+                        Notification::make()
+                            ->title('운영진 임명 완료')
+                            ->body($record->nickname . ' 님이 운영진으로 등록되었습니다.')
+                            ->success()
+                            ->send();
+                    }),
+                Action::make('dismiss_administrator')
+                    ->label('운영진 해제')
+                    ->icon('heroicon-o-user-minus')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('운영진 해제')
+                    ->modalDescription(fn (User $record) => ($record->name ?? $record->nickname) . ' (@' . $record->nickname . ') 님의 운영진 등록을 해제합니다. 공개 페이지에서도 제거됩니다.')
+                    ->modalSubmitActionLabel('해제')
+                    ->visible(fn (User $record) => in_array(auth()->user()->role, ['super_admin', 'region_admin'])
+                        && (bool) $record->administrator)
+                    ->action(function (User $record) {
+                        app(AdministratorService::class)->dismiss($record);
+                        AdminLogService::log('administrator_dismiss', 'User', $record->id,
+                            "운영진 해제 → {$record->nickname}");
+                        Notification::make()
+                            ->title('운영진 해제 완료')
+                            ->body($record->nickname . ' 님의 운영진 등록이 해제되었습니다.')
+                            ->success()
+                            ->send();
+                    }),
+                Action::make('edit_administrator')
+                    ->label('운영진 프로필')
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('gray')
+                    ->url(fn (User $record) => $record->administrator
+                        ? AdministratorResource::getUrl('edit', ['record' => $record->administrator])
+                        : null)
+                    ->visible(fn (User $record) => (bool) $record->administrator),
                 Action::make('send_verification_email')
                     ->label('인증 이메일 발송')
                     ->icon('heroicon-o-envelope')
@@ -201,8 +289,7 @@ class UserResource extends Resource
                     ->modalDescription(fn ($record) => $record->nickname . ' (' . $record->email . ') 에게 비밀번호 재설정 링크를 발송합니다.')
                     ->modalSubmitActionLabel('발송')
                     ->action(function ($record) {
-                        $token = Password::createToken($record);
-                        $record->sendPasswordResetNotification($token);
+                        app(\App\Services\PasswordResetService::class)->sendLinkToUser($record);
                         AdminLogService::log('email_sent', 'User', $record->id,
                             "비밀번호 재설정 이메일 발송 → {$record->name} ({$record->email})");
                         Notification::make()

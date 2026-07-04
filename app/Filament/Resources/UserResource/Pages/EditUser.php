@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
+use App\Models\User;
 use App\Models\UsersDetail;
 use App\Services\AdminLogService;
 use Filament\Resources\Pages\EditRecord;
@@ -10,6 +11,11 @@ use Filament\Resources\Pages\EditRecord;
 class EditUser extends EditRecord
 {
     protected static string $resource = UserResource::class;
+
+    public function resolveRecord(int | string $key): User
+    {
+        return parent::resolveRecord($key)->load('administrator');
+    }
 
     // 저장 전 detail 필드를 임시 보관
     private array $pendingDetail = [];

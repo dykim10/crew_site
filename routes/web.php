@@ -26,6 +26,7 @@
  *   GET   /photos/{id}                            → 포토 갤러리 상세
  */
 
+use App\Http\Controllers\AdministratorController;
 use App\Http\Controllers\ApplyController;
 use App\Http\Controllers\BoardCommentController;
 use App\Http\Controllers\BugReportController;
@@ -57,6 +58,12 @@ Route::get('/introduce', [IntroduceController::class, 'index'])->name('introduce
 
 // 지부 소개 (공개)
 Route::get('/branch', [BranchController::class, 'index'])->name('branch');
+
+// 운영진 소개 (공개)
+Route::get('/administrator', [AdministratorController::class, 'index'])->name('administrator');
+
+// 개인정보처리방침 (공개)
+Route::view('/privacy', 'privacy.index')->name('privacy');
 
 // GNB 단축 별칭 — 와일드카드 그룹보다 반드시 먼저 등록 (선 등록 라우트가 우선 매칭)
 Route::get('/boards/free',   fn() => redirect()->route('boards.index', 'free'))->name('boards.free');
@@ -121,6 +128,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+    Route::post('/profile/password-reset', [ProfileController::class, 'sendPasswordResetLink'])
+        ->middleware('throttle:6,1')
+        ->name('profile.password-reset');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // 러닝 기록

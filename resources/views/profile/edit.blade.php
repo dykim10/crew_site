@@ -108,7 +108,7 @@
     </div>
 
     <div class="p-6">
-      @include('profile.partials.update-password-form')
+      @include('profile.partials.request-password-reset-form')
     </div>
   </div>
 

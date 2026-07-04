@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\PasswordResetService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Client\ConnectionException;
@@ -108,6 +109,27 @@ class ProfileController extends Controller
         }
 
         return Redirect::route('profile.edit')->with('status', 'avatar-updated');
+    }
+
+    /**
+     * 로그인 상태에서 등록 이메일로 비밀번호 재설정 링크를 발송한다.
+     */
+    public function sendPasswordResetLink(Request $request): RedirectResponse
+    {
+        try {
+            app(PasswordResetService::class)->sendLinkToUser($request->user());
+        } catch (\Exception $e) {
+            Log::error('프로필 비밀번호 재설정 이메일 발송 실패', [
+                'user_id' => $request->user()->id,
+                'error'   => $e->getMessage(),
+            ]);
+
+            return back()->withErrors([
+                'password_reset' => '이메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.',
+            ]);
+        }
+
+        return Redirect::route('profile.edit')->with('status', 'password-reset-link-sent');
     }
 
     /**

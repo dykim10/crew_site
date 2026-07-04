@@ -315,9 +315,9 @@
 <footer>
   <div class="footer-main">
     <div><img src="{{ asset('images/logo-footer.webp') }}" alt="PAC RUN" style="height:36px;width:auto;margin-bottom:14px;"><div class="footer-desc">TEAM PAC(팀팩)<br>Birds fly. Fish swim. Pac run.<br>Eat miles, pac run.</div></div>
-    <div><div class="footer-col-title">소개</div><ul class="footer-links"><li><a href="{{ route('introduce') }}">PAC-RUN 소개</a></li><li><a href="{{ route('branch') }}">지부 안내</a></li><li><a href="{{ route('introduce') }}">운영진</a></li><li><a href="{{ route('apply') }}">가입 안내</a></li></ul></div>
+    <div><div class="footer-col-title">소개</div><ul class="footer-links"><li><a href="{{ route('introduce') }}">PAC-RUN 소개</a></li><li><a href="{{ route('branch') }}">지부 안내</a></li><li><a href="{{ route('administrator') }}">운영진</a></li><li><a href="{{ route('apply') }}">가입 안내</a></li></ul></div>
     <div><div class="footer-col-title">활동</div><ul class="footer-links"><li><a href="{{ route('events.index') }}">이벤트</a></li><li><a href="{{ auth()->check() ? route('running-logs.index') : route('login') }}">기록 관리</a></li><li><a href="{{ route('photos.index') }}">포토 갤러리</a></li><li><a href="{{ route('ranking.index') }}">랭킹</a></li></ul></div>
-    <div><div class="footer-col-title">고객지원</div><ul class="footer-links"><li><a href="{{ route('notices.index') }}">공지사항</a></li><li><a href="{{ route('boards.qna') }}">문의하기</a></li><li><a href="{{ route('bug-reports.create') }}">버그 제보</a></li><li><a href="{{ route('apply') }}">개인정보처리방침</a></li></ul></div>
+    <div><div class="footer-col-title">고객지원</div><ul class="footer-links"><li><a href="{{ route('notices.index') }}">공지사항</a></li><li><a href="{{ route('boards.qna') }}">문의하기</a></li><li><a href="{{ route('bug-reports.create') }}">버그 제보</a></li><li><a href="{{ route('privacy') }}">개인정보처리방침</a></li></ul></div>
   </div>
   <div class="footer-bottom">
     <span>© 2026 PAC-RUN. All rights reserved.</span>

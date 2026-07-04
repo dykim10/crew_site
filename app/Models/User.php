@@ -161,6 +161,16 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
         return $this->hasOne(UsersDetail::class, 'user_id');
     }
 
+    public function administrator(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(Administrator::class);
+    }
+
+    public function isPublicAdministrator(): bool
+    {
+        return $this->administrator()->where('is_active', true)->exists();
+    }
+
     // 참여한 모든 기수 이력
     public function userGenerations()
     {
