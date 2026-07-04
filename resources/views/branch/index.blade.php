@@ -34,12 +34,13 @@
     @endphp
     <div class="bg-pac-black-900 overflow-hidden group">
 
-      {{-- 이미지 / 배경 영역 --}}
+      {{-- 이미지 / 배경 영역 (고정 h-48, object-fit:cover) --}}
       <div class="h-48 relative overflow-hidden">
         @if($branch->public_image_url)
           <img src="{{ $branch->public_image_url }}" alt="{{ $branch->name }}"
-               class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-          <div class="absolute inset-0 bg-gradient-to-t from-pac-black-900/80 via-transparent to-transparent"></div>
+               class="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+               loading="lazy">
+          <div class="absolute inset-0 bg-gradient-to-t from-pac-black-900/90 via-pac-black-900/20 to-transparent"></div>
         @else
           <div class="absolute inset-0" style="background:{{ $bg }};"></div>
           <div class="absolute inset-0 flex items-center justify-center">

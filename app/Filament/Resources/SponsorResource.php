@@ -15,7 +15,9 @@ use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Forms\Components\Placeholder;
 use Filament\Tables\Columns\IconColumn;
+use Illuminate\Support\HtmlString;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
@@ -86,15 +88,26 @@ class SponsorResource extends Resource
 
             Section::make('로고 이미지')
                 ->schema([
+                    Placeholder::make('logo_preview')
+                        ->label('현재 로고')
+                        ->content(fn (?Sponsor $record) => filled($record?->getAttributes()['logo_url'] ?? null)
+                            ? new HtmlString(
+                                '<img src="' . e(Sponsor::resolveLogoUrl($record->getAttributes()['logo_url'])) . '" '
+                                . 'class="max-h-16 rounded bg-white p-2" style="width:auto;max-width:50%;object-fit:contain;" alt="스폰서 로고">'
+                            )
+                            : new HtmlString('<span class="text-gray-400 text-sm">등록된 로고가 없습니다.</span>')
+                        )
+                        ->visible(fn (?Sponsor $record) => filled($record?->getAttributes()['logo_url'] ?? null)),
+
                     FileUpload::make('logo_url')
-                        ->label('로고 이미지')
+                        ->label('로고 이미지 변경')
                         ->image()
                         ->disk('s3')
                         ->directory('sponsors')
                         ->visibility('public')
                         ->maxSize(2048)
                         ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'])
-                        ->helperText('권장: 투명 배경 PNG/WebP, 최대 2MB'),
+                        ->helperText('새 이미지를 선택하면 기존 로고가 교체됩니다. 권장: 투명 배경 PNG/WebP, 최대 2MB'),
                 ]),
 
             Section::make('소개')
@@ -121,9 +134,12 @@ class SponsorResource extends Resource
 
                 ImageColumn::make('logo_url')
                     ->label('로고')
-                    ->disk('s3')
-                    ->visibility('public')
-                    ->size(48)
+                    ->getStateUsing(fn (Sponsor $record) => Sponsor::resolveLogoUrl($record->getAttributes()['logo_url'] ?? null))
+                    ->imageHeight('auto')
+                    ->imageWidth('50%')
+                    ->extraImgAttributes([
+                        'style' => 'width:50%;height:auto;object-fit:contain;',
+                    ])
                     ->defaultImageUrl(asset('images/placeholder.png')),
 
                 TextColumn::make('name')

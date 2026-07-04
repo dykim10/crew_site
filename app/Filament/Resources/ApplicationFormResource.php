@@ -75,7 +75,7 @@ class ApplicationFormResource extends Resource
 
                     Toggle::make('is_active')
                         ->label('활성화 (신청 받기)')
-                        ->helperText('활성화 시 /apply 페이지에서 이 폼이 표시됩니다.')
+                        ->helperText('활성화 + 모집 기간(open_from/open_until) 충족 시 /apply 에 노출됩니다. cohort는 기수 번호와 맞추세요 (예: 7기).')
                         ->default(false)
                         ->inline(false),
                 ])

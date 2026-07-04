@@ -17,9 +17,9 @@ class Generation extends Model
     protected function casts(): array
     {
         return [
-            'start_date'       => 'date',
-            'end_date'         => 'date',
-            'active_branch_ids'=> 'array',
+            'start_date'        => 'date',
+            'end_date'          => 'date',
+            'active_branch_ids' => 'array',
         ];
     }
 

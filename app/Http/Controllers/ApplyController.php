@@ -15,6 +15,7 @@ class ApplyController extends Controller
     public function index(): View
     {
         $form = ApplicationForm::getActive();
+
         return view('apply.index', compact('form'));
     }
 

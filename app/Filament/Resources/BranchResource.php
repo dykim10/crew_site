@@ -26,6 +26,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class BranchResource extends Resource
 {
+    private const IMAGE_PREVIEW_SCALE = '50%';
+
     protected static ?string $model = Branch::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-map-pin';
@@ -90,22 +92,21 @@ class BranchResource extends Resource
                         ->content(fn (?Branch $record) => filled($record?->getAttributes()['image_url'] ?? null)
                             ? new HtmlString(
                                 '<img src="' . e(Branch::resolveImageUrl($record->getAttributes()['image_url'])) . '" '
-                                . 'class="max-w-md rounded-lg shadow" style="max-height:240px;object-fit:cover;" alt="지부 대표 이미지">'
+                                . 'class="rounded-lg shadow block" style="width:' . self::IMAGE_PREVIEW_SCALE . ';height:auto;max-width:100%;" alt="지부 대표 이미지">'
                             )
                             : new HtmlString('<span class="text-gray-400 text-sm">등록된 이미지가 없습니다.</span>')
                         )
                         ->visible(fn (?Branch $record) => filled($record?->getAttributes()['image_url'] ?? null)),
 
                     FileUpload::make('image_url')
-                        ->label('대표 이미지')
+                        ->label('대표 이미지 변경')
                         ->image()
                         ->disk('s3')
                         ->directory('branches')
                         ->visibility('public')
                         ->maxSize(5120)
                         ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                        ->imagePreviewHeight('160')
-                        ->helperText('권장 크기: 800×500px, 최대 5MB. S3(cdn.pac-run.com)에 저장됩니다.'),
+                        ->helperText('새 이미지를 선택하면 기존 이미지가 교체됩니다. 권장 크기: 800×500px, 최대 5MB.'),
 
                     Textarea::make('branch_desc')
                         ->label('간략 소개')
@@ -141,8 +142,11 @@ class BranchResource extends Resource
                 ImageColumn::make('image_url')
                     ->label('이미지')
                     ->getStateUsing(fn (Branch $record) => Branch::resolveImageUrl($record->getAttributes()['image_url'] ?? null))
-                    ->width(72)
-                    ->height(48),
+                    ->imageHeight('auto')
+                    ->imageWidth(self::IMAGE_PREVIEW_SCALE)
+                    ->extraImgAttributes([
+                        'style' => 'width:' . self::IMAGE_PREVIEW_SCALE . ';height:auto;object-fit:contain;',
+                    ]),
 
                 TextColumn::make('name')
                     ->label('지부명')

@@ -30,7 +30,7 @@
     .hero-title .line2 { -webkit-text-stroke:2px rgba(255,255,255,0.15); color:transparent; }
     .hero-title .accent { color:var(--pac-yellow); }
     .hero-rule { width:80px; height:3px; background:var(--pac-yellow); margin:36px 0; }
-    .hero-sub { font-size:16px; font-weight:300; color:rgba(255,255,255,.55); max-width:500px; line-height:1.8; margin-bottom:52px; }
+    .hero-sub { font-size:16px; font-weight:300; color:rgba(255,255,255,.55); max-width:560px; line-height:1.8; margin-bottom:52px; }
     .hero-cta { display:flex; gap:16px; align-items:center; }
     .hero-stats { display:flex; gap:0; margin-top:80px; border-top:1px solid var(--pac-border); padding-top:40px; }
     .hero-stat { flex:1; padding-right:40px; border-right:1px solid var(--pac-border); margin-right:40px; }
@@ -52,6 +52,9 @@
     .pac-content h2 { font-family:'Bebas Neue',sans-serif; font-size:52px; line-height:1.05; margin-bottom:20px; }
     .pac-content h2 em { color:var(--pac-yellow); font-style:normal; }
     .pac-content p { font-size:15px; line-height:1.9; color:rgba(255,255,255,.55); margin-bottom:16px; font-weight:300; }
+    .pac-slogan-list { display:flex; flex-direction:column; gap:10px; margin-top:28px; padding-top:24px; border-top:1px solid var(--pac-border); }
+    .pac-slogan-item { font-family:'Bebas Neue',sans-serif; font-size:clamp(16px,2.5vw,22px); letter-spacing:2px; color:var(--pac-yellow); line-height:1.3; }
+    .hero-slogan { font-family:'Bebas Neue',sans-serif; font-size:clamp(18px,3vw,26px); letter-spacing:2px; color:var(--pac-yellow); margin-bottom:12px; line-height:1.3; }
 
     /* ── 지부 ── */
     .branch-section { background:var(--pac-bg); }
@@ -59,6 +62,7 @@
     .branch-card { height:300px; position:relative; overflow:hidden; cursor:pointer; border:1px solid var(--pac-border); transition:border-color .3s; }
     .branch-card:hover { border-color:var(--pac-yellow); }
     .branch-bg { position:absolute; inset:0; transition:transform .6s ease; }
+    .branch-bg img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; }
     .branch-card:hover .branch-bg { transform:scale(1.06); }
     .branch-banpo   { background:linear-gradient(160deg, #2d1a00, #0d0d0d); }
     .branch-yonsei  { background:linear-gradient(160deg, #001a2d, #0d0d0d); }
@@ -149,6 +153,7 @@
       .hero-eyebrow { font-size:10px; letter-spacing:3px; line-height:1.6; word-break:keep-all; }
       .hero-title { font-size:clamp(52px,16vw,90px); word-break:keep-all; }
       .hero-sub { max-width:none; margin-bottom:32px; word-break:keep-all; }
+      .hero-slogan { word-break:keep-all; margin-bottom:8px; }
       .hero-cta { flex-direction:column; align-items:stretch; width:100%; }
       .hero-cta .pac-btn, .hero-cta .pac-btn-ghost { justify-content:center; text-align:center; }
       .hero-stats { flex-wrap:wrap; margin-top:48px; padding-top:32px; }
@@ -195,7 +200,8 @@
     <div class="line2">CREW</div>
   </div>
   <div class="hero-rule"></div>
-  <p class="hero-sub">함께 달리고, 함께 성장하는 서울 러닝 크루.<br>반포·연대·군포·인천 — 각 지역에서 달린다.</p>
+  <p class="hero-slogan">Birds fly. Fish swim. Pac run.</p>
+  <p class="hero-sub">TEAM PAC(팀팩)은 풀코스 마라톤 완주를 목표로 트랙에서 인터벌 훈련을 이어가는 러닝 팀입니다.<br><br>에밀 자토팩의 명언을 모티브로 한 "Bird fly, Fish swim, PAC run"처럼, 우리는 언제 어디서나 달리는 '팩'입니다. 함께 달리며 얻은 유대감과 성장이 TEAM PAC의 가장 큰 자부심입니다.</p>
   <div class="hero-cta">
     <a href="{{ route('apply') }}" class="pac-btn">크루 참여하기 →</a>
     <a href="#about" class="pac-btn-ghost">크루 소개</a>
@@ -210,17 +216,20 @@
 
 <!-- PAC 소개 -->
 <section class="pac-intro-section" id="about">
-  <div class="pac-section-label">About PAC-RUN</div>
-  <div class="pac-section-heading">우리는 함께 달린다</div>
+  <div class="pac-section-label">About TEAM PAC</div>
+  <div class="pac-section-heading">Eat miles, pac run</div>
   <div class="pac-banner">
     <div class="pac-image">
       <div class="pac-image-big-text">PAC</div>
-      <div class="pac-image-tag">PAC-RUN OFFICIAL</div>
+      <div class="pac-image-tag">Birds fly · Fish swim · Pac run</div>
     </div>
     <div class="pac-content">
-      <h2>달리기로 하나 되는<br><em>러닝 크루</em></h2>
-      <p>PAC-RUN은 서울과 수도권을 기반으로 활동하는 러닝 크루입니다. 반포, 연대, 군포, 인천 4개 지부가 각 지역의 러너들을 연결하고, 함께 달리며 성장하는 커뮤니티를 만들어갑니다.</p>
-      <p>매월 정기 런, 특별 이벤트, 지부 간 교류를 통해 혼자가 아닌 함께 달리는 즐거움을 경험하세요.</p>
+      <h2>풀코스를 향한<br><em>러닝 팀 TEAM PAC</em></h2>
+      <div class="pac-slogan-list">
+        <div class="pac-slogan-item">Birds fly. Fish swim. Pac run</div>
+        <div class="pac-slogan-item">You want something go get it Period</div>
+        <div class="pac-slogan-item">Eat miles, pac run</div>
+      </div>
       <a href="{{ route('introduce') }}" class="pac-btn-outline" style="margin-top:20px;">자세히 보기 →</a>
     </div>
   </div>
@@ -305,7 +314,7 @@
 <!-- Footer -->
 <footer>
   <div class="footer-main">
-    <div><img src="{{ asset('images/logo-footer.webp') }}" alt="PAC RUN" style="height:36px;width:auto;margin-bottom:14px;"><div class="footer-desc">함께 달리고, 함께 성장하는<br>서울 러닝 크루 PAC-RUN.<br>반포 · 연대 · 군포 · 인천</div></div>
+    <div><img src="{{ asset('images/logo-footer.webp') }}" alt="PAC RUN" style="height:36px;width:auto;margin-bottom:14px;"><div class="footer-desc">TEAM PAC(팀팩)<br>Birds fly. Fish swim. Pac run.<br>Eat miles, pac run.</div></div>
     <div><div class="footer-col-title">소개</div><ul class="footer-links"><li><a href="{{ route('introduce') }}">PAC-RUN 소개</a></li><li><a href="{{ route('branch') }}">지부 안내</a></li><li><a href="{{ route('introduce') }}">운영진</a></li><li><a href="{{ route('apply') }}">가입 안내</a></li></ul></div>
     <div><div class="footer-col-title">활동</div><ul class="footer-links"><li><a href="{{ route('events.index') }}">이벤트</a></li><li><a href="{{ auth()->check() ? route('running-logs.index') : route('login') }}">기록 관리</a></li><li><a href="{{ route('photos.index') }}">포토 갤러리</a></li><li><a href="{{ route('ranking.index') }}">랭킹</a></li></ul></div>
     <div><div class="footer-col-title">고객지원</div><ul class="footer-links"><li><a href="{{ route('notices.index') }}">공지사항</a></li><li><a href="{{ route('boards.qna') }}">문의하기</a></li><li><a href="{{ route('bug-reports.create') }}">버그 제보</a></li><li><a href="{{ route('apply') }}">개인정보처리방침</a></li></ul></div>

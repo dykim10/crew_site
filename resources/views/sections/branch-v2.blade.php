@@ -1,61 +1,47 @@
-{{-- 지부 섹션 v2 — Energy Burst: 카드형 + [지부 보기] 버튼 --}}
+{{-- 지부 섹션 v2 — Energy Burst: DB 업로드 이미지 + branch-top 영역 --}}
+@php
+  $branches = $branches ?? collect();
+  $fallbackBgs = ['branch-banpo-color', 'branch-yonsei-color', 'branch-gunpo-color', 'branch-incheon-color'];
+@endphp
 <section class="branch-section">
   <div class="section-eyebrow">지부 소개</div>
-  <div class="section-heading">4개 지부,<br><em>하나의</em> 크루</div>
+  <div class="section-heading">{{ $branches->count() ?: 4 }}개 지부,<br><em>하나의</em> 크루</div>
   <div class="swiper swiper-branches">
     <div class="swiper-wrapper">
-      <div class="swiper-slide" style="width:300px">
-        <div class="branch-card">
-          <div class="branch-top branch-banpo-color">
-            <div class="branch-top-num">01</div>
-            <div class="branch-top-region">BANPO · 반포</div>
-            <div class="branch-top-name">반포 지부</div>
-          </div>
-          <div class="branch-bottom">
-            <div class="branch-slogan">한강변을 달리며 자유를 느끼는 반포 러너들</div>
-            <a href="{{ route('branch') }}" class="branch-arrow-btn">지부 보기</a>
-          </div>
-        </div>
-      </div>
-      <div class="swiper-slide" style="width:300px">
-        <div class="branch-card">
-          <div class="branch-top branch-yonsei-color">
-            <div class="branch-top-num">02</div>
-            <div class="branch-top-region">YONSEI · 연대</div>
-            <div class="branch-top-name">연대 지부</div>
-          </div>
-          <div class="branch-bottom">
-            <div class="branch-slogan">캠퍼스와 도심을 누비는 연대 러닝팀</div>
-            <a href="{{ route('branch') }}" class="branch-arrow-btn">지부 보기</a>
+      @forelse($branches as $i => $branch)
+        @php
+          $num = str_pad($i + 1, 2, '0', STR_PAD_LEFT);
+          $fallbackBg = $fallbackBgs[$i % count($fallbackBgs)];
+        @endphp
+        <div class="swiper-slide" style="width:300px">
+          <div class="branch-card">
+            <div class="branch-top {{ $branch->public_image_url ? '' : $fallbackBg }}">
+              @if($branch->public_image_url)
+                <img class="branch-top-img" src="{{ $branch->public_image_url }}" alt="{{ $branch->name }}" loading="lazy">
+                <div class="branch-top-overlay"></div>
+              @endif
+              <div class="branch-top-num">{{ $num }}</div>
+              <div class="branch-top-region">BRANCH · {{ $num }}</div>
+              <div class="branch-top-name">{{ $branch->name }}</div>
+            </div>
+            <div class="branch-bottom">
+              <div class="branch-slogan">{{ $branch->branch_desc ?: '소개 준비 중' }}</div>
+              <a href="{{ route('branch') }}" class="branch-arrow-btn">지부 보기</a>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="swiper-slide" style="width:300px">
-        <div class="branch-card">
-          <div class="branch-top branch-gunpo-color">
-            <div class="branch-top-num">03</div>
-            <div class="branch-top-region">GUNPO · 군포</div>
-            <div class="branch-top-name">군포 지부</div>
-          </div>
-          <div class="branch-bottom">
-            <div class="branch-slogan">수리산 트레일과 함께하는 군포 러너들</div>
-            <a href="{{ route('branch') }}" class="branch-arrow-btn">지부 보기</a>
+      @empty
+        <div class="swiper-slide" style="width:300px">
+          <div class="branch-card">
+            <div class="branch-top branch-banpo-color">
+              <div class="branch-top-name">지부 정보 준비 중</div>
+            </div>
+            <div class="branch-bottom">
+              <a href="{{ route('branch') }}" class="branch-arrow-btn">지부 보기</a>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="swiper-slide" style="width:300px">
-        <div class="branch-card">
-          <div class="branch-top branch-incheon-color">
-            <div class="branch-top-num">04</div>
-            <div class="branch-top-region">INCHEON · 인천</div>
-            <div class="branch-top-name">인천 지부</div>
-          </div>
-          <div class="branch-bottom">
-            <div class="branch-slogan">바다 내음과 함께 달리는 인천 러닝 패밀리</div>
-            <a href="{{ route('branch') }}" class="branch-arrow-btn">지부 보기</a>
-          </div>
-        </div>
-      </div>
+      @endforelse
     </div>
   </div>
 </section>

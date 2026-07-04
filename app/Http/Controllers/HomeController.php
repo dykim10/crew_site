@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Board;
+use App\Models\Branch;
 use App\Models\Event;
 use App\Models\Notice;
 use App\Models\PhotoGallery;
@@ -35,6 +36,7 @@ class HomeController extends Controller
         $freePosts = collect();
         $qnaPosts = collect();
         $photoGalleries = collect();
+        $branches = collect();
 
         try {
             $notices = Notice::where('target_type', 'all')
@@ -57,6 +59,10 @@ class HomeController extends Controller
                 ->orderByDesc('sort_order')
                 ->limit(5)
                 ->get();
+
+            $branches = Branch::where('status', 'active')
+                ->orderBy('name')
+                ->get();
         } catch (\Throwable) {
             // 테스트/DB 미연결 시 홈은 목업 없이 빈 목록
         }
@@ -69,6 +75,7 @@ class HomeController extends Controller
             'freePosts',
             'qnaPosts',
             'photoGalleries',
+            'branches',
         ));
     }
 

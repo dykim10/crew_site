@@ -62,9 +62,11 @@
     .branch-card { border:2px solid var(--black); overflow:hidden; position:relative; cursor:pointer; height:320px; transition:transform .3s; }
     .branch-card:hover { transform:translateY(-8px); }
     .branch-top { padding:20px 24px; position:relative; overflow:hidden; height:200px; display:flex; flex-direction:column; justify-content:flex-end; }
-    .branch-top-num { position:absolute; top:-10px; right:10px; font-family:'Anton',sans-serif; font-size:88px; line-height:1; color:rgba(255,255,255,.05); }
-    .branch-top-region { font-size:10px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--yellow); margin-bottom:6px; }
-    .branch-top-name { font-family:'Anton',sans-serif; font-size:36px; letter-spacing:2px; color:var(--white); }
+    .branch-top-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center; }
+    .branch-top-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.88) 0%, rgba(0,0,0,.2) 55%); }
+    .branch-top-num { position:absolute; top:-10px; right:10px; font-family:'Anton',sans-serif; font-size:88px; line-height:1; color:rgba(255,255,255,.05); z-index:2; }
+    .branch-top-region { font-size:10px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--yellow); margin-bottom:6px; position:relative; z-index:2; }
+    .branch-top-name { font-family:'Anton',sans-serif; font-size:36px; letter-spacing:2px; color:var(--white); position:relative; z-index:2; }
     .branch-bottom { padding:18px 24px; background:var(--white); border-top:2px solid var(--black); height:120px; display:flex; flex-direction:column; justify-content:space-between; }
     .branch-slogan { font-size:13px; color:rgba(26,18,18,.6); line-height:1.5; }
     .branch-arrow-btn { display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--black); text-decoration:none; }

@@ -36,16 +36,21 @@
     </div>
     <div class="bg-pac-black-900 p-8">
       <div class="font-display text-[11px] tracking-[4px] uppercase text-pac-yellow-500 mb-3">ACTIVATION</div>
-      <h3 class="font-display text-3xl uppercase text-pac-black-900 mb-4">지역 활성화</h3>
+      <h3 class="font-display text-3xl uppercase text-pac-black-900 mb-4">마라톤 & 기록 경신</h3>
       <p class="font-body text-sm text-pac-black-600 leading-relaxed">
-        각 지부는 지역 러닝 문화를 만들어갑니다. 반포 한강, 연대 캠퍼스, 군포 수리산, 인천 바다.
+        러닝 훈련팀으로 매주 달리며 마라톤 풀코스 완주를 목표로 합니다. 트랙 인터벌부터 장거리 러닝까지, 개인 기록(PB) 경신과 대회 완주를 함께 이뤄갑니다.
       </p>
     </div>
   </div>
 
-  {{-- 수치 --}}
+  {{-- 수치 (DB 자동 집계) --}}
   <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-pac-black-100 border border-pac-black-100 mb-16">
-    @foreach([['240+','Active Runners'], ['4','지부'], ['12','진행 이벤트'], ['10,840km','Total Distance']] as $stat)
+    @foreach([
+      [$stats['runners'], 'Active Runners'],
+      [$stats['branches'], '지부'],
+      [$stats['events'], '등록된 이벤트'],
+      [$stats['total_km'], 'Total Distance'],
+    ] as $stat)
     <div class="bg-pac-black-900 px-8 py-10 text-center">
       <div class="font-display text-5xl text-pac-yellow-500 mb-2">{{ $stat[0] }}</div>
       <div class="font-display text-[10px] tracking-[3px] uppercase text-pac-black-500">{{ $stat[1] }}</div>
@@ -73,8 +78,8 @@
         @if($sponsor->link_url)
           <a href="{{ $sponsor->link_url }}" target="_blank" rel="noopener"
              class="w-full flex items-center justify-center rounded-lg border border-pac-black-100 bg-white p-4 h-20 hover:border-pac-yellow-500 hover:shadow-sm transition-all">
-            @if($sponsor->logo_url)
-              <img src="{{ $sponsor->logo_url }}" alt="{{ e($sponsor->name) }}"
+            @if($sponsor->public_logo_url)
+              <img src="{{ $sponsor->public_logo_url }}" alt="{{ e($sponsor->name) }}"
                    class="max-h-10 max-w-full object-contain grayscale group-hover:grayscale-0 transition-all">
             @else
               <span class="font-display text-sm uppercase tracking-wide text-pac-black-600">{{ $sponsor->name }}</span>
@@ -82,8 +87,8 @@
           </a>
         @else
           <div class="w-full flex items-center justify-center rounded-lg border border-pac-black-100 bg-white p-4 h-20">
-            @if($sponsor->logo_url)
-              <img src="{{ $sponsor->logo_url }}" alt="{{ e($sponsor->name) }}"
+            @if($sponsor->public_logo_url)
+              <img src="{{ $sponsor->public_logo_url }}" alt="{{ e($sponsor->name) }}"
                    class="max-h-10 max-w-full object-contain grayscale">
             @else
               <span class="font-display text-sm uppercase tracking-wide text-pac-black-600">{{ $sponsor->name }}</span>

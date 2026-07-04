@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\GenerationResource\Pages;
 use App\Models\Branch;
 use App\Models\Generation;
+use App\Services\GenerationRecruitmentService;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -23,6 +24,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -56,36 +58,105 @@ class GenerationResource extends Resource
         return auth()->user()->role === 'super_admin';
     }
 
-    // CORE API에서 대회 목록 로드 (10분 캐시)
+    /** @param iterable<int, object|array<string, mixed>> $rows */
+    private static function buildRaceOptions(iterable $rows): array
+    {
+        $options = [];
+        foreach ($rows as $race) {
+            $row  = is_array($race) ? $race : (array) $race;
+            $id   = $row['id'] ?? null;
+            $name = $row['name'] ?? null;
+            $date = isset($row['race_date']) ? substr((string) $row['race_date'], 0, 10) : '';
+            if ($id && $name) {
+                $options[$id] = $date ? "[{$date}] {$name}" : $name;
+            }
+        }
+
+        return $options;
+    }
+
+    /** @return array{options: array<int|string, string>, failed: bool, error: ?string, source: ?string} */
+    private static function loadRaceOptionsFromDb(): array
+    {
+        try {
+            $rows = DB::select(
+                <<<'SQL'
+                SELECT r.id, r.name, ed.race_date
+                FROM review.races r
+                LEFT JOIN LATERAL (
+                    SELECT re.race_date
+                    FROM review.race_editions re
+                    WHERE re.race_id = r.id
+                      AND re.is_active = true
+                    ORDER BY re.race_date DESC NULLS LAST
+                    LIMIT 1
+                ) ed ON true
+                WHERE r.is_active = true
+                ORDER BY r.id DESC
+                LIMIT 200
+                SQL
+            );
+
+            return [
+                'options' => static::buildRaceOptions($rows),
+                'failed'  => false,
+                'error'   => null,
+                'source'  => 'db',
+            ];
+        } catch (\Exception $e) {
+            Log::warning('review.races DB 조회 실패: ' . $e->getMessage());
+
+            return ['options' => [], 'failed' => true, 'error' => $e->getMessage(), 'source' => null];
+        }
+    }
+
+    /** @return array{options: array<int|string, string>, failed: bool, error: ?string, source: ?string} */
     private static function loadRaceOptions(): array
     {
-        return Cache::remember('core_api_races', 600, function () {
-            try {
-                $response = Http::timeout(5)
-                    ->get(config('services.core_api.url') . '/api/races?limit=200');
+        $cached = Cache::get('core_api_races');
+        if (is_array($cached)) {
+            return ['options' => $cached, 'failed' => false, 'error' => null, 'source' => 'cache'];
+        }
 
-                if ($response->successful()) {
-                    $options = [];
-                    foreach ($response->json() as $race) {
-                        $id   = $race['id'] ?? null;
-                        $name = $race['name'] ?? null;
-                        $date = isset($race['race_date']) ? substr($race['race_date'], 0, 10) : '';
-                        if ($id && $name) {
-                            $options[$id] = $date ? "[{$date}] {$name}" : $name;
-                        }
-                    }
-                    return $options;
-                }
-            } catch (\Exception $e) {
-                Log::warning('CORE API 대회 목록 조회 실패: ' . $e->getMessage());
+        $url = rtrim(config('services.core_api.url'), '/') . '/api/races/?limit=200';
+
+        try {
+            $response = Http::timeout(5)->get($url);
+
+            if ($response->successful()) {
+                $options = static::buildRaceOptions($response->json() ?? []);
+                Cache::put('core_api_races', $options, 600);
+
+                return ['options' => $options, 'failed' => false, 'error' => null, 'source' => 'api'];
             }
-            return [];
-        });
+
+            Log::warning("CORE API 대회 목록 HTTP {$response->status()}: {$url}");
+        } catch (\Exception $e) {
+            Log::warning('CORE API 대회 목록 조회 실패: ' . $e->getMessage());
+        }
+
+        $dbResult = static::loadRaceOptionsFromDb();
+        if (!$dbResult['failed']) {
+            Cache::put('core_api_races', $dbResult['options'], 600);
+
+            return $dbResult;
+        }
+
+        return [
+            'options' => [],
+            'failed'  => true,
+            'error'   => $dbResult['error'] ?? 'CORE API 및 DB 조회 모두 실패',
+            'source'  => null,
+        ];
     }
 
     public static function form(Schema $schema): Schema
     {
-        $raceOptions   = static::loadRaceOptions();
+        $raceLoad      = static::loadRaceOptions();
+        $raceOptions   = $raceLoad['options'];
+        $raceApiFailed = $raceLoad['failed'];
+        $raceApiError  = $raceLoad['error'];
+        $coreApiUrl    = rtrim(config('services.core_api.url'), '/');
         $branchOptions = Branch::where('status', 'active')
             ->orderBy('name')
             ->pluck('name', 'id')
@@ -140,19 +211,77 @@ class GenerationResource extends Resource
                 ])
                 ->columns(2),
 
+            Section::make('모집 안내')
+                ->description('모집 기간·활성화는 «신청서 폼 관리»에서 설정합니다. cohort를 기수 번호와 맞추세요 (예: 7기).')
+                ->schema([
+                    Placeholder::make('recruitment_status')
+                        ->label('신청 현황')
+                        ->content(function (?Generation $record) {
+                            if (!$record?->exists) {
+                                return '저장 후 신청 현황이 표시됩니다.';
+                            }
+
+                            $service = app(GenerationRecruitmentService::class);
+                            $counts  = $service->applicationStatusCounts($record);
+                            $open    = $service->isFormOpen($record);
+
+                            return "{$counts['total']}명 신청 · "
+                                . ($open ? '신청서 폼 노출 중' : '신청서 미등록 또는 모집 기간 외');
+                        }),
+
+                    Placeholder::make('recruitment_link')
+                        ->label('모집 링크')
+                        ->content(function (?Generation $record) {
+                            if (!$record?->exists) {
+                                return '저장 후 모집 링크가 표시됩니다.';
+                            }
+
+                            $url     = route('apply', absolute: true);
+                            $service = app(GenerationRecruitmentService::class);
+                            $form    = $service->resolveApplicationForm($record);
+                            $open    = $service->isFormOpen($record);
+
+                            $status = match (true) {
+                                $open => '<span class="font-medium text-success-600 dark:text-success-400">현재 /apply 에 이 기수 신청 폼 노출 중</span>',
+                                $form && !$form->is_active => '<span class="font-medium text-warning-600 dark:text-warning-400">신청서 폼이 비활성화되어 있습니다</span>',
+                                $form => '<span class="text-gray-600 dark:text-gray-400">신청서 모집 기간(open_from/open_until) 외</span>',
+                                default => '<span class="font-medium text-warning-600 dark:text-warning-400">cohort «' . e("{$record->number}기") . '» 신청서 폼을 등록해주세요</span>',
+                            };
+
+                            return new HtmlString(
+                                '<div class="space-y-2">'
+                                . '<a href="' . e($url) . '" target="_blank" rel="noopener" class="block rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm font-mono text-primary-600 hover:underline dark:border-gray-700 dark:bg-gray-800">'
+                                . e($url)
+                                . '</a>'
+                                . '<p class="text-sm">' . $status . '</p>'
+                                . '<p class="text-xs text-gray-500 dark:text-gray-400">메인·소개 페이지 「크루 참여하기」 버튼도 동일 링크입니다.</p>'
+                                . '</div>'
+                            );
+                        })
+                        ->columnSpanFull(),
+                ])
+                ->visible(fn (?Generation $record) => (bool) $record?->exists)
+                ->columns(2),
+
             Section::make('메인 대회')
-                ->description('대회 목록은 CORE API (review.races)에서 불러옵니다.')
+                ->description('대회 목록은 CORE API 또는 DB(review.races)에서 불러옵니다.')
                 ->schema(array_filter([
-                    $raceOptions ? null : Placeholder::make('api_warning')
+                    $raceApiFailed ? Placeholder::make('api_warning')
                         ->label('')
                         ->content(new HtmlString(
                             '<div class="rounded-md bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-800">'
                             . '⚠ CORE API에 연결할 수 없습니다. 아래 직접 입력란에 대회명을 입력하세요.'
-                            . '<br><span class="text-xs text-amber-600 mt-1 block">EC2: <code>sudo supervisorctl status fastapi</code> 확인</span>'
-                            . '</div>'
-                        )),
+                            . '<br><span class="text-xs text-amber-600 mt-1 block">'
+                            . 'URL: <code>' . e($coreApiUrl) . '/api/races</code>'
+                            . ($raceApiError ? '<br>오류: ' . e($raceApiError) : '')
+                            . (app()->environment('local')
+                                ? '<br>로컬: CORE API 미연결 시 DB(review.races) fallback 사용 · Supabase 스키마 저장 후 API 재시작'
+                                : '<br>EC2: <code>sudo supervisorctl status fastapi</code>')
+                            . '<br>복구 후: <code>php artisan cache:forget core_api_races</code>'
+                            . '</span></div>'
+                        )) : null,
 
-                    $raceOptions ? Select::make('main_race_id')
+                    !$raceApiFailed ? Select::make('main_race_id')
                         ->label('메인 대회 선택')
                         ->options($raceOptions)
                         ->searchable()
@@ -167,9 +296,9 @@ class GenerationResource extends Resource
                         }) : null,
 
                     TextInput::make('main_race_name')
-                        ->label($raceOptions ? '대회명 (자동 채워짐 또는 직접 입력)' : '대회명 (직접 입력)')
+                        ->label($raceApiFailed ? '대회명 (직접 입력)' : '대회명 (자동 채워짐 또는 직접 입력)')
                         ->maxLength(200)
-                        ->placeholder($raceOptions ? '대회 선택 시 자동 입력' : '대회명을 직접 입력하세요'),
+                        ->placeholder($raceApiFailed ? '대회명을 직접 입력하세요' : '대회 선택 시 자동 입력'),
                 ])),
 
             Section::make('활성화 지부')
@@ -228,12 +357,12 @@ class GenerationResource extends Resource
                 TextColumn::make('start_date')
                     ->label('시작일')
                     ->date('Y.m.d')
-                    ->default('—'),
+                    ->placeholder('—'),
 
                 TextColumn::make('end_date')
-                    ->label('종료일')
+                    ->label('운영 종료')
                     ->date('Y.m.d')
-                    ->default('—'),
+                    ->placeholder('—'),
 
                 TextColumn::make('main_race_name')
                     ->label('메인 대회')
