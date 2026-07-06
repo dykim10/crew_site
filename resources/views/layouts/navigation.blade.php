@@ -56,6 +56,16 @@
       </a>
     </li>
 
+    @if($authed)
+    {{-- 훈련노트 (로그인 전용) --}}
+    <li>
+      <a href="{{ route('training-notes.index') }}"
+         class="{{ request()->routeIs('training-notes*') ? 'pac-active' : '' }}">
+        훈련노트
+      </a>
+    </li>
+    @endif
+
     {{-- 커뮤니티 드롭다운 --}}
     <li class="pac-dropdown-wrap"
         @mouseenter="communityOpen = true"
@@ -154,6 +164,11 @@
            class="pac-dropdown-item {{ request()->routeIs('running-logs*') ? 'active' : '' }}">
           <span class="pac-dropdown-label">기록</span>
           <span class="pac-dropdown-sub">러닝 기록 관리</span>
+        </a>
+        <a href="{{ route('training-notes.index') }}"
+           class="pac-dropdown-item {{ request()->routeIs('training-notes*') ? 'active' : '' }}">
+          <span class="pac-dropdown-label">훈련노트</span>
+          <span class="pac-dropdown-sub">AI 코치 · 주간 스케줄</span>
         </a>
         <a href="{{ route('photos.index') }}"
            class="pac-dropdown-item {{ request()->routeIs('photos*') ? 'active' : '' }}">
@@ -272,6 +287,13 @@
           ['route' => 'events.index',      'label' => '이벤트',    'match' => 'events*'],
           ['route' => 'bug-reports.create', 'label' => '버그제보',  'match' => 'bug-reports*'],
         ];
+        if ($authed) {
+          array_splice($mobileNav, 3, 0, [[
+            'route' => 'training-notes.index',
+            'label' => '훈련노트',
+            'match' => 'training-notes*',
+          ]]);
+        }
       @endphp
       @foreach($mobileNav as $item)
         @php $ia = request()->routeIs($item['match']); @endphp
@@ -326,6 +348,7 @@
           $myNav = [
             ['route' => 'dashboard',          'label' => '마이페이지', 'match' => 'dashboard'],
             ['route' => 'running-logs.index', 'label' => '기록',      'match' => 'running-logs*'],
+            ['route' => 'training-notes.index', 'label' => '훈련노트', 'match' => 'training-notes*'],
             ['route' => 'photos.index',       'label' => '포토',      'match' => 'photos*'],
             ['route' => 'ranking.index',      'label' => '순위',      'match' => 'ranking*'],
           ];

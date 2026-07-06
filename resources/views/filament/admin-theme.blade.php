@@ -48,6 +48,11 @@ document.addEventListener('input', function (e) {
 ═══════════════════════════════════════════════════════ */
 .fi-main {
     background: var(--adm-bg) !important;
+    max-width: 100% !important;
+}
+
+.fi-main-ctn {
+    width: 100% !important;
 }
 
 /* ═══════════════════════════════════════════════════════

@@ -53,6 +53,10 @@ class RunningLog extends Model
         'parsed_data',
         'memo',
         'is_confirmed',
+        'user_note',
+        'coach_feedback',
+        'feedback_at',
+        'vo2max',
     ];
 
     protected function casts(): array
@@ -62,6 +66,9 @@ class RunningLog extends Model
             'is_indoor'    => 'boolean',
             'is_confirmed' => 'boolean',
             'parsed_data'  => 'array',
+            'coach_feedback' => 'array',
+            'feedback_at'  => 'datetime',
+            'vo2max'       => 'float',
         ];
     }
 

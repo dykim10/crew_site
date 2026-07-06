@@ -40,6 +40,7 @@ use App\Http\Controllers\PhotoGalleryController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\RunningLogController;
+use App\Http\Controllers\TrainingNoteController;
 use App\Http\Controllers\Admin\EventGroupController;
 use App\Http\Controllers\AdminPasswordConfirmController;
 use App\Http\Controllers\PlanningFeedbackController;
@@ -139,6 +140,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/running-logs/batch-confirm', [RunningLogController::class, 'batchConfirm'])->name('running-logs.batch-confirm');
     Route::post('/running-logs/{runningLog}/confirm', [RunningLogController::class, 'confirm'])->name('running-logs.confirm');
     Route::resource('running-logs', RunningLogController::class);
+
+    // 개인 훈련노트
+    Route::prefix('training-notes')->name('training-notes.')->group(function () {
+        Route::get('/', [TrainingNoteController::class, 'index'])->name('index');
+        Route::get('/logs/{log}', [TrainingNoteController::class, 'showLog'])->name('logs.show');
+        Route::post('/logs/{log}/note', [TrainingNoteController::class, 'saveNote'])->name('logs.note');
+        Route::post('/logs/{log}/feedback', [TrainingNoteController::class, 'feedback'])->name('logs.feedback');
+        Route::post('/reports', [TrainingNoteController::class, 'report'])->name('reports');
+        Route::post('/schedules', [TrainingNoteController::class, 'schedule'])->name('schedules');
+        Route::post('/schedules/{schedule}/match', [TrainingNoteController::class, 'matchSchedule'])->name('schedules.match');
+        Route::get('/records', [TrainingNoteController::class, 'records'])->name('records');
+        Route::post('/records', [TrainingNoteController::class, 'storeRecord'])->name('records.store');
+        Route::delete('/records/{record}', [TrainingNoteController::class, 'destroyRecord'])->name('records.destroy');
+        Route::get('/body', [TrainingNoteController::class, 'body'])->name('body');
+        Route::post('/body/consent', [TrainingNoteController::class, 'consent'])->name('body.consent');
+        Route::post('/body/parse', [TrainingNoteController::class, 'parseBody'])->name('body.parse');
+        Route::post('/body', [TrainingNoteController::class, 'storeBody'])->name('body.store');
+    });
 
     // 버그 제보 (제출 전용 — 목록·상세 없음)
     Route::get('/bug-reports',  [BugReportController::class, 'create'])->name('bug-reports.create');

@@ -11,6 +11,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Width;
 use Filament\Navigation\NavigationGroup;
 use Filament\View\PanelsRenderHook;
 use App\Filament\Widgets\StatsOverview;
@@ -31,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName('PAC-RUN')
+            ->maxContentWidth(Width::Full)
             ->colors([
                 'primary' => Color::hex('#E5AD16'),
                 'gray'    => Color::Gray,

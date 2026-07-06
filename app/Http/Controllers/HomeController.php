@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Board;
 use App\Models\Branch;
 use App\Models\Event;
+use App\Models\InstagramCache;
 use App\Models\MainHeroImage;
 use App\Models\Notice;
 use App\Models\PhotoGallery;
@@ -41,6 +42,7 @@ class HomeController extends Controller
         $qnaPosts = collect();
         $photoGalleries = collect();
         $branches = collect();
+        $instagramPosts = collect();
 
         try {
             $notices = Notice::where('target_type', 'all')
@@ -67,6 +69,8 @@ class HomeController extends Controller
             $branches = Branch::where('status', 'active')
                 ->orderBy('name')
                 ->get();
+
+            $instagramPosts = InstagramCache::forHome(12);
         } catch (\Throwable) {
             // 테스트/DB 미연결 시 홈은 목업 없이 빈 목록
         }
@@ -101,6 +105,7 @@ class HomeController extends Controller
             'branches',
             'mainPacImageDisplay',
             'stats',
+            'instagramPosts',
         ));
     }
 

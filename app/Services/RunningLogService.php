@@ -75,6 +75,7 @@ class RunningLogService
                         'avg_heart_rate'    => $data['avg_heart_rate'] ?? null,
                         'is_indoor'         => $data['is_indoor'] ?? false,
                         'elevation_m'       => $data['elevation_m'] ?? null,
+                        'vo2max'            => $data['vo2max'] ?? null,
                     ],
                     'raw_parsed' => $data,
                     'error'      => null,
@@ -136,6 +137,7 @@ class RunningLogService
             'calories'          => $p['calories'] ?? null,
             'avg_heart_rate'    => $p['avg_heart_rate'] ?? null,
             'elevation_m'       => $p['elevation_m'] ?? null,
+            'vo2max'            => $p['vo2max'] ?? null,
             'image_url'         => $parseResult['s3_url'],
             'parsed_data'       => $parseResult['raw_parsed'] ?: null,
             'is_confirmed'      => false,
@@ -179,7 +181,16 @@ class RunningLogService
 
     public function delete(RunningLog $log): void
     {
+        $wasConfirmed = $log->is_confirmed;
+        $userId = $log->user_id;
+        $runDate = $log->run_date;
+
         $log->delete(); // S3 삭제는 RunningLog::booted() deleting 이벤트에서 자동 처리
+
+        if ($wasConfirmed) {
+            $this->recalculateGoals($userId, $runDate);
+            app(CrewStatsService::class)->forgetCache();
+        }
     }
 
     // CORE API를 통해 S3 이미지 삭제 — 실패 시 로그만 기록하고 DB 삭제는 차단하지 않음
@@ -227,6 +238,7 @@ class RunningLogService
 
         $log->update(['is_confirmed' => true]);
         $this->recalculateGoals($log->user_id, $log->run_date);
+        app(CrewStatsService::class)->forgetCache();
     }
 
     // 관리자 검수 취소 — is_confirmed=false 후 마일리지 재집계
@@ -236,6 +248,7 @@ class RunningLogService
 
         $log->update(['is_confirmed' => false]);
         $this->recalculateGoals($log->user_id, $log->run_date);
+        app(CrewStatsService::class)->forgetCache();
     }
 
     // confirmed 기록 기준으로 user_goals.achieved_km 재집계 + A타입 이벤트 자동 점수 부여

@@ -21,6 +21,7 @@ class UsersDetail extends Model
         'gender',
         'shirt_size',
         'avatar_url',
+        'body_data_consent_at',
     ];
 
     protected $attributes = [
@@ -31,6 +32,7 @@ class UsersDetail extends Model
     {
         return [
             'join_date' => 'date',
+            'body_data_consent_at' => 'datetime',
         ];
     }
 
