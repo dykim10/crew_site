@@ -30,10 +30,10 @@
   justify-content: space-between;
   padding: 0 56px;
   height: 72px;
-  background: rgba(13,13,13,0.96);
+  background: var(--pac-bg);
   border-bottom: 1px solid var(--pac-border);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  -webkit-font-smoothing: subpixel-antialiased;
+  -moz-osx-font-smoothing: auto;
 }
 
 .pac-nav-logo {
@@ -58,11 +58,11 @@
   padding: 0;
 }
 .pac-nav-links a {
-  color: rgba(255,255,255,.55);
+  color: rgba(255,255,255,.82);
   text-decoration: none;
   font-size: 13px;
   font-weight: 600;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   transition: color .18s;
   position: relative;
@@ -315,8 +315,17 @@
   cursor: pointer;
   padding: 3px 6px;
   transition: background .15s;
+  color: rgba(255,255,255,.82);
 }
 .pac-user-btn:hover { background: rgba(255,255,255,0.05); }
+.pac-user-nick {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,.82);
+  letter-spacing: 0;
+  text-transform: none;
+  max-width: 96px;
+}
 
 /* ── SKIN SWITCHER ──────────────────────────────────── */
 .skin-switcher {

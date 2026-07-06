@@ -7,6 +7,7 @@ use App\Models\RunningLog;
 use App\Models\TrainingReport;
 use App\Models\TrainingSchedule;
 use App\Models\User;
+use App\Models\UsersDetail;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
@@ -60,7 +61,73 @@ class TrainingNoteService
             'currentWeekStart'=> $currentWeekStart,
             'currentReport'   => $currentReport,
             'currentSchedule' => $currentSchedule,
+            'profileEmpty'    => $this->profileIsEmpty($user),
+            'trainingGoal'    => $this->getTrainingGoal($user),
         ];
+    }
+
+    public const COURSE_TYPES = [
+        '5K'   => '5K',
+        '10K'  => '10K',
+        'HALF' => '하프마라톤 (21K)',
+        'FULL' => '풀코스 (42K)',
+    ];
+
+    public function getTrainingGoal(User $user): ?array
+    {
+        $goal = UsersDetail::where('user_id', $user->id)->value('training_goal');
+        if (!is_array($goal) || empty($goal['race_name']) || empty($goal['course_type'])) {
+            return null;
+        }
+        return $goal;
+    }
+
+    public function saveTrainingGoal(User $user, array $data): array
+    {
+        $goal = [
+            'race_edition_id' => $data['race_edition_id'] ?? null,
+            'race_name'       => $data['race_name'],
+            'course_type'     => $data['course_type'],
+            'race_date'       => $data['race_date'],
+            'goal_time'       => $data['goal_time'] ?? null,
+        ];
+
+        UsersDetail::updateOrCreate(
+            ['user_id' => $user->id],
+            ['training_goal' => $goal]
+        );
+
+        return $goal;
+    }
+
+    /** @return list<array{id:int,race_name:string,race_date:?string,year:?int}> */
+    public function listUpcomingRaceEditions(): array
+    {
+        try {
+            $response = Http::timeout(15)->get("{$this->baseUrl}/api/races/editions/upcoming", [
+                'limit' => 80,
+            ]);
+            if (!$response->successful()) {
+                Log::warning('CORE upcoming race editions 조회 실패', [
+                    'status' => $response->status(),
+                ]);
+                return [];
+            }
+            $data = $response->json();
+            return is_array($data) ? $data : [];
+        } catch (\Throwable $e) {
+            Log::warning('CORE upcoming race editions 연결 실패', [
+                'error' => $e->getMessage(),
+            ]);
+            return [];
+        }
+    }
+
+    /** PB·러닝 기록 없음 → CORE 데모 모드 대상 */
+    public function profileIsEmpty(User $user): bool
+    {
+        return !PersonalRecord::where('user_id', $user->id)->exists()
+            && !RunningLog::byUser($user->id)->exists();
     }
 
     public function coachFeedback(int $logId): array
@@ -82,6 +149,23 @@ class TrainingNoteService
             'user_id'    => $userId,
             'week_start' => $weekStart,
         ], 120);
+    }
+
+    public function parsePb(UploadedFile $file): array
+    {
+        $response = Http::timeout(60)
+            ->attach('file', file_get_contents($file->getRealPath()), $file->getClientOriginalName())
+            ->post("{$this->baseUrl}/api/coach/pb/parse");
+
+        if (!$response->successful()) {
+            $message = $response->json('detail') ?? 'PB 이미지 파싱에 실패했습니다.';
+            if (is_array($message)) {
+                $message = $message[0]['msg'] ?? 'PB 이미지 파싱에 실패했습니다.';
+            }
+            throw new \RuntimeException(is_string($message) ? $message : 'PB 이미지 파싱에 실패했습니다.');
+        }
+
+        return $response->json();
     }
 
     public function parseInbody(UploadedFile $file): array

@@ -26,6 +26,44 @@ class TrainingNoteController extends Controller
         return view('training-notes.index', $data);
     }
 
+    public function goal(Request $request): View
+    {
+        $user = $request->user();
+        $trainingGoal = $this->service->getTrainingGoal($user);
+        $raceEditions = $this->service->listUpcomingRaceEditions();
+        $courseTypes = TrainingNoteService::COURSE_TYPES;
+
+        return view('training-notes.goal', compact('trainingGoal', 'raceEditions', 'courseTypes'));
+    }
+
+    public function storeGoal(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'race_edition_id' => ['nullable', 'integer'],
+            'race_name'       => ['required', 'string', 'max:120'],
+            'course_type'     => ['required', 'in:5K,10K,HALF,FULL'],
+            'race_date'       => ['required', 'date'],
+            'goal_time'       => ['nullable', 'regex:/^\d{1,2}:\d{2}(:\d{2})?$/'],
+        ]);
+
+        if (!empty($validated['race_edition_id'])) {
+            $editions = collect($this->service->listUpcomingRaceEditions());
+            $match = $editions->firstWhere('id', (int) $validated['race_edition_id']);
+            if ($match) {
+                $validated['race_name'] = $match['race_name'];
+                if (empty($validated['race_date']) && $match['race_date']) {
+                    $validated['race_date'] = $match['race_date'];
+                }
+            }
+        }
+
+        $this->service->saveTrainingGoal($request->user(), $validated);
+
+        return redirect()
+            ->route('training-notes.index')
+            ->with('success', '목표 대회가 저장되었습니다. 스케줄을 새로 생성해 보세요.');
+    }
+
     public function showLog(RunningLog $log): View
     {
         abort_if($log->user_id !== auth()->id(), 403);
@@ -84,18 +122,39 @@ class TrainingNoteController extends Controller
 
         if ($existing) {
             return response()->json([
-                'success' => true,
-                'report'  => $existing->report,
-                'cached'  => true,
+                'success'   => true,
+                'report'    => $existing->report,
+                'cached'    => true,
+                'demo_mode' => (bool) ($existing->report['demo_mode'] ?? false),
             ]);
         }
 
         try {
             $report = $this->service->weeklyReport($user->id, $weekStart);
-            return response()->json(['success' => true, 'report' => $report, 'cached' => false]);
+            return response()->json([
+                'success'   => true,
+                'report'    => $report,
+                'cached'    => false,
+                'demo_mode' => (bool) ($report['demo_mode'] ?? false),
+            ]);
         } catch (\RuntimeException $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }
+    }
+
+    public function destroyReport(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'week_start' => ['nullable', 'date'],
+        ]);
+
+        $weekStart = $this->service->mondayOf($validated['week_start'] ?? now());
+
+        TrainingReport::where('user_id', $request->user()->id)
+            ->where('period_start', $weekStart)
+            ->delete();
+
+        return response()->json(['success' => true]);
     }
 
     public function schedule(Request $request): JsonResponse
@@ -112,23 +171,57 @@ class TrainingNoteController extends Controller
             ->first();
 
         if ($existing) {
+            $pw = $existing->point_workout ?? [];
             return response()->json([
                 'success'  => true,
                 'schedule' => [
                     'point_workout' => $existing->point_workout,
                     'weekly_volume' => $existing->weekly_volume,
                     'rationale'     => $existing->rationale,
+                    'demo_mode'     => (bool) ($pw['demo_mode'] ?? false),
+                    'demo_note'     => (bool) ($pw['demo_mode'] ?? false)
+                        ? '실제 훈련·PB·체성분 데이터가 없어 샘플 프로필로 생성된 데모 결과입니다.'
+                        : null,
                 ],
-                'cached' => true,
+                'cached'    => true,
+                'demo_mode' => (bool) ($pw['demo_mode'] ?? false),
             ]);
+        }
+
+        if (!$this->service->getTrainingGoal($user)) {
+            return response()->json([
+                'success' => false,
+                'message' => '목표 대회·코스를 먼저 설정해 주세요.',
+                'code'    => 'goal_required',
+            ], 422);
         }
 
         try {
             $schedule = $this->service->generateSchedule($user->id, $weekStart);
-            return response()->json(['success' => true, 'schedule' => $schedule, 'cached' => false]);
+            return response()->json([
+                'success'   => true,
+                'schedule'  => $schedule,
+                'cached'    => false,
+                'demo_mode' => (bool) ($schedule['demo_mode'] ?? false),
+            ]);
         } catch (\RuntimeException $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }
+    }
+
+    public function destroySchedule(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'week_start' => ['nullable', 'date'],
+        ]);
+
+        $weekStart = $this->service->mondayOf($validated['week_start'] ?? now());
+
+        TrainingSchedule::where('user_id', $request->user()->id)
+            ->where('week_start', $weekStart)
+            ->delete();
+
+        return response()->json(['success' => true]);
     }
 
     public function matchSchedule(Request $request, TrainingSchedule $schedule): JsonResponse
@@ -158,12 +251,25 @@ class TrainingNoteController extends Controller
         return view('training-notes.records', compact('records', 'latestByDistance'));
     }
 
+    public function parseRecord(Request $request): JsonResponse
+    {
+        $request->validate(['image' => ['required', 'image', 'max:10240']]);
+
+        try {
+            $parsed = $this->service->parsePb($request->file('image'));
+            return response()->json(['success' => true, 'data' => $parsed]);
+        } catch (\RuntimeException $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+        }
+    }
+
     public function storeRecord(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'distance_type' => ['required', 'in:1K,5K,10K,HALF,FULL'],
             'record_time'   => ['required', 'regex:/^\d{1,2}:\d{2}(:\d{2})?$/'],
             'achieved_at'   => ['required', 'date', 'before_or_equal:today'],
+            'source'        => ['nullable', 'in:manual,image'],
         ]);
 
         PersonalRecord::create([
@@ -171,7 +277,7 @@ class TrainingNoteController extends Controller
             'distance_type'  => $validated['distance_type'],
             'record_seconds' => $this->service->timeToSeconds($validated['record_time']),
             'achieved_at'    => $validated['achieved_at'],
-            'source'         => 'manual',
+            'source'         => $validated['source'] ?? 'manual',
         ]);
 
         return redirect()->route('training-notes.records')->with('success', 'PB 기록이 등록되었습니다.');

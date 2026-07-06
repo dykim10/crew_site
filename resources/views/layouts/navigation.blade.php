@@ -137,7 +137,7 @@
           <span class="font-display text-sm leading-none"
                 style="color:{{ $avatarTxt }};">{{ $initial }}</span>
         </div>
-        <span class="font-body text-xs text-pac-black-400 max-w-[80px] truncate hidden xl:block">
+        <span class="font-body pac-user-nick truncate hidden xl:block">
           {{ $nick }}
         </span>
         <svg class="pac-dropdown-caret" width="10" height="6" viewBox="0 0 10 6" fill="none"

@@ -96,6 +96,12 @@ return new class extends Migration
                 $table->timestampTz('body_data_consent_at', 6)->nullable();
             });
         }
+
+        foreach (['training_reports', 'personal_records', 'training_schedules', 'body_records'] as $table) {
+            DB::statement("GRANT ALL ON crew.{$table} TO postgres, anon, authenticated, service_role");
+            DB::statement("GRANT USAGE, SELECT ON SEQUENCE crew.{$table}_id_seq TO postgres, anon, authenticated, service_role");
+        }
+        DB::statement("SELECT pg_notify('pgrst', 'reload schema')");
     }
 
     public function down(): void
