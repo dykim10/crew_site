@@ -72,11 +72,11 @@
     {{-- 테이블 헤더 --}}
     <div class="hidden sm:grid grid-cols-[auto_1fr_auto_auto_auto] gap-x-4 px-5 py-2.5
                 border-b border-pac-black-100 bg-pac-black-800">
-      <span class="font-display text-[9px] tracking-[3px] uppercase text-pac-black-600 w-10 text-center">번호</span>
-      <span class="font-display text-[9px] tracking-[3px] uppercase text-pac-black-600">제목</span>
-      <span class="font-display text-[9px] tracking-[3px] uppercase text-pac-black-600 w-16 text-center">작성자</span>
-      <span class="font-display text-[9px] tracking-[3px] uppercase text-pac-black-600 w-14 text-center">날짜</span>
-      <span class="font-display text-[9px] tracking-[3px] uppercase text-pac-black-600 w-10 text-center">조회</span>
+      <span class="font-display text-xs tracking-[3px] uppercase text-pac-black-600 w-10 text-center">번호</span>
+      <span class="font-display text-xs tracking-[3px] uppercase text-pac-black-600">제목</span>
+      <span class="font-display text-xs tracking-[3px] uppercase text-pac-black-600 w-16 text-center">작성자</span>
+      <span class="font-display text-xs tracking-[3px] uppercase text-pac-black-600 w-14 text-center">날짜</span>
+      <span class="font-display text-xs tracking-[3px] uppercase text-pac-black-600 w-10 text-center">조회</span>
     </div>
 
     @foreach($posts as $idx => $post)

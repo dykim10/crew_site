@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Http\Middleware\EnsureAdminPasswordConfirmed;
 use App\Http\Middleware\FilamentAdminAuthenticate;
+use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -32,6 +33,9 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName('PAC-RUN')
+            ->darkMode(false)
+            ->defaultThemeMode(ThemeMode::Light)
+            ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth(Width::Full)
             ->colors([
                 'primary' => Color::hex('#E5AD16'),
@@ -41,8 +45,9 @@ class AdminPanelProvider extends PanelProvider
                 'warning' => Color::Amber,
                 'info'    => Color::Blue,
             ])
-            ->darkMode(false)
+            ->collapsibleNavigationGroups(false)
             ->navigationGroups([
+                NavigationGroup::make('메인'),
                 NavigationGroup::make('크루 관리'),
                 NavigationGroup::make('이벤트 관리'),
                 NavigationGroup::make('기수 모집'),

@@ -67,22 +67,25 @@ Route::get('/administrator', [AdministratorController::class, 'index'])->name('a
 // 개인정보처리방침 (공개)
 Route::view('/privacy', 'privacy.index')->name('privacy');
 
-// GNB 단축 별칭 — 와일드카드 그룹보다 반드시 먼저 등록 (선 등록 라우트가 우선 매칭)
-Route::get('/boards/free',   fn() => redirect()->route('boards.index', 'free'))->name('boards.free');
-Route::get('/boards/qna',    fn() => redirect()->route('boards.index', 'qna'))->name('boards.qna');
-Route::get('/boards/photo',  fn() => redirect()->route('photos.index'))->name('boards.photo');   // 포토갤러리는 PhotoGalleryController
-Route::get('/boards/photos', fn() => redirect()->route('photos.index'))->name('boards.photos');  // 복수형 별칭
+// GNB 단축 URL — photo/photos는 /photos 로 이동 (별도 컨트롤러)
+Route::get('/boards/photo',  fn() => redirect()->route('photos.index'))->name('boards.photo');
+Route::get('/boards/photos', fn() => redirect()->route('photos.index'))->name('boards.photos');
 
 // 게시판 (자유·문의) — 목록/상세/작성/수정/삭제 모두 auth 필요
 Route::middleware(['auth', 'verified'])->prefix('boards')->name('boards.')->group(function () {
     Route::post('/images/upload',    [BoardController::class, 'uploadImage'])->name('images.upload');
-    Route::get('/{type}',            [BoardController::class, 'index'])->name('index');
-    Route::get('/{type}/create',     [BoardController::class, 'create'])->name('create');
-    Route::post('/{type}',           [BoardController::class, 'store'])->name('store');
-    Route::get('/{type}/{board}',    [BoardController::class, 'show'])->name('show');
-    Route::get('/{type}/{board}/edit',   [BoardController::class, 'edit'])->name('edit');
-    Route::put('/{type}/{board}',        [BoardController::class, 'update'])->name('update');
-    Route::delete('/{type}/{board}',     [BoardController::class, 'destroy'])->name('destroy');
+
+    // free/qna 는 와일드카드 {type} 보다 먼저 등록 (redirect 별칭 사용 금지 — 동일 URL 루프)
+    Route::get('/free', [BoardController::class, 'index'])->defaults('type', 'free')->name('free');
+    Route::get('/qna',  [BoardController::class, 'index'])->defaults('type', 'qna')->name('qna');
+
+    Route::get('/{type}/create',     [BoardController::class, 'create'])->name('create')->where('type', 'free|qna');
+    Route::post('/{type}',           [BoardController::class, 'store'])->name('store')->where('type', 'free|qna');
+    Route::get('/{type}/{board}',    [BoardController::class, 'show'])->name('show')->where('type', 'free|qna');
+    Route::get('/{type}/{board}/edit',   [BoardController::class, 'edit'])->name('edit')->where('type', 'free|qna');
+    Route::put('/{type}/{board}',        [BoardController::class, 'update'])->name('update')->where('type', 'free|qna');
+    Route::delete('/{type}/{board}',     [BoardController::class, 'destroy'])->name('destroy')->where('type', 'free|qna');
+    Route::get('/{type}',            [BoardController::class, 'index'])->name('index')->where('type', 'free|qna');
 });
 
 // 테마 전환 (super_admin / region_admin 전용)

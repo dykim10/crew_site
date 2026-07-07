@@ -370,10 +370,127 @@ class UserResource extends Resource
                                 ->send();
                         })
                         ->deselectRecordsAfterCompletion(),
-                ]),
+
+                    BulkAction::make('update_role')
+                        ->label('권한 일괄 변경')
+                        ->icon('heroicon-o-shield-check')
+                        ->color('warning')
+                        ->visible(fn () => in_array(auth()->user()->role, ['super_admin', 'region_admin']))
+                        ->modalHeading('권한 일괄 변경')
+                        ->modalDescription('선택한 구성원 전원의 관리자 권한을 변경합니다.')
+                        ->modalSubmitActionLabel('적용')
+                        ->form([
+                            Select::make('role')
+                                ->label('변경할 권한')
+                                ->options(fn () => self::bulkRoleOptions())
+                                ->required(),
+                        ])
+                        ->action(function (Collection $records, array $data) {
+                            $newRole = $data['role'];
+                            $labels = self::roleLabels();
+                            $updated = 0;
+                            $skipped = 0;
+
+                            foreach ($records as $user) {
+                                if ($user->id === auth()->id()) {
+                                    $skipped++;
+                                    continue;
+                                }
+                                if ($newRole === 'super_admin' && auth()->user()->role !== 'super_admin') {
+                                    $skipped++;
+                                    continue;
+                                }
+                                if ($user->role === $newRole) {
+                                    continue;
+                                }
+
+                                $before = $user->role;
+                                $user->update(['role' => $newRole]);
+                                AdminLogService::log(
+                                    'role_changed',
+                                    'User',
+                                    $user->id,
+                                    "일괄 권한 변경: {$user->nickname} — " . ($labels[$before] ?? $before) . ' → ' . ($labels[$newRole] ?? $newRole)
+                                );
+                                $updated++;
+                            }
+
+                            $body = "{$updated}명의 권한이 [" . ($labels[$newRole] ?? $newRole) . ']으로 변경되었습니다.';
+                            if ($skipped > 0) {
+                                $body .= " (본인 또는 슈퍼관리자 지정 불가 {$skipped}명 제외)";
+                            }
+
+                            Notification::make()
+                                ->title('권한 변경 완료')
+                                ->body($body)
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+
+                    BulkAction::make('bulk_appoint_administrator')
+                        ->label('운영진 일괄 임명')
+                        ->icon('heroicon-o-user-circle')
+                        ->color('success')
+                        ->visible(fn () => in_array(auth()->user()->role, ['super_admin', 'region_admin']))
+                        ->modalHeading('운영진 일괄 임명')
+                        ->modalDescription('선택한 구성원을 운영진으로 등록하거나, 이미 등록된 경우 역할·소속을 업데이트합니다.')
+                        ->modalSubmitActionLabel('임명')
+                        ->form(fn () => AdministratorResource::staffProfileFormFields(includeUserSelect: false))
+                        ->fillForm([
+                            'role'       => 'crew_ops',
+                            'is_active'  => true,
+                            'sort_order' => 0,
+                        ])
+                        ->action(function (Collection $records, array $data) {
+                            $service = app(AdministratorService::class);
+                            $count = 0;
+
+                            foreach ($records as $user) {
+                                $service->appoint($user, $data);
+                                AdminLogService::log(
+                                    'administrator_appoint',
+                                    'User',
+                                    $user->id,
+                                    "운영진 일괄 임명 → {$user->nickname}"
+                                );
+                                $count++;
+                            }
+
+                            Notification::make()
+                                ->title('운영진 임명 완료')
+                                ->body("{$count}명이 운영진으로 등록·갱신되었습니다.")
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
+                ])
             ])
             ->defaultSort('created_at', 'desc')
             ->striped();
+    }
+
+    /** @return array<string, string> */
+    private static function roleLabels(): array
+    {
+        return [
+            'super_admin'  => '슈퍼관리자',
+            'region_admin' => '지역관리자',
+            'operator'     => '운영자',
+            'member'       => '일반멤버',
+        ];
+    }
+
+    /** @return array<string, string> */
+    private static function bulkRoleOptions(): array
+    {
+        $options = self::roleLabels();
+
+        if (auth()->user()->role !== 'super_admin') {
+            unset($options['super_admin']);
+        }
+
+        return $options;
     }
 
     public static function getRelations(): array

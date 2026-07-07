@@ -135,10 +135,12 @@ class SponsorResource extends Resource
                 ImageColumn::make('logo_url')
                     ->label('로고')
                     ->getStateUsing(fn (Sponsor $record) => Sponsor::resolveLogoUrl($record->getAttributes()['logo_url'] ?? null))
-                    ->imageHeight('auto')
-                    ->imageWidth('50%')
+                    ->width(80)
+                    ->imageHeight(48)
+                    ->imageWidth(72)
                     ->extraImgAttributes([
-                        'style' => 'width:50%;height:auto;object-fit:contain;',
+                        'class' => 'rounded bg-white p-0.5',
+                        'style' => 'object-fit:contain;max-height:48px;max-width:72px;width:auto;height:auto;',
                     ])
                     ->defaultImageUrl(asset('images/placeholder.png')),
 

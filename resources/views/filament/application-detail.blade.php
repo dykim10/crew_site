@@ -1,54 +1,53 @@
-<div class="space-y-4 text-sm p-1">
+<div class="adm-detail">
 
-    <div class="grid grid-cols-2 gap-3">
+    <div class="adm-detail-grid">
         <div>
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">이름</p>
-            <p class="font-medium text-gray-900">{{ $pii['name'] }}</p>
+            <p class="adm-detail-label">이름</p>
+            <p class="adm-detail-value">{{ $pii['name'] }}</p>
         </div>
         <div>
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">이메일</p>
-            <p class="font-medium text-gray-900 break-all">{{ $pii['email'] }}</p>
+            <p class="adm-detail-label">이메일</p>
+            <p class="adm-detail-value">{{ $pii['email'] }}</p>
         </div>
         <div>
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">연락처</p>
-            <p class="font-medium text-gray-900">{{ $pii['phone'] }}</p>
+            <p class="adm-detail-label">연락처</p>
+            <p class="adm-detail-value">{{ $pii['phone'] }}</p>
         </div>
         <div>
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">신청일</p>
-            <p class="font-medium text-gray-900">{{ $record->created_at->format('Y.m.d H:i') }}</p>
+            <p class="adm-detail-label">신청일</p>
+            <p class="adm-detail-value">{{ $record->created_at->format('Y.m.d H:i') }}</p>
         </div>
     </div>
 
     @if(count($fieldLines) > 0)
-        <hr class="border-gray-200">
-        <div class="space-y-3">
+        <hr class="adm-detail-divider">
+        <div class="adm-detail" style="gap:0.75rem;">
             @foreach($fieldLines as $line)
                 <div>
-                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-0.5">{{ $line['label'] }}</p>
-                    <p class="text-gray-800 whitespace-pre-wrap leading-relaxed">{{ $line['value'] }}</p>
+                    <p class="adm-detail-label">{{ $line['label'] }}</p>
+                    <p class="adm-detail-body">{{ $line['value'] }}</p>
                 </div>
             @endforeach
         </div>
     @endif
 
-    <hr class="border-gray-200">
-    <div class="flex items-center gap-2">
-        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wide">상태:</span>
-        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-            {{ match($record->status) {
-                'approved'   => 'bg-green-100 text-green-800',
-                'rejected'   => 'bg-red-100 text-red-800',
-                'waitlisted' => 'bg-yellow-100 text-yellow-800',
-                default      => 'bg-gray-100 text-gray-800',
-            } }}">
+    <hr class="adm-detail-divider">
+    <div style="display:flex;align-items:center;gap:0.5rem;">
+        <span class="adm-detail-label" style="margin:0;">상태</span>
+        <span class="adm-status {{ match($record->status) {
+            'approved'   => 'adm-status--approved',
+            'rejected'   => 'adm-status--rejected',
+            'waitlisted' => 'adm-status--waitlisted',
+            default      => 'adm-status--default',
+        } }}">
             {{ \App\Models\Application::STATUS_LABELS[$record->status] ?? $record->status }}
         </span>
     </div>
 
     @if($record->admin_memo)
         <div>
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">관리자 메모</p>
-            <p class="text-gray-700 whitespace-pre-wrap">{{ $record->admin_memo }}</p>
+            <p class="adm-detail-label">관리자 메모</p>
+            <p class="adm-detail-body">{{ $record->admin_memo }}</p>
         </div>
     @endif
 </div>
