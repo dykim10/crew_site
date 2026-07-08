@@ -6,6 +6,8 @@ use App\Filament\Resources\UserResource;
 use App\Models\User;
 use App\Models\UsersDetail;
 use App\Services\AdminLogService;
+use App\Services\BranchAdminService;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 
 class EditUser extends EditRecord
@@ -17,8 +19,9 @@ class EditUser extends EditRecord
         return parent::resolveRecord($key)->load('administrator');
     }
 
-    // 저장 전 detail 필드를 임시 보관
     private array $pendingDetail = [];
+    private string $roleBefore = '';
+    private ?int $branchIdBefore = null;
 
     protected function getHeaderActions(): array
     {
@@ -38,12 +41,10 @@ class EditUser extends EditRecord
         return $data;
     }
 
-    private string $roleBefore = '';
-
-    // 저장 전 detail_* 필드를 User 모델 데이터에서 분리
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $this->roleBefore = $this->record->role ?? '';
+        $this->branchIdBefore = $this->record->branch_id ? (int) $this->record->branch_id : null;
 
         $this->pendingDetail = [
             'grade'          => $data['detail_grade'] ?? null,
@@ -72,12 +73,7 @@ class EditUser extends EditRecord
 
         $roleAfter = $this->record->fresh()->role ?? '';
         if ($this->roleBefore !== '' && $this->roleBefore !== $roleAfter) {
-            $labels = [
-                'super_admin'  => '슈퍼관리자',
-                'region_admin' => '지역관리자',
-                'operator'     => '운영자',
-                'member'       => '일반멤버',
-            ];
+            $labels = BranchAdminService::roleLabels();
             $before = $labels[$this->roleBefore] ?? $this->roleBefore;
             $after  = $labels[$roleAfter] ?? $roleAfter;
             AdminLogService::log(
@@ -86,6 +82,35 @@ class EditUser extends EditRecord
                 $this->record->id,
                 "사용자 {$this->record->name} 권한 변경: {$before} → {$after}"
             );
+        }
+
+        $branchService = app(BranchAdminService::class);
+        $branchAfter = $this->record->fresh()->branch_id ? (int) $this->record->fresh()->branch_id : null;
+
+        if ($this->roleBefore !== $roleAfter) {
+            $syncedBranch = $branchService->onRoleChanged($this->record, $this->roleBefore, $roleAfter);
+            if ($roleAfter === 'region_admin' && ! $syncedBranch) {
+                Notification::make()
+                    ->warning()
+                    ->title('지부 관리자 미연동')
+                    ->body('소속 지부가 없어 지부 관리 페이지에 자동 지정되지 않았습니다. 소속 지부를 설정해 주세요.')
+                    ->send();
+            } elseif ($syncedBranch) {
+                Notification::make()
+                    ->success()
+                    ->title('지부 관리자 연동')
+                    ->body("{$syncedBranch->name} 지부의 관리자로 자동 지정되었습니다.")
+                    ->send();
+            }
+        } elseif ($roleAfter === 'region_admin' && $branchAfter !== $this->branchIdBefore) {
+            $syncedBranch = $branchService->syncFromRegionAdmin($this->record->fresh());
+            if ($syncedBranch) {
+                Notification::make()
+                    ->success()
+                    ->title('지부 관리자 연동')
+                    ->body("{$syncedBranch->name} 지부의 관리자로 자동 지정되었습니다.")
+                    ->send();
+            }
         }
     }
 

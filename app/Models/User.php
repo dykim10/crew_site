@@ -27,7 +27,7 @@ use Illuminate\Notifications\Notifiable;
  *
  * [역할 계층]
  *   super_admin  : 전체 관리자
- *   region_admin : 지역 관리자 (super_admin 권한 포함)
+ *   region_admin : 지부 관리자 (해당 지부 branches.admin_id 와 연동)
  *   operator     : 운영자 (super_admin + region_admin 권한 포함)
  *   member       : 일반 구성원
  *   → isAdmin() / isSuperAdmin() / isRegionAdmin() / isOperator() 헬퍼 메서드 제공
@@ -164,6 +164,11 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
     public function administrator(): \Illuminate\Database\Eloquent\Relations\HasOne
     {
         return $this->hasOne(Administrator::class);
+    }
+
+    public function branch(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 
     public function isPublicAdministrator(): bool

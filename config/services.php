@@ -44,4 +44,8 @@ return [
         'webhook_secret' => env('SMS_WEBHOOK_SECRET'),
     ],
 
+    'google' => [
+        'service_account_path' => env('GOOGLE_SERVICE_ACCOUNT_PATH'),
+    ],
+
 ];

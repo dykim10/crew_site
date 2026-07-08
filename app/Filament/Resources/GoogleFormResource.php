@@ -10,6 +10,7 @@ use App\Services\GoogleFormService;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -50,12 +51,38 @@ class GoogleFormResource extends Resource
                     TextInput::make('sheet_id')
                         ->label('Google Sheet ID 또는 URL')
                         ->placeholder('1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms  또는  전체 URL 붙여넣기')
-                        ->helperText('구글 폼 → 응답 → 스프레드시트에서 보기 → URL의 /d/ 뒤 ID')
+                        ->helperText(function (): string {
+                            $email = app(GoogleFormService::class)->getServiceAccountEmail();
+                            $base = '구글 폼 → 응답 → 스프레드시트에서 보기 → URL의 /d/ 뒤 ID';
+                            if (! $email) {
+                                return $base . ' · 서비스 계정 키가 없으면 storage/app/google/service-account.json 을 배치하세요.';
+                            }
+
+                            return $base . ' · 시트 [공유]에 아래 이메일을 뷰어로 추가: ' . $email;
+                        })
                         ->required()
                         ->maxLength(500)
                         ->dehydrateStateUsing(
                             fn (string $state): string => GoogleFormService::extractSheetId($state)
                         ),
+
+                    Placeholder::make('google_share_guide')
+                        ->label('시트 공유 안내')
+                        ->content(function (): \Illuminate\Support\HtmlString {
+                            $email = app(GoogleFormService::class)->getServiceAccountEmail();
+                            if (! $email) {
+                                return new \Illuminate\Support\HtmlString(
+                                    '<span class="text-sm text-gray-500">서비스 계정 키가 없습니다. storage/app/google/service-account.json 배치 후 새로고침하세요.</span>'
+                                );
+                            }
+
+                            return new \Illuminate\Support\HtmlString(
+                                '<span class="text-sm text-gray-600">연결된 Google 시트 → <strong>공유</strong> → '
+                                . '<code class="text-xs bg-gray-100 px-1 py-0.5 rounded">' . e($email) . '</code>'
+                                . ' 를 <strong>뷰어</strong>로 추가해야 결과 보기/엑셀 다운로드가 됩니다.</span>'
+                            );
+                        })
+                        ->columnSpanFull(),
 
                     Textarea::make('description')
                         ->label('설명')
@@ -121,6 +148,7 @@ class GoogleFormResource extends Resource
                             'headers' => $data['headers'],
                             'rows'    => $data['rows'],
                             'error'   => $data['error'] ?? null,
+                            'warning' => $data['warning'] ?? null,
                             'count'   => count($data['rows']),
                         ]);
                     }),
@@ -144,6 +172,14 @@ class GoogleFormResource extends Resource
                         if (empty($data['headers'])) {
                             Notification::make()->warning()->title('응답 데이터가 없습니다.')->send();
                             return;
+                        }
+
+                        if (! empty($data['warning'])) {
+                            Notification::make()
+                                ->warning()
+                                ->title('공개 CSV로 다운로드')
+                                ->body($data['warning'])
+                                ->send();
                         }
 
                         $columns = [];

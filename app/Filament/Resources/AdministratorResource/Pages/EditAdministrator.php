@@ -35,9 +35,14 @@ class EditAdministrator extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        if (blank($data['profile_image'] ?? null)) {
-            $data['profile_image'] = $this->existingImagePath;
+        $newImage = $data['profile_image'] ?? null;
+        if (is_array($newImage)) {
+            $newImage = filled($newImage) ? reset($newImage) : null;
         }
+
+        $data['profile_image'] = filled($newImage)
+            ? Administrator::normalizeStoragePath($newImage)
+            : $this->existingImagePath;
 
         if (filled($data['branch_id'] ?? null)) {
             $data['branch_custom'] = null;

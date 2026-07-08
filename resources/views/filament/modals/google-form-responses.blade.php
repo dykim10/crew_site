@@ -7,7 +7,7 @@
             </svg>
             <div>
                 <strong>Google Sheets 연결 오류</strong>
-                <p>{{ $error }}</p>
+                <p style="white-space:pre-wrap;margin-top:0.5rem;line-height:1.6;">{{ $error }}</p>
             </div>
         </div>
 
@@ -15,6 +15,12 @@
         <div class="adm-empty">응답 데이터가 없습니다.</div>
 
     @else
+        @if(!empty($warning))
+            <div style="margin-bottom:0.75rem;padding:0.75rem 1rem;border-radius:0.5rem;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:0.84rem;line-height:1.5;white-space:pre-wrap;">
+                {{ $warning }}
+            </div>
+        @endif
+
         <p style="font-size:0.84rem;color:var(--adm-muted);">
             총 <span style="font-weight:600;color:var(--adm-ink);">{{ $count }}건</span>
         </p>

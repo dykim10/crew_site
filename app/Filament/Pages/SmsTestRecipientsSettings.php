@@ -87,7 +87,7 @@ class SmsTestRecipientsSettings extends Page implements HasForms, HasTable
                     ->label('권한')
                     ->formatStateUsing(fn (?string $state) => match ($state) {
                         'super_admin'  => '슈퍼관리자',
-                        'region_admin' => '지역관리자',
+                        'region_admin' => '지부 관리자',
                         'operator'     => '운영자',
                         default        => $state ?? '-',
                     })

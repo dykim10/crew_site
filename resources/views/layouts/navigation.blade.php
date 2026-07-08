@@ -13,7 +13,7 @@
   $avatarTxt   = ($role === 'region_admin') ? '#1A1212' : '#ffffff';
   $roleLabel   = match($role) {
     'super_admin'  => 'SUPER ADMIN',
-    'region_admin' => 'REGION ADMIN',
+    'region_admin' => 'BRANCH ADMIN',
     'operator'     => 'OPERATOR',
     default        => 'MEMBER',
   };

@@ -140,7 +140,7 @@ class AdministratorResource extends Resource
         return $schema->columns(1)->components([
 
             Section::make('연결 구성원')
-                ->description('구성원 관리에 등록된 회원과 1:1로 연결됩니다.')
+                ->description('구성원 관리에 등록된 회원과 1:1로 연결됩니다. 지부 관리자 권한은 지부 관리 메뉴와 자동 연동되며, 운영진은 지부별로 여러 명 등록할 수 있습니다.')
                 ->schema([
                     Placeholder::make('linked_user')
                         ->label('구성원')
@@ -203,11 +203,20 @@ class AdministratorResource extends Resource
                     FileUpload::make('profile_image')
                         ->label('운영진 전용 이미지 (선택)')
                         ->image()
+                        ->avatar()
                         ->disk('s3')
                         ->directory('administrators')
                         ->visibility('public')
                         ->maxSize(2048)
-                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
+                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                        ->orientImagesFromExif(false)
+                        ->imageEditor()
+                        ->imageEditorMode(2)
+                        ->imageEditorAspectRatios(['1:1'])
+                        ->imageEditorEmptyFillColor('#1a1212')
+                        ->imageEditorViewportWidth('400')
+                        ->imageEditorViewportHeight('400')
+                        ->helperText('업로드 후 연필(✎) 아이콘으로 회전·크롭할 수 있습니다. 원형 프로필에 맞게 1:1 정사각형 크롭을 권장합니다.'),
                 ]),
         ]);
     }

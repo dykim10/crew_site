@@ -5,7 +5,7 @@
   $initial = mb_strtoupper(mb_substr($nick, 0, 1));
   $roleMap = [
     'super_admin'  => ['label' => 'SUPER ADMIN',   'color' => 'text-pac-pink-400',   'bg' => 'bg-pac-pink-500'],
-    'region_admin' => ['label' => 'REGION ADMIN',  'color' => 'text-pac-yellow-400', 'bg' => 'bg-pac-yellow-500'],
+    'region_admin' => ['label' => 'BRANCH ADMIN', 'color' => 'text-pac-yellow-400', 'bg' => 'bg-pac-yellow-500'],
     'operator'     => ['label' => 'OPERATOR',       'color' => 'text-pac-green-500',  'bg' => 'bg-pac-green-500'],
     'member'       => ['label' => 'MEMBER',         'color' => 'text-pac-black-400',  'bg' => 'bg-pac-black-600'],
   ];

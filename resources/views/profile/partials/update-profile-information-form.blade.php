@@ -49,7 +49,7 @@
                 @php
                   $roleLabel = match($user->role) {
                     'super_admin'  => '슈퍼관리자',
-                    'region_admin' => '지역관리자',
+                    'region_admin' => '지부 관리자',
                     'operator'     => '운영자',
                     default        => '일반멤버',
                   };

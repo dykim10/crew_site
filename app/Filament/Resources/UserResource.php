@@ -5,11 +5,13 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers\GenerationsRelationManager;
 use App\Models\Administrator;
+use App\Models\Branch;
 use App\Models\Generation;
 use App\Models\User;
 use App\Models\UserGeneration;
 use App\Services\AdminLogService;
 use App\Services\AdministratorService;
+use App\Services\BranchAdminService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -61,13 +63,20 @@ class UserResource extends Resource
 
                     Select::make('role')
                         ->label('권한')
-                        ->options([
-                            'super_admin'  => '슈퍼관리자',
-                            'region_admin' => '지역관리자',
-                            'operator'     => '운영자',
-                            'member'       => '일반멤버',
-                        ])
+                        ->options(BranchAdminService::roleLabels())
                         ->required(),
+
+                    Select::make('branch_id')
+                        ->label('소속 지부')
+                        ->options(fn () => Branch::query()
+                            ->where('status', 'active')
+                            ->orderBy('name')
+                            ->pluck('name', 'id')
+                            ->toArray())
+                        ->searchable()
+                        ->nullable()
+                        ->placeholder('지부 미지정')
+                        ->helperText('지부 관리자 권한 부여 시 해당 지부의 관리자로 자동 지정됩니다.'),
 
                     Toggle::make('is_beta')
                         ->label('베타 사용자')
@@ -114,7 +123,7 @@ class UserResource extends Resource
                 ->visibleOn('edit'),
 
             Section::make('운영진')
-                ->description('공개 운영진 소개 페이지(/administrator)에 노출되는 프로필입니다.')
+                ->description('공개 운영진 소개 페이지에 노출되는 프로필입니다. 운영진은 지부별로 다수 등록할 수 있으며, 지부 관리자(1인)는 구성원 관리 권한과 연동됩니다.')
                 ->schema([
                     \Filament\Forms\Components\Placeholder::make('administrator_status')
                         ->label('상태')
@@ -137,7 +146,7 @@ class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn ($query) => $query->with('administrator'))
+            ->modifyQueryUsing(fn ($query) => $query->with(['administrator', 'branch']))
             ->columns([
                 TextColumn::make('nickname')
                     ->label('닉네임')
@@ -160,12 +169,12 @@ class UserResource extends Resource
                         'operator'     => 'info',
                         default        => 'gray',
                     })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'super_admin'  => '슈퍼관리자',
-                        'region_admin' => '지역관리자',
-                        'operator'     => '운영자',
-                        default        => '일반멤버',
-                    }),
+                    ->formatStateUsing(fn (string $state): string => BranchAdminService::roleLabels()[$state] ?? $state),
+
+                TextColumn::make('branch.name')
+                    ->label('소속 지부')
+                    ->placeholder('—')
+                    ->toggleable(),
 
                 IconColumn::make('is_beta')
                     ->label('베타')
@@ -198,12 +207,7 @@ class UserResource extends Resource
             ->filters([
                 SelectFilter::make('role')
                     ->label('권한')
-                    ->options([
-                        'super_admin'  => '슈퍼관리자',
-                        'region_admin' => '지역관리자',
-                        'operator'     => '운영자',
-                        'member'       => '일반멤버',
-                    ]),
+                    ->options(BranchAdminService::roleLabels()),
             ])
             ->actions([
                 EditAction::make()->label('수정'),
@@ -387,9 +391,10 @@ class UserResource extends Resource
                         ])
                         ->action(function (Collection $records, array $data) {
                             $newRole = $data['role'];
-                            $labels = self::roleLabels();
+                            $labels = BranchAdminService::roleLabels();
                             $updated = 0;
                             $skipped = 0;
+                            $branchService = app(BranchAdminService::class);
 
                             foreach ($records as $user) {
                                 if ($user->id === auth()->id()) {
@@ -406,6 +411,7 @@ class UserResource extends Resource
 
                                 $before = $user->role;
                                 $user->update(['role' => $newRole]);
+                                $branchService->onRoleChanged($user, $before, $newRole);
                                 AdminLogService::log(
                                     'role_changed',
                                     'User',
@@ -473,12 +479,7 @@ class UserResource extends Resource
     /** @return array<string, string> */
     private static function roleLabels(): array
     {
-        return [
-            'super_admin'  => '슈퍼관리자',
-            'region_admin' => '지역관리자',
-            'operator'     => '운영자',
-            'member'       => '일반멤버',
-        ];
+        return BranchAdminService::roleLabels();
     }
 
     /** @return array<string, string> */

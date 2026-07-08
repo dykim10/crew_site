@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\BranchResource\Pages;
 use App\Models\Branch;
 use App\Models\User;
+use Filament\Actions\Action as TableAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -26,6 +27,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class BranchResource extends Resource
 {
+    private const IMAGE_THUMB_WIDTH = 48;
+    private const IMAGE_THUMB_HEIGHT = 36;
     private const IMAGE_PREVIEW_SCALE = '50%';
 
     protected static ?string $model = Branch::class;
@@ -123,7 +126,7 @@ class BranchResource extends Resource
                         ->options($adminOptions)
                         ->searchable()
                         ->placeholder('회원 선택')
-                        ->helperText('지역관리자(region_admin) 이상 회원만 표시됩니다.'),
+                        ->helperText('구성원 관리에서 지부 관리자 권한을 부여하면 자동 지정됩니다. 수동 변경 시 기존 관리자를 대체합니다.'),
 
                     Select::make('operator_id')
                         ->label('지부 운영자')
@@ -142,10 +145,10 @@ class BranchResource extends Resource
                 ImageColumn::make('image_url')
                     ->label('이미지')
                     ->getStateUsing(fn (Branch $record) => Branch::resolveImageUrl($record->getAttributes()['image_url'] ?? null))
-                    ->imageHeight('auto')
-                    ->imageWidth(self::IMAGE_PREVIEW_SCALE)
+                    ->width(self::IMAGE_THUMB_WIDTH)
+                    ->height(self::IMAGE_THUMB_HEIGHT)
                     ->extraImgAttributes([
-                        'style' => 'width:' . self::IMAGE_PREVIEW_SCALE . ';height:auto;object-fit:contain;',
+                        'style' => 'width:' . self::IMAGE_THUMB_WIDTH . 'px;height:' . self::IMAGE_THUMB_HEIGHT . 'px;object-fit:cover;border-radius:4px;',
                     ]),
 
                 TextColumn::make('name')
@@ -178,6 +181,27 @@ class BranchResource extends Resource
                     ->options(['active' => '활성', 'inactive' => '비활성']),
             ])
             ->actions([
+                TableAction::make('view_image')
+                    ->label('이미지 보기')
+                    ->icon('heroicon-o-magnifying-glass-plus')
+                    ->color('gray')
+                    ->tooltip('이미지 크게 보기')
+                    ->modalHeading(fn (Branch $record) => $record->name . ' — 대표 이미지')
+                    ->modalContent(function (Branch $record) {
+                        $url = Branch::resolveImageUrl($record->getAttributes()['image_url'] ?? null);
+                        if (! filled($url)) {
+                            return new HtmlString('<span class="text-gray-400 text-sm">등록된 이미지가 없습니다.</span>');
+                        }
+
+                        return new HtmlString(
+                            '<img src="' . e($url) . '" alt="' . e($record->name) . '" '
+                            . 'style="width:100%;max-width:640px;height:auto;border-radius:8px;object-fit:contain;display:block;margin:0 auto;">'
+                        );
+                    })
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('닫기')
+                    ->visible(fn (Branch $record) => filled($record->getAttributes()['image_url'] ?? null)),
+
                 EditAction::make()->label('수정'),
                 DeleteAction::make()->label('삭제'),
             ])
