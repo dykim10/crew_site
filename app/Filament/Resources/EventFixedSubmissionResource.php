@@ -151,9 +151,8 @@ class EventFixedSubmissionResource extends Resource
 
                 ImageColumn::make('image_url')
                     ->label('제출물')
-                    ->disk('s3')
-                    ->visibility('public')
-                    ->square(),
+                    ->square()
+                    ->imageHeight(48),
 
                 TextColumn::make('confirmed_at')
                     ->label('처리일')
@@ -182,13 +181,13 @@ class EventFixedSubmissionResource extends Resource
                     ->preload(),
             ])
             ->actions([
-                Action::make('view_image')
+                TableAction::make('view_image')
                     ->label('이미지 보기')
                     ->icon('heroicon-o-eye')
                     ->url(fn (EventFixedSubmission $record) => $record->image_url, shouldOpenInNewTab: true)
                     ->visible(fn (EventFixedSubmission $record) => filled($record->image_url)),
 
-                Action::make('approve')
+                TableAction::make('approve')
                     ->label('승인')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
@@ -213,7 +212,7 @@ class EventFixedSubmissionResource extends Resource
                     )
                     ->visible(fn (EventFixedSubmission $record) => $record->isPending()),
 
-                Action::make('reject')
+                TableAction::make('reject')
                     ->label('반려')
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')

@@ -197,14 +197,14 @@
     </div>
 
     {{-- 기록 추가 CTA (데스크탑) --}}
-    <a href="{{ route('running-logs.create') }}" class="pac-nav-cta hidden md:inline-flex">
+    <a href="{{ route('running-logs.create') }}" class="pac-nav-cta pac-nav-header-cta hidden md:inline-flex">
       + 기록
     </a>
 
     @else
 
     {{-- 비로그인: 로그인 버튼 --}}
-    <a href="{{ route('login') }}" class="pac-nav-cta hidden md:inline-flex">
+    <a href="{{ route('login') }}" class="pac-nav-cta pac-nav-header-cta hidden md:inline-flex">
       로그인
     </a>
 
@@ -275,6 +275,21 @@
         </svg>
       </button>
     </div>
+
+    @if(!$authed)
+    {{-- 게스트: 드로어 상단 로그인 CTA --}}
+    <div class="px-5 py-4" style="border-bottom:1px solid rgba(255,255,255,0.06);">
+      <a href="{{ route('login') }}"
+         class="pac-nav-cta flex items-center justify-center w-full"
+         style="clip-path:none;text-decoration:none;">
+        로그인
+      </a>
+      <p class="mt-2 text-center font-body text-[11px]"
+         style="color:rgba(255,255,255,.25);">
+        로그인 후 기록·훈련노트를 이용할 수 있습니다
+      </p>
+    </div>
+    @endif
 
     {{-- 드로어 네비 --}}
     <nav class="flex-1 px-2 py-3 overflow-y-auto">
@@ -366,10 +381,9 @@
 
     </nav>
 
-    {{-- 드로어 하단 --}}
+    {{-- 드로어 하단 (로그인 사용자) --}}
+    @if($authed)
     <div class="px-2 py-3" style="border-top:1px solid rgba(255,255,255,0.06);">
-
-      @if($authed)
       <a href="{{ route('running-logs.create') }}"
          class="pac-nav-cta flex items-center justify-center w-full mb-2"
          style="clip-path:none;text-decoration:none;">
@@ -388,17 +402,8 @@
           로그아웃
         </button>
       </form>
-
-      @else
-
-      <a href="{{ route('login') }}"
-         class="pac-nav-cta flex items-center justify-center w-full"
-         style="clip-path:none;text-decoration:none;">
-        로그인
-      </a>
-
-      @endif
     </div>
+    @endif
 
   </aside>
 

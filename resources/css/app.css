@@ -444,8 +444,8 @@
 
 /* ── RESPONSIVE ─────────────────────────────────────── */
 @media (max-width: 767px) {
-  /* Tailwind hidden/md:inline-flex보다 늦게 선언되므로 명시적으로 숨김 */
-  .pac-nav-cta { display: none; }
+  /* 헤더 CTA만 숨김 — 모바일 드로어 하단 CTA는 유지 */
+  .pac-nav-header-cta { display: none !important; }
   .pac-section-heading { margin-bottom: 32px; word-break: keep-all; }
 }
 @media (max-width: 1023px) {
