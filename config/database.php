@@ -104,6 +104,7 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public,crew',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
+            'timezone' => 'Asia/Seoul',
         ],
 
         'pgsql_live' => [
@@ -123,6 +124,7 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public,crew',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
+            'timezone' => 'Asia/Seoul',
         ],
 
         'sqlsrv' => [
