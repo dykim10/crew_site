@@ -10,6 +10,8 @@ use App\Models\User;
 use App\Observers\PhotoGalleryObserver;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
@@ -31,7 +33,11 @@ class AppServiceProvider extends ServiceProvider
         PhotoGallery::observe(PhotoGalleryObserver::class);
 
         DatePicker::configureUsing(fn (DatePicker $c) => $c->locale('ko'));
-        DateTimePicker::configureUsing(fn (DateTimePicker $c) => $c->locale('ko'));
+        DateTimePicker::configureUsing(
+            fn (DateTimePicker $c) => $c->locale('ko')->timezone('Asia/Seoul'),
+        );
+        TextColumn::configureUsing(fn (TextColumn $c) => $c->timezone('Asia/Seoul'));
+        TextEntry::configureUsing(fn (TextEntry $c) => $c->timezone('Asia/Seoul'));
 
         // 모든 뷰에 activeTheme 공유 (crew.settings 테이블 기반)
         // 테스트 환경(SQLite)에서는 crew 스키마 쿼리 불가 → 기본값 사용
