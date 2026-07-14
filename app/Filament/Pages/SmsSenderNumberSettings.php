@@ -55,7 +55,6 @@ class SmsSenderNumberSettings extends Page implements HasForms
                         ->label('휴대폰 번호')
                         ->tel()
                         ->placeholder('01012345678')
-                        ->required()
                         ->columnSpanFull(),
                 ])
                 ->footerActions([
@@ -71,11 +70,9 @@ class SmsSenderNumberSettings extends Page implements HasForms
                         ->label('휴대폰 번호')
                         ->tel()
                         ->placeholder('01012345678')
-                        ->required()
                         ->columnSpanFull(),
                     TextInput::make('certification_code')
                         ->label('인증코드')
-                        ->required()
                         ->maxLength(10)
                         ->columnSpanFull(),
                 ])
@@ -118,7 +115,8 @@ class SmsSenderNumberSettings extends Page implements HasForms
 
     public function requestRegisterCode(): void
     {
-        $phone = $this->normalizePhone((string) ($this->form->getState()['register_phone'] ?? ''));
+        $state = $this->form->getRawState();
+        $phone = $this->normalizePhone((string) ($state['register_phone'] ?? ''));
         if ($phone === null) {
             Notification::make()->title('유효하지 않은 전화번호입니다.')->danger()->send();
             return;
@@ -143,7 +141,7 @@ class SmsSenderNumberSettings extends Page implements HasForms
             $this->form->fill([
                 'register_phone'     => $phone,
                 'verify_phone'       => $phone,
-                'certification_code' => $this->form->getState()['certification_code'] ?? null,
+                'certification_code' => $state['certification_code'] ?? null,
             ]);
 
             Notification::make()->title('인증코드가 발송되었습니다.')->success()->send();
@@ -158,7 +156,7 @@ class SmsSenderNumberSettings extends Page implements HasForms
 
     public function verifyRegisterCode(): void
     {
-        $state = $this->form->getState();
+        $state = $this->form->getRawState();
         $phone = $this->normalizePhone((string) ($state['verify_phone'] ?? ''));
         $code = trim((string) ($state['certification_code'] ?? ''));
 
@@ -192,7 +190,7 @@ class SmsSenderNumberSettings extends Page implements HasForms
             }
 
             $this->form->fill([
-                'register_phone'     => $this->form->getState()['register_phone'] ?? null,
+                'register_phone'     => $state['register_phone'] ?? null,
                 'verify_phone'       => $phone,
                 'certification_code' => null,
             ]);
