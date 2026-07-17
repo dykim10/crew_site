@@ -396,6 +396,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
             <div class="cov-feat"><span class="cov-feat-dot" style="color:var(--y)">▸</span>카카오맵 코스 지도 — GPX 폴리라인 · km 마커 · 구간 고도</div>
             <div class="cov-feat"><span class="cov-feat-dot" style="color:var(--y)">▸</span>AI 종합 분석 · 워치 이미지 파싱 (Claude API 티어링)</div>
             <div class="cov-feat"><span class="cov-feat-dot" style="color:var(--y)">▸</span>기상청 ASOS · 고저도 프로파일 · 레이스 플랜 RAG · SNS</div>
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:var(--y)">▸</span>대회 목록 관리 정비 — is_published · 연도별 대회 UX 통일</div>
           </div>
         </div>
 
@@ -409,6 +410,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
             <span class="badge bd">v1 운영 중</span>
             <span class="badge bd">리모델 완료</span>
             <span class="badge bw">코스 지도 완료</span>
+            <span class="badge bd">대회목록 정비</span>
           </div>
           <div class="cov-zc-sep"></div>
           <div class="cov-techs">
@@ -443,6 +445,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
             <div class="cov-feat"><span class="cov-feat-dot" style="color:#FF6B8A">▸</span>메인 PAC 이미지 · 지부 상세 · 운영진 소개 · 동적 통계</div>
             <div class="cov-feat"><span class="cov-feat-dot" style="color:#FF6B8A">▸</span>Filament v4 어드민 · @pac_run Instagram · Google Forms · 단체 SMS</div>
             <div class="cov-feat"><span class="cov-feat-dot" style="color:#FF6B8A">▸</span>이벤트 동적 폼 · 게시판 TipTap · 통합 시스템 로그 뷰어</div>
+            <div class="cov-feat"><span class="cov-feat-dot" style="color:#FF6B8A">▸</span>기수 개편 — 메인 대회 N건 · /generation · 신청서 희망지부 · 입단 이관</div>
           </div>
         </div>
 
@@ -455,6 +458,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
           <div class="cov-zc-badges">
             <span class="badge bd">배포 완료</span>
             <span class="badge bd">v1 운영</span>
+            <span class="badge bd">기수 개편</span>
           </div>
           <div class="cov-zc-sep"></div>
           <div class="cov-techs">
@@ -645,7 +649,7 @@ php artisan serve --port=<span class="hl">[CREW]</span>
   <div class="sh"><div class="s-label">Chapter 03 — REVIEW</div><div class="s-num">04 / 15</div></div>
   <div class="slide-content">
     <div class="stitle">REVIEW <span class="dim">· review.pac-run.com</span></div>
-    <div class="ssub">마라톤/러닝 대회 리뷰 + AI 분석 + 코스 지도 &nbsp;<span class="badge bd">v1 운영</span> &nbsp;<span class="badge bd">리모델 완료</span> &nbsp;<span class="badge bw">코스 지도 2026-06-21</span></div>
+    <div class="ssub">마라톤/러닝 대회 리뷰 + AI 분석 + 코스 지도 &nbsp;<span class="badge bd">v1 운영</span> &nbsp;<span class="badge bd">리모델 완료</span> &nbsp;<span class="badge bd">대회목록 정비 2026-07-17</span></div>
 
     <div class="g2">
       <div>
@@ -681,6 +685,7 @@ php artisan serve --port=<span class="hl">[CREW]</span>
           <li>트랜잭션 메일 클라이언트 호환 (테이블+인라인 HTML · 2026-07-08)</li>
           <li>통합 시스템 로그 수집 (app_error · source=review · 2026-07-12)</li>
           <li>표시 시각 KST(Asia/Seoul) 통일 — DB는 UTC 절대시각 (2026-07-12)</li>
+          <li><strong style="color:var(--y)">2026-07-17 대회 목록 관리 정비</strong> — races.is_published · UNIQUE(race_id,year) · 연도별 대회 UX · 전년도 복제</li>
         </ul>
 
         <h3 class="st">v2 UI 설계 확정</h3>
@@ -932,7 +937,7 @@ crew.instagram_cache  upsert 저장 (post_id UNIQUE)
   <div class="sh"><div class="s-label">Chapter 06 — CREW</div><div class="s-num">07 / 15</div></div>
   <div class="slide-content">
     <div class="stitle">CREW <span class="dim">· crew.pac-run.com</span></div>
-    <div class="ssub">러닝 크루 기록 · 이벤트 · 관리 통합 플랫폼 &nbsp;<span class="badge bd">v1 운영</span> &nbsp;<span class="badge bw">2026-07-04 공개 UX</span></div>
+    <div class="ssub">러닝 크루 기록 · 이벤트 · 관리 통합 플랫폼 &nbsp;<span class="badge bd">v1 운영</span> &nbsp;<span class="badge bd">기수 개편 2026-07-17</span></div>
 
     <div class="g2">
       <div>
@@ -985,10 +990,13 @@ crew.instagram_cache  upsert 저장 (post_id UNIQUE)
           <li>트랜잭션 메일 클라이언트 호환 · 모바일 드로어 로그인 CTA (2026-07-08)</li>
           <li>통합 시스템 로그 — 수집 + Filament 뷰어 (2026-07-12)</li>
           <li>프로필 재설계 · 커스텀 이메일 템플릿 · XSS 방어</li>
+          <li><strong style="color:var(--y)">기수 개편 (2026-07-17)</strong> — main_races N건 · application_form_id · /generation · 구글폼 신청 · 입단 이관</li>
+          <li>신청서 희망지부(branch_settings) · 안내 이미지 · 기수·지부 소속 이력 (user_generations.branch_id)</li>
         </ul>
 
         <h3 class="st">다음 작업 (우선순위)</h3>
         <ul class="cl">
+          <li class="wip">운영 EC2 migrate (100001~150001) + 기수/신청서 스모크</li>
           <li class="pend">관리자 엑셀 업로드 (UserImport)</li>
           <li class="pend">훈련노트 UI 모바일 실측 (375/430px)</li>
           <li class="wip">예약 문자 발송 (Filament + CORE 스케줄러) — E2E 검증 중</li>
@@ -1250,9 +1258,9 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
 
 <span class="hl">crews</span>          크루
 <span class="hl">generations</span>    기수
-  goal_km_grades JSONB
-  recruit_start/end_at
-  is_recruiting, max_members
+  main_races JSONB · apply_method
+  application_form_id FK
+  recruit_start/end_at · max_members
 
 <span class="hl">regions</span>        지역 (반포/연대/인천/군포)
 <span class="hl">branches</span>       지부 (image_url, branch_desc, admin/operator)
@@ -1267,15 +1275,16 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
       <div>
         <h3 class="st">review 스키마</h3>
         <p style="font-size:15px;color:var(--td);margin-bottom:8px">REVIEW 전용 · v2 확장 예정</p>
-        <div class="ab" style="white-space:pre-wrap"><span class="hl">races</span>  카탈로그 전용 (Phase 5 정제)
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">races</span>  카탈로그 전용
   name, name_en, city, organizer
-  is_certified, wa_label (Platinum/Gold/Elite/Label)
-  is_domestic, ai_race_summary JSONB
+  is_published (공개 범위 · 26-07-17)
+  is_certified, wa_label · is_domestic
+  ai_race_summary JSONB
 
-<span class="hl">race_editions</span>  연도별 개최 이력 (신규 2026-06-13)
+<span class="hl">race_editions</span>  연도별 개최 이력
   race_id FK, year, race_date, location
   entry_fee, weather_stn_id
-  UNIQUE(race_id, year)
+  UNIQUE(race_id, year) partial
 
 <span class="hl">reviews</span>  v2 컬럼 포함
   distance_km, rating, sentiment, ai_summary
@@ -1310,8 +1319,9 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
 <span class="hl">notices</span> / <span class="hl">notice_reads</span>
 <span class="hl">bug_reports</span>       severity, status
 <span class="hl">photo_galleries</span>   thumbnail WebP
-<span class="hl">application_forms</span> (동적 폼)
-<span class="hl">applications</span>      암호화 저장
+<span class="hl">application_forms</span> branch_settings · images
+<span class="hl">applications</span>      희망지부 · 암호화
+<span class="hl">user_generations</span>  branch_id (기수별 지부)
 <span class="hl">boards</span>            board_type, is_secret
 <span class="hl">board_comments</span>    parent_id (2depth)
 <span class="hl">sms_logs</span>          group_id 인덱스
@@ -1319,7 +1329,7 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
 <span class="hl">main_hero_images</span>  홈 PAC (10:7 WebP)
 <span class="hl">administrators</span>    공개 운영진 (/administrator)
 <span class="hl">admin_logs</span>        읽기전용 감사
-<span class="hl">google_forms</span>      Sheets 연동 (26-07-08)
+<span class="hl">google_forms</span>      purpose · form_url · 매핑
 
 <span class="gn">── 훈련노트 (26-07-06 신규) ──</span>
 <span class="gn">training_reports</span>   주간 리포트 캐시
@@ -1492,7 +1502,7 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
   <div class="sh"><div class="s-label">Chapter 13 — Status & Roadmap</div><div class="s-num">14 / 15</div></div>
   <div class="slide-content">
     <div class="stitle">개발 현황 &amp; <span class="acc">로드맵</span></div>
-    <div class="ssub">2026-07-12 기준 · developer_md/STATUS.md 종합 반영</div>
+    <div class="ssub">2026-07-17 기준 · developer_md/STATUS.md 종합 반영</div>
 
     <div class="g3" style="margin-bottom:16px">
       <div class="card cy">
@@ -1501,7 +1511,7 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
           <div class="sbar" style="flex:1"><div class="fill" style="width:99%"></div></div>
           <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:800;color:var(--y)">99%</span>
         </div>
-        <p><span class="badge bd">v1 운영</span>&nbsp;<span class="badge bd">리모델 완료</span>&nbsp;<span class="badge bd">코스 지도</span><br>레이스 플랜 · RAG · SNS · Kakao 지도</p>
+        <p><span class="badge bd">v1 운영</span>&nbsp;<span class="badge bd">리모델</span>&nbsp;<span class="badge bd">대회목록 정비</span><br>코스 지도 · 레이스 플랜 · RAG · SNS</p>
       </div>
       <div class="card cp">
         <div class="ctitle">CREW</div>
@@ -1509,7 +1519,7 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
           <div class="sbar" style="flex:1"><div class="fill" style="width:96%;background:var(--p)"></div></div>
           <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:800;color:var(--p)">96%</span>
         </div>
-        <p><span class="badge bd">v1 운영</span>&nbsp;<span class="badge bd">AI 코치</span><br>훈련노트 · Instagram · Google Forms · 시스템 로그</p>
+        <p><span class="badge bd">v1 운영</span>&nbsp;<span class="badge bd">AI 코치</span>&nbsp;<span class="badge bd">기수 개편</span><br>훈련노트 · /generation · 신청서 · Google Forms</p>
       </div>
       <div class="card cd">
         <div class="ctitle">CORE API</div>
@@ -1517,7 +1527,7 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
           <div class="sbar" style="flex:1"><div class="fill" style="width:95%"></div></div>
           <span style="font-family:'Barlow Condensed';font-size:22px;font-weight:800;color:var(--y)">95%</span>
         </div>
-        <p><span class="badge bd">v1 운영 중</span>&nbsp;<span class="badge bd">AI 코치 완료</span><br>pgvector · 레이스 플랜 · 코치 API · 관측 로그</p>
+        <p><span class="badge bd">v1 운영 중</span>&nbsp;<span class="badge bd">AI 코치</span>&nbsp;<span class="badge bd">races 카탈로그</span><br>pgvector · latest_race_date · 코치 API</p>
       </div>
     </div>
 
@@ -1567,29 +1577,57 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
               <div class="stage-desc">3서비스 로그 수집 · Filament 뷰어 · KST/UTC 원칙 확립 · 운영 데이터 보정</div>
             </div>
           </div>
+          <div class="stage-item done">
+            <span class="stage-no">✓</span>
+            <div>
+              <div class="stage-ttl">REVIEW 대회 목록 관리 정비 <span style="font-size:14px;color:#3FB950">main (2026-07-17)</span></div>
+              <div class="stage-desc">is_published · UNIQUE(year) · 연도별 대회 UX — 운영 migrate 대기</div>
+            </div>
+          </div>
+          <div class="stage-item done">
+            <span class="stage-no">✓</span>
+            <div>
+              <div class="stage-ttl">CREW 기수 개편 + CORE races 보강 <span style="font-size:14px;color:#3FB950">main (2026-07-17)</span></div>
+              <div class="stage-desc">crew#2 · core#4 — main_races · 신청서 · latest_race_date — 운영 migrate 대기</div>
+            </div>
+          </div>
           <div class="stage-item plan">
             <span class="stage-no">1</span>
+            <div>
+              <div class="stage-ttl">운영 EC2 migrate</div>
+              <div class="stage-desc">CREW 100001~150001 · REVIEW is_published/UNIQUE · CORE 배포 확인</div>
+            </div>
+          </div>
+          <div class="stage-item plan">
+            <span class="stage-no">2</span>
             <div>
               <div class="stage-ttl">완주 라벨 플로우</div>
               <div class="stage-desc">certificate_url 업로드 → 관리자/Vision 확인 → is_certified</div>
             </div>
           </div>
           <div class="stage-item plan">
-            <span class="stage-no">2</span>
+            <span class="stage-no">3</span>
+            <div>
+              <div class="stage-ttl">CORE upcoming is_published 필터</div>
+              <div class="stage-desc">/api/races/editions/upcoming — CREW 목표 대회 공개 범위</div>
+            </div>
+          </div>
+          <div class="stage-item plan">
+            <span class="stage-no">4</span>
             <div>
               <div class="stage-ttl">pilot GPX 품질 보완</div>
               <div class="stage-desc">서울(305) 빈 GPX · 경주/군산 S3 스텁 → 실 코스 재업로드</div>
             </div>
           </div>
           <div class="stage-item plan">
-            <span class="stage-no">3</span>
+            <span class="stage-no">5</span>
             <div>
               <div class="stage-ttl">개인 GPX/TCX 업로드 (Phase 4)</div>
               <div class="stage-desc">CORE gpx_service 분리 · source=gpx</div>
             </div>
           </div>
           <div class="stage-item plan">
-            <span class="stage-no">4</span>
+            <span class="stage-no">6</span>
             <div>
               <div class="stage-ttl">기상청 단기/중기 예보 API</div>
               <div class="stage-desc">race_plan_service 스텁 → 실 연동</div>
@@ -1615,7 +1653,7 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
           <div style="font-size:15px;color:var(--td);margin-top:6px;line-height:1.9">
             Project Documentation v4.0<br>
             김대윤 · dykim10iufc@gmail.com<br>
-            2026-07-12
+            2026-07-17
           </div>
         </div>
       </div>
