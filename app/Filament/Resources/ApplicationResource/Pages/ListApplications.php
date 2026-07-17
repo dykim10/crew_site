@@ -23,7 +23,10 @@ class ListApplications extends ListRecords
                     '폼'       => fn ($r) => $r->form?->title ?? '-',
                     '기수'     => fn ($r) => $r->form?->cohort ?? '-',
                     '이름'     => fn ($r) => app(CryptoService::class)->decrypt($r->name_enc) ?? '-',
-                    '이메일'   => fn ($r) => app(CryptoService::class)->decrypt($r->email_enc) ?? '-',
+                    '희망지부' => fn ($r) => app(\App\Services\ApplicationService::class)->preferredBranch($r),
+                    '이메일'   => fn ($r) => $r->email_enc
+                        ? (app(CryptoService::class)->decrypt($r->email_enc) ?? '-')
+                        : '(없음)',
                     '연락처'   => fn ($r) => $r->phone_enc
                         ? (app(CryptoService::class)->decrypt($r->phone_enc) ?? '-')
                         : '-',

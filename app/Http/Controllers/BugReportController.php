@@ -13,9 +13,12 @@ class BugReportController extends Controller
 
     public function create(Request $request): View
     {
-        // 이전 페이지 경로를 path 필드 기본값으로 전달
+        // 이전 페이지 경로·제보 초안(대회 등록 요청 등)을 쿼리로 전달 가능
         $previousPath = $request->query('from', '');
-        return view('bug-reports.create', compact('previousPath'));
+        $prefillTitle = (string) $request->query('title', '');
+        $prefillDescription = (string) $request->query('description', '');
+
+        return view('bug-reports.create', compact('previousPath', 'prefillTitle', 'prefillDescription'));
     }
 
     public function store(Request $request): RedirectResponse

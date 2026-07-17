@@ -46,6 +46,7 @@ use App\Http\Controllers\AdminPasswordConfirmController;
 use App\Http\Controllers\PlanningFeedbackController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\GenerationController;
 use App\Http\Controllers\IntroduceController;
 use App\Http\Controllers\SkinController;
 use App\Http\Controllers\SmsWebhookController;
@@ -60,6 +61,9 @@ Route::get('/introduce', [IntroduceController::class, 'index'])->name('introduce
 // 지부 소개 (공개)
 Route::get('/branch', [BranchController::class, 'index'])->name('branch');
 Route::get('/branch/{branch}', [BranchController::class, 'show'])->name('branch.show');
+
+// 기수 소개 (공개 — 모집/운영 중일 때 GNB 노출)
+Route::get('/generation', [GenerationController::class, 'show'])->name('generation.show');
 
 // 운영진 소개 (공개)
 Route::get('/administrator', [AdministratorController::class, 'index'])->name('administrator');

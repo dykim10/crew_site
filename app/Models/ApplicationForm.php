@@ -17,14 +17,18 @@ class ApplicationForm extends Model
         'open_from',
         'open_until',
         'form_fields',
+        'branch_settings',
+        'images',
         'created_by',
     ];
 
     protected $casts = [
-        'is_active'   => 'boolean',
-        'open_from'   => 'date',
-        'open_until'  => 'date',
-        'form_fields' => 'array',
+        'is_active'        => 'boolean',
+        'open_from'        => 'date',
+        'open_until'       => 'date',
+        'form_fields'      => 'array',
+        'branch_settings'  => 'array',
+        'images'           => 'array',
     ];
 
     public function applications(): HasMany

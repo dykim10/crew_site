@@ -4,8 +4,10 @@ namespace App\Filament\Resources\GenerationResource\Pages;
 
 use App\Filament\Resources\GenerationResource;
 use App\Models\Generation;
+use App\Services\GenerationVisibilityService;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Cache;
 
 class CreateGeneration extends CreateRecord
 {
@@ -15,7 +17,22 @@ class CreateGeneration extends CreateRecord
     {
         $this->validateDateOverlap($data['start_date'] ?? null, $data['end_date'] ?? null, excludeId: null);
 
+        $cached = Cache::get('core_api_editions_upcoming');
+        $editionMeta = (is_array($cached) && isset($cached['meta']) && is_array($cached['meta']))
+            ? $cached['meta']
+            : (Cache::get('core_api_editions_upcoming_meta') ?? []);
+        $data = GenerationResource::composeMainRaces($data, is_array($editionMeta) ? $editionMeta : []);
+        $data['apply_method'] = $data['apply_method'] ?? 'internal';
+        if ($data['apply_method'] !== 'google_form') {
+            $data['google_form_id'] = null;
+        }
+
         return $data;
+    }
+
+    protected function afterCreate(): void
+    {
+        GenerationVisibilityService::forgetCache();
     }
 
     protected function getRedirectUrl(): string
@@ -25,7 +42,6 @@ class CreateGeneration extends CreateRecord
 
     private function validateDateOverlap(?string $start, ?string $end, ?int $excludeId): void
     {
-        // 시작일·종료일 둘 다 없으면 검증 생략
         if (!$start || !$end) {
             return;
         }

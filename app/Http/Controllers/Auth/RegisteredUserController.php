@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\ApplicationMatchingService;
 use App\Services\CryptoService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -15,7 +16,10 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    public function __construct(private CryptoService $crypto) {}
+    public function __construct(
+        private CryptoService $crypto,
+        private ApplicationMatchingService $matching,
+    ) {}
 
     public function create(): View
     {
@@ -30,7 +34,7 @@ class RegisteredUserController extends Controller
             'email'    => [
                 'required', 'string', 'lowercase', 'email', 'max:255',
                 function (string $attribute, mixed $value, \Closure $fail) {
-                    $hash = hash('sha256', strtolower(trim($value)));
+                    $hash = $this->crypto->hashEmail((string) $value);
                     if (User::where('email_hash', $hash)->exists()) {
                         $fail('이미 등록된 이메일입니다.');
                     }
@@ -53,6 +57,8 @@ class RegisteredUserController extends Controller
             'role'       => 'member',
             'is_beta'    => true,
         ]);
+
+        $this->matching->matchUser($user);
 
         event(new Registered($user));
 

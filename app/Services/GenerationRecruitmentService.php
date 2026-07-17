@@ -7,11 +7,18 @@ use App\Models\ApplicationForm;
 use App\Models\Generation;
 use Illuminate\Support\Facades\DB;
 
-/** 기수 ↔ 신청서(cohort) 연동 — 관리자 UI용 */
+/** 기수 ↔ 신청서 연동 — application_form_id 우선, cohort fallback */
 class GenerationRecruitmentService
 {
     public function resolveApplicationForm(Generation $generation): ?ApplicationForm
     {
+        if ($generation->application_form_id) {
+            $linked = ApplicationForm::query()->find($generation->application_form_id);
+            if ($linked) {
+                return $linked;
+            }
+        }
+
         return ApplicationForm::query()
             ->where('cohort', "{$generation->number}기")
             ->orderByDesc('is_active')
@@ -29,9 +36,12 @@ class GenerationRecruitmentService
     /** @return array{pending:int, approved:int, waitlisted:int, total:int} */
     public function applicationStatusCounts(Generation $generation): array
     {
-        $formIds = ApplicationForm::query()
-            ->where('cohort', "{$generation->number}기")
-            ->pluck('id');
+        $form = $this->resolveApplicationForm($generation);
+        $formIds = $form
+            ? collect([$form->id])
+            : ApplicationForm::query()
+                ->where('cohort', "{$generation->number}기")
+                ->pluck('id');
 
         if ($formIds->isEmpty()) {
             return ['pending' => 0, 'approved' => 0, 'waitlisted' => 0, 'total' => 0];
