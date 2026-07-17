@@ -369,7 +369,7 @@ code{font-family:'JetBrains Mono',monospace;font-size:14px;background:rgba(229,1
       <div style="text-align:right">
         <div class="cov-year">2026</div>
         <div class="cov-ver">Project Docs v4.0</div>
-        <div class="s-num" id="snum" style="margin-top:4px;font-size:11px;color:var(--td);letter-spacing:2px">01 / 15</div>
+        <div class="s-num" id="snum" style="margin-top:4px;font-size:11px;color:var(--td);letter-spacing:2px">01 / 16</div>
       </div>
     </div>
 
@@ -1348,12 +1348,12 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
   <div class="bg-num">11</div>
 </div>
 
-<!-- ═══ SLIDE 12 ARCH & SECURITY ═══ -->
+<!-- ═══ SLIDE 12 ARCHITECTURE ═══ -->
 <div class="slide" data-i="11">
-  <div class="sh"><div class="s-label">Chapter 11 — Architecture & Security</div><div class="s-num">12 / 15</div></div>
+  <div class="sh"><div class="s-label">Chapter 11 — Architecture</div><div class="s-num">12 / 16</div></div>
   <div class="slide-content">
-    <div class="stitle">아키텍처 패턴 &amp; <span class="acc">보안</span></div>
-    <div class="ssub">Controller → Service → Model 3계층 + 보안 체크리스트 + 개인정보 암호화</div>
+    <div class="stitle">아키텍처 <span class="acc">패턴</span></div>
+    <div class="ssub">Controller → Service → Model 3계층 · 서비스 경계 · 기능 추가 표준 절차</div>
 
     <div class="g2">
       <div>
@@ -1372,6 +1372,12 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
   복잡 JOIN/집계 → DB::select() raw
   <span class="gn">재사용 쿼리 → scope / static 메서드</span></div>
 
+        <h3 class="st">서비스 경계</h3>
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">REVIEW / CREW</span>  → 소유 스키마만 Eloquent
+<span class="hl">cross-schema</span>     → <span class="gn">CORE API만</span> 허용
+<span class="mt">raw SQL로 상대 스키마 JOIN 금지</span></div>
+      </div>
+      <div>
         <h3 class="st">기능 추가 표준 절차</h3>
         <div class="flow">
           <div class="fs"><div class="fn">1</div><div class="fc"><strong>Model</strong><span>fillable, casts, scope 정의</span></div></div>
@@ -1381,55 +1387,10 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
           <div class="fs"><div class="fn">5</div><div class="fc"><strong>View</strong><span>Blade + Tailwind CSS (인라인 style 금지)</span></div></div>
           <div class="fs"><div class="fn">6</div><div class="fc"><strong>브라우저 확인</strong><span>실제 테스트 후 완료 보고</span></div></div>
         </div>
-      </div>
-      <div>
-        <h3 class="st">보안 체크리스트</h3>
-        <table class="tbl">
-          <tr><th>항목</th><th>규칙</th></tr>
-          <tr style="background:rgba(229,173,22,.07);outline:1px solid rgba(229,173,22,.25)">
-            <td style="font-weight:700;color:var(--y);white-space:nowrap">
-              API 키
-              <span class="badge bw" style="font-family:'Noto Sans KR',sans-serif;text-transform:none;letter-spacing:0;font-size:11px;margin-left:6px;vertical-align:middle">↑ 업그레이드</span>
-            </td>
-            <td>
-              <strong style="color:var(--tw)">AWS Secrets Manager</strong> 활용 권장
-              <span style="color:var(--tm);font-size:13px;margin-left:4px">— 중앙 집중 관리 · 자동 교체(Rotation) · IAM 접근 제어</span>
-              <br>
-              <span style="font-size:13px;color:var(--tm)">현재: 환경변수(.env) 관리 &nbsp;·&nbsp; Git 커밋 금지 &nbsp;·&nbsp; 로그 노출 금지</span>
-            </td>
-          </tr>
-          <tr><td>운영 환경</td><td>APP_DEBUG=false · Swagger 비활성화</td></tr>
-          <tr><td>CSRF</td><td>모든 POST/PUT/DELETE에 @csrf 필수</td></tr>
-          <tr><td>관리자</td><td>/admin/* → auth, verified 미들웨어</td></tr>
-          <tr><td>입력 검증</td><td>$request->validate() 반드시 선행</td></tr>
-          <tr><td>개인정보</td><td>이름/이메일/전화 → 암호화 저장</td></tr>
-          <tr><td>XSS</td><td>mews/purifier 적용 (boards 프로파일)</td></tr>
-          <tr><td>테스트</td><td>DatabaseTransactions (RefreshDatabase 금지)</td></tr>
-        </table>
 
-        <h3 class="st">개인정보 암호화 설계</h3>
-        <table class="tbl">
-          <tr><th>데이터</th><th>방식</th></tr>
-          <tr><td>이메일 (검색)</td><td>단방향 해시 암호화</td></tr>
-          <tr><td>이메일 (표시)</td><td>양방향 암호화</td></tr>
-          <tr><td>전화번호</td><td>양방향 암호화</td></tr>
-          <tr><td>이름</td><td>양방향 암호화</td></tr>
-          <tr><td>체성분(인바디)</td><td>전 컬럼 Fernet 암호화 · CORE 전담 · 동의 게이트</td></tr>
-        </table>
-
-        <h3 class="st">운영 가시성 — 통합 시스템 로그 <span class="badge bd" style="font-family:'Noto Sans KR';text-transform:none;letter-spacing:0;font-size:11px">2026-07-12</span></h3>
-        <div class="ab" style="white-space:pre-wrap"><span class="hl">3서비스 → public.system_logs</span> (source: core/crew/review)
-  스케줄러 성공/실패 · 백업 · SMS · 크롤링 · AI 실패
-  미처리 예외(app_error) — 404/419/422/403 제외
-  ↓
-<span class="gn">Filament 통합 뷰어</span> (super_admin · 읽기 전용)
-  출처/분류/수준 필터 · context JSON 모달
-<span class="mt">30일 초과분 매일 자동 정리 · 로깅 실패는 조용히 격리
-   (본 기능 장애가 서비스에 전파되지 않도록 설계)</span></div>
-
-        <div class="co warn" style="margin-top:10px">
-          <strong>운영 안전 정책</strong>
-          DB 플랜 분리 운영 · 전용 백업 솔루션 이중 적용으로 데이터 안전성 확보.
+        <div class="co info" style="margin-top:14px">
+          <strong>보안 정책</strong>
+          인증·관리자 게이트·암호화·운영 가시성은 다음 <strong>Security</strong> 챕터에 모은다.
         </div>
       </div>
     </div>
@@ -1437,9 +1398,96 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
   <div class="bg-num">12</div>
 </div>
 
-<!-- ═══ SLIDE 13 MEMBER & ADMIN ═══ -->
+<!-- ═══ SLIDE 13 SECURITY ═══ -->
 <div class="slide" data-i="12">
-  <div class="sh"><div class="s-label">Chapter 12 — Member & Admin</div><div class="s-num">13 / 15</div></div>
+  <div class="sh"><div class="s-label">Chapter 12 — Security</div><div class="s-num">13 / 16</div></div>
+  <div class="slide-content">
+    <div class="stitle">보안 <span class="acc">정책</span></div>
+    <div class="ssub">접근 통제 · 비밀·개인정보 · 데이터 안전 · 운영 가시성 &nbsp;<span class="badge bd">2026-07-17</span></div>
+
+    <div class="g2">
+      <div>
+        <h3 class="st">관리자 비밀번호 재확인 <span class="badge bd" style="font-family:'Noto Sans KR';text-transform:none;letter-spacing:0;font-size:11px">CREW · REVIEW</span></h3>
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">목적</span>  로그인 세션만으로 /admin 진입 차단
+  (세션 탈취·자리 이탈 대비 2차 게이트)
+
+<span class="hl">흐름</span>
+  1. auth + verified + role(admin)
+  2. <span class="gn">비밀번호 재입력</span>  (/admin-confirm)
+  3. session <span class="hl">admin_password_confirmed_at</span>
+  4. TTL <span class="gn">8시간</span> 후 재확인
+
+<span class="hl">구현</span>
+  CREW  — Filament authMiddleware
+         EnsureAdminPasswordConfirmed
+  REVIEW — middleware alias <span class="hl">admin.password</span>
+  확인 UI는 admin 그룹 <span class="mt">밖</span> (루프 방지)</div>
+
+        <h3 class="st">접근·권한 통제</h3>
+        <table class="tbl">
+          <tr><th>항목</th><th>규칙</th></tr>
+          <tr><td>관리자 게이트</td><td>/admin/* → auth · verified · role · <strong style="color:var(--tw)">비밀번호 재확인</strong></td></tr>
+          <tr><td>역할(RBAC)</td><td>super_admin / region_admin / operator / member</td></tr>
+          <tr><td>소유자 검증</td><td>본인 리소스만 — abort_if(user_id !== auth)</td></tr>
+          <tr><td>클로즈 베타</td><td>초대 코드(is_beta) · 코드 비공개 운영</td></tr>
+          <tr><td>체성분 동의</td><td>body_data_consent_at 후에만 등록·조회</td></tr>
+          <tr><td>CORE API</td><td>내부 전용 · 경로 비공개 · 백업은 X-Backup-Api-Key</td></tr>
+        </table>
+
+        <h3 class="st">비밀·키 관리</h3>
+        <table class="tbl">
+          <tr><th>항목</th><th>규칙</th></tr>
+          <tr style="background:rgba(229,173,22,.07);outline:1px solid rgba(229,173,22,.25)">
+            <td style="font-weight:700;color:var(--y)">API 키</td>
+            <td><strong style="color:var(--tw)">Secrets Manager</strong> 권장 · 현재 .env · Git 금지 · 로그 노출 금지</td>
+          </tr>
+          <tr><td>운영</td><td>APP_DEBUG=false · Swagger 비활성화</td></tr>
+          <tr><td>Google SA</td><td>service-account.json gitignore · scp 배치 · 시트 뷰어만</td></tr>
+          <tr><td>DB 연결</td><td>CORE live=True 금지 (운영 로그 전멸 사고 후 원칙화)</td></tr>
+        </table>
+      </div>
+      <div>
+        <h3 class="st">개인정보·콘텐츠 보안</h3>
+        <table class="tbl">
+          <tr><th>데이터</th><th>방식</th></tr>
+          <tr><td>이메일 (검색)</td><td>단방향 해시 (email_hash)</td></tr>
+          <tr><td>이메일/이름/전화</td><td>양방향 암호화 (_enc) · 평문 금지</td></tr>
+          <tr><td>신청서</td><td>applications 암호화 저장</td></tr>
+          <tr><td>체성분(인바디)</td><td>Fernet · CORE 전담 · CREW 평문 금지</td></tr>
+          <tr><td>XSS</td><td>mews/purifier (boards)</td></tr>
+          <tr><td>CSRF</td><td>모든 변경 요청 @csrf</td></tr>
+          <tr><td>입력 검증</td><td>$request->validate() 선행</td></tr>
+          <tr><td>SNS 수집</td><td>개인식별 저장 금지 · URL/메타만</td></tr>
+        </table>
+
+        <h3 class="st">데이터·테스트 안전</h3>
+        <table class="tbl">
+          <tr><th>항목</th><th>규칙</th></tr>
+          <tr><td>테스트 DB</td><td>DatabaseTransactions · RefreshDatabase 금지</td></tr>
+          <tr><td>users 테이블</td><td>Schema::table만 · DROP/CREATE 금지</td></tr>
+          <tr><td>백업</td><td>스케줄 + POST /api/backup/run (API Key)</td></tr>
+          <tr><td>시스템 로그</td><td>null바이트/길이 sanitize · 실패 격리</td></tr>
+        </table>
+
+        <h3 class="st">운영 가시성 <span class="badge bd" style="font-family:'Noto Sans KR';text-transform:none;letter-spacing:0;font-size:11px">system_logs</span></h3>
+        <div class="ab" style="white-space:pre-wrap"><span class="hl">3서비스 → public.system_logs</span>
+  스케줄러 · 백업 · SMS · 크롤링 · AI · app_error
+  ↓ Filament 뷰어 (super_admin · 읽기 전용)
+<span class="mt">30일 자동 정리 · 로깅 실패는 서비스에 전파하지 않음</span></div>
+
+        <div class="co warn" style="margin-top:10px">
+          <strong>운영 안전</strong>
+          DB 플랜 분리 · 백업 이중화. 비밀·개인정보는 로그/뷰/응답 노출 금지.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bg-num">13</div>
+</div>
+
+<!-- ═══ SLIDE 14 MEMBER & ADMIN ═══ -->
+<div class="slide" data-i="13">
+  <div class="sh"><div class="s-label">Chapter 13 — Member & Admin</div><div class="s-num">14 / 16</div></div>
   <div class="slide-content">
     <div class="stitle">회원 · 권한 &amp; <span class="acc">관리자</span> 패널</div>
     <div class="ssub">public.users 통합 회원 권한 4단계 + Filament v4 어드민 패널 (CREW)</div>
@@ -1494,12 +1542,12 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
       </div>
     </div>
   </div>
-  <div class="bg-num">13</div>
+  <div class="bg-num">14</div>
 </div>
 
-<!-- ═══ SLIDE 14 ROADMAP ═══ -->
-<div class="slide" data-i="13">
-  <div class="sh"><div class="s-label">Chapter 13 — Status & Roadmap</div><div class="s-num">14 / 15</div></div>
+<!-- ═══ SLIDE 15 ROADMAP ═══ -->
+<div class="slide" data-i="14">
+  <div class="sh"><div class="s-label">Chapter 14 — Status & Roadmap</div><div class="s-num">15 / 16</div></div>
   <div class="slide-content">
     <div class="stitle">개발 현황 &amp; <span class="acc">로드맵</span></div>
     <div class="ssub">2026-07-17 기준 · developer_md/STATUS.md 종합 반영</div>
@@ -1659,12 +1707,12 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
       </div>
     </div>
   </div>
-  <div class="bg-num">14</div>
+  <div class="bg-num">15</div>
 </div>
 
-<!-- ═══ SLIDE 15 DEPLOY AUTOMATION ═══ -->
-<div class="slide" data-i="14">
-  <div class="sh"><div class="s-label">Chapter 14 — Deploy Automation</div><div class="s-num">15 / 15</div></div>
+<!-- ═══ SLIDE 16 DEPLOY AUTOMATION ═══ -->
+<div class="slide" data-i="15">
+  <div class="sh"><div class="s-label">Chapter 15 — Deploy Automation</div><div class="s-num">16 / 16</div></div>
   <div class="slide-content">
     <div class="stitle">AI <span class="acc">배포 자동화</span> <span class="dim">· Claude Code Hook 기반</span></div>
     <div class="ssub">자연어 명령 한 줄 → Hook 자동 실행 → EC2 배포 완료 — 개발자 개입 최소화</div>
@@ -1730,7 +1778,7 @@ APScheduler 주 1회 (대회 시즌 전후 집중)</div>
       </div>
     </div>
   </div>
-  <div class="bg-num">15</div>
+  <div class="bg-num">16</div>
 </div>
 
 </div><!-- /sc -->
@@ -1763,7 +1811,8 @@ const META=[
   {lbl:'CORE API',    name:'CORE API'},
   {lbl:'External',    name:'외부 서비스 연동'},
   {lbl:'Database',    name:'DB 스키마'},
-  {lbl:'Arch & Sec',  name:'아키텍처 & 보안'},
+  {lbl:'Arch',        name:'아키텍처 패턴'},
+  {lbl:'Security',    name:'보안 정책'},
   {lbl:'Member/Admin',name:'회원 · 권한 & 관리자'},
   {lbl:'Roadmap',     name:'개발 현황 & 로드맵'},
   {lbl:'Deploy Auto', name:'AI 배포 자동화'},
