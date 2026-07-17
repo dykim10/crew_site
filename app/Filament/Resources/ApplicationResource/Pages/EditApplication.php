@@ -15,7 +15,9 @@ class EditApplication extends EditRecord
         $crypto = app(CryptoService::class);
 
         $data['decrypted_name']  = $crypto->decrypt($this->record->name_enc) ?? '-';
-        $data['decrypted_email'] = $crypto->decrypt($this->record->email_enc) ?? '-';
+        $data['decrypted_email'] = $this->record->email_enc
+            ? ($crypto->decrypt($this->record->email_enc) ?? '-')
+            : '(없음)';
         $data['decrypted_phone'] = $this->record->phone_enc
             ? ($crypto->decrypt($this->record->phone_enc) ?? '-')
             : '-';

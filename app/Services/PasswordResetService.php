@@ -7,10 +7,12 @@ use Illuminate\Support\Facades\Password;
 
 class PasswordResetService
 {
+    public function __construct(private CryptoService $crypto) {}
+
     /** 계정 존재 여부를 노출하지 않고 재설정 링크를 발송한다. */
     public function sendLinkToEmail(string $email): void
     {
-        $emailHash = hash('sha256', strtolower(trim($email)));
+        $emailHash = $this->crypto->hashEmail($email);
         $user = User::where('email_hash', $emailHash)->first();
 
         if (!$user) {

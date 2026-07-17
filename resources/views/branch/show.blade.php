@@ -83,6 +83,72 @@
     @endif
   </div>
 
+  {{-- 기수 구성원 (기수별 활동 지부 스냅샷) --}}
+  <div class="bg-white rounded-2xl shadow-sm p-6">
+    <div class="flex flex-wrap items-baseline justify-between gap-3 mb-3">
+      <h2 class="font-display text-sm font-bold text-pac-black-900 uppercase tracking-widest">구성원</h2>
+      <p class="font-body text-xs text-pac-black-500">{{ $memberCount }}명</p>
+    </div>
+
+    <form method="GET" action="{{ route('branch.show', $branch) }}" class="mb-4">
+      <label for="generation" class="block font-display text-[10px] font-bold text-pac-black-400 uppercase tracking-widest mb-1.5">기수</label>
+      <div class="flex flex-wrap gap-2 items-center">
+        <select id="generation" name="generation"
+                class="font-body text-sm border border-pac-black-100 rounded-lg px-3 py-2 bg-white min-w-[12rem]"
+                onchange="this.form.submit()">
+          <option value="" @selected(!$usingPastFilter)>
+            현재
+            @if($visibleGenerations->isNotEmpty())
+              ({{ $visibleGenerations->map(fn ($g) => $g->alias ? "{$g->number}기" : "{$g->number}기")->implode(', ') }})
+            @else
+              (모집·운영 기수 없음)
+            @endif
+          </option>
+          @foreach($pastGenerations as $g)
+            <option value="{{ $g->id }}" @selected($usingPastFilter && $selectedGeneration?->id === $g->id)>
+              {{ $g->alias ? "{$g->number}기 — {$g->alias}" : "{$g->number}기" }}
+              @if($g->status === 'ended') (종료) @endif
+            </option>
+          @endforeach
+        </select>
+        @if($usingPastFilter)
+          <a href="{{ route('branch.show', $branch) }}" class="font-body text-xs text-pac-black-500 hover:text-pac-yellow-600 underline">현재로</a>
+        @endif
+      </div>
+      @if($usingPastFilter && $selectedGeneration)
+        <p class="font-body text-xs text-pac-black-500 mt-2">
+          {{ $selectedGeneration->alias ? "{$selectedGeneration->number}기 — {$selectedGeneration->alias}" : "{$selectedGeneration->number}기" }}
+          당시 이 지부 활동 인원입니다.
+        </p>
+      @endif
+    </form>
+
+    @if($memberCount === 0)
+      <p class="font-body text-sm text-pac-black-500 italic">
+        @if($usingPastFilter)
+          선택한 기수에 이 지부로 기록된 구성원이 없습니다.
+        @else
+          현재 모집·운영 기수에 이 지부로 편성된 신청자가 없습니다.
+          <span class="block mt-2 text-pac-black-400 not-italic">
+            관리자: 신청 내역에서「기수 입단 이관」으로 기수·지부를 지정하면 여기에 표시됩니다.
+            (회원가입·회원 연결은 필수가 아닙니다.)
+          </span>
+        @endif
+      </p>
+    @elseif(!$showRoster)
+      <p class="font-body text-sm text-pac-black-600 leading-relaxed">
+        구성원 닉네임은 로그인 후 확인할 수 있습니다.
+      </p>
+      <a href="{{ route('login') }}" class="inline-block mt-4 font-body text-sm text-pac-yellow-600 hover:underline">로그인하기</a>
+    @else
+      <ul class="flex flex-wrap gap-2">
+        @foreach($nicknames as $nickname)
+          <li class="font-body text-sm text-pac-black-800 px-2.5 py-1 rounded-lg bg-pac-black-50">{{ $nickname }}</li>
+        @endforeach
+      </ul>
+    @endif
+  </div>
+
   {{-- 하단 CTA --}}
   <div class="flex flex-col sm:flex-row items-start gap-3 pt-2">
     <a href="{{ route('apply') }}" class="pac-btn">크루 합류하기 →</a>

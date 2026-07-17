@@ -44,7 +44,7 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        $emailHash = hash('sha256', strtolower(trim($this->email)));
+        $emailHash = app(\App\Services\CryptoService::class)->hashEmail($this->email);
         $user = User::where('email_hash', $emailHash)->first();
 
         if (! $user || ! Hash::check($this->password, $user->password)) {

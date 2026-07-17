@@ -19,10 +19,34 @@
       @if($form->subtitle)
         <p class="font-body text-base text-pac-black-600 mt-4 leading-relaxed max-w-xl">{{ $form->subtitle }}</p>
       @endif
+
+      @if(!empty($formImages))
+        <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          @foreach($formImages as $imageUrl)
+            <div class="overflow-hidden border border-pac-black-100 bg-pac-black-50">
+              <img src="{{ $imageUrl }}" alt="안내 이미지" class="w-full h-auto object-cover" loading="lazy">
+            </div>
+          @endforeach
+        </div>
+      @endif
     @else
-      <h1 class="font-display text-[clamp(36px,6vw,56px)] leading-none tracking-wide text-pac-black-900 uppercase">
-        모집 <span class="text-pac-black-400">준비 중</span>
-      </h1>
+      @if(!empty($generation))
+        <h1 class="font-display text-[clamp(36px,6vw,56px)] leading-none tracking-wide text-pac-black-900 uppercase">
+          {{ $generation->number }}기 <span class="text-pac-black-400">접수 마감</span>
+        </h1>
+        @php $periodForm = $closedForm ?? null; @endphp
+        @if($periodForm && ($periodForm->open_from || $periodForm->open_until))
+          <p class="font-body text-sm text-pac-black-500 mt-4">
+            모집 기간 {{ $periodForm->open_from?->format('Y.m.d') ?? '~' }}
+            ~
+            {{ $periodForm->open_until?->format('Y.m.d') ?? '' }}
+          </p>
+        @endif
+      @else
+        <h1 class="font-display text-[clamp(36px,6vw,56px)] leading-none tracking-wide text-pac-black-900 uppercase">
+          모집 <span class="text-pac-black-400">준비 중</span>
+        </h1>
+      @endif
     @endif
     <div class="w-20 h-0.5 bg-pac-yellow-500 mt-6"></div>
   </div>
@@ -30,10 +54,21 @@
   @if(!$form || !$form->isOpen())
     <div class="border border-pac-black-100 bg-pac-black-900 py-20 text-center">
       <p class="font-display text-[10px] tracking-[4px] uppercase text-pac-black-500 mb-4">Not Available</p>
-      <p class="font-body text-sm text-pac-black-600 leading-relaxed">
-        현재 모집 중인 기수 신청이 없습니다.<br>추후 공지를 확인해주세요.
-      </p>
-      <a href="{{ route('home') }}" class="inline-block mt-8 pac-btn-ghost">메인으로</a>
+      @if(!empty($generation))
+        <p class="font-body text-sm text-pac-black-600 leading-relaxed">
+          {{ $generation->display_name }} 모집 기간이 아닙니다.<br>
+          지금은 접수를 받지 않습니다.
+        </p>
+        <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <a href="{{ route('generation.show') }}" class="pac-btn">기수 소개 보기</a>
+          <a href="{{ route('home') }}" class="pac-btn-ghost">메인으로</a>
+        </div>
+      @else
+        <p class="font-body text-sm text-pac-black-600 leading-relaxed">
+          현재 모집 중인 기수 신청이 없습니다.<br>추후 공지를 확인해주세요.
+        </p>
+        <a href="{{ route('home') }}" class="inline-block mt-8 pac-btn-ghost">메인으로</a>
+      @endif
     </div>
   @else
 
@@ -56,6 +91,9 @@
 
     <form method="POST" action="{{ route('apply.store') }}">
       @csrf
+      @if(!empty($generation))
+        <input type="hidden" name="generation" value="{{ $generation->id }}">
+      @endif
       <div class="space-y-px bg-pac-black-100 border border-pac-black-100">
 
         {{-- 기본 정보 --}}
@@ -75,19 +113,56 @@
             <label for="email" class="block font-body text-sm font-medium text-pac-black-800 mb-2">
               이메일 <span class="text-pac-yellow-500">*</span>
             </label>
-            <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="연락 가능한 이메일"
+            <input type="email" id="email" name="email" value="{{ old('email') }}"
+                   placeholder="name@example.com"
+                   required autocomplete="email" inputmode="email"
+                   pattern="[^\s@]+@[^\s@]+\.[^\s@]{2,}"
+                   title="올바른 이메일 형식으로 입력해주세요"
                    class="w-full border {{ $errors->has('email') ? 'border-red-500' : 'border-pac-black-100' }} px-4 py-3 font-body text-sm">
             @error('email')<p class="font-body text-xs text-red-400 mt-1.5">{{ $message }}</p>@enderror
           </div>
 
           <div>
             <label for="phone" class="block font-body text-sm font-medium text-pac-black-800 mb-2">
-              연락처 <span class="font-normal text-pac-black-500">(선택)</span>
+              연락처 <span class="text-pac-yellow-500">*</span>
             </label>
-            <input type="tel" id="phone" name="phone" value="{{ old('phone') }}" placeholder="010-0000-0000"
-                   class="w-full border border-pac-black-100 px-4 py-3 font-body text-sm">
+            <input type="tel" id="phone" name="phone" value="{{ old('phone') }}" placeholder="010-0000-0000" required
+                   class="w-full border {{ $errors->has('phone') ? 'border-red-500' : 'border-pac-black-100' }} px-4 py-3 font-body text-sm">
+            @error('phone')<p class="font-body text-xs text-red-400 mt-1.5">{{ $message }}</p>@enderror
           </div>
         </div>
+
+        {{-- 희망지부 (내장) --}}
+        @if(($branchOptions ?? collect())->isNotEmpty())
+        <div class="bg-pac-black-900 p-6 md:p-8 space-y-4">
+          <h2 class="font-display text-[10px] tracking-[4px] uppercase text-pac-yellow-500">희망지부</h2>
+          <p class="font-body text-sm text-pac-black-600">활동할 지부를 하나만 선택해주세요. <span class="text-pac-yellow-500">*</span></p>
+          <div class="space-y-2">
+            @foreach($branchOptions as $opt)
+              @php
+                $bid = $opt->branch->id;
+                $label = $opt->branch->name;
+                if ($opt->max !== null) {
+                  $label .= ' ('.$opt->count.'/'.$opt->max.')';
+                }
+                if ($opt->is_full) {
+                  $label .= ' · 마감';
+                }
+              @endphp
+              <label class="flex items-center gap-3 {{ $opt->is_selectable ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed' }}">
+                <input type="radio"
+                       name="preferred_branch_id"
+                       value="{{ $bid }}"
+                       {{ (string) old('preferred_branch_id') === (string) $bid ? 'checked' : '' }}
+                       {{ $opt->is_selectable ? 'required' : 'disabled' }}
+                       class="accent-pac-yellow-500">
+                <span class="font-body text-sm text-pac-black-800">{{ $label }}</span>
+              </label>
+            @endforeach
+          </div>
+          @error('preferred_branch_id')<p class="font-body text-xs text-red-400 mt-1.5">{{ $message }}</p>@enderror
+        </div>
+        @endif
 
         {{-- 동적 필드 --}}
         @if(count($form->form_fields ?? []) > 0)

@@ -48,6 +48,15 @@
       </a>
     </li>
 
+    @if(!empty($showGenerationNav))
+    <li>
+      <a href="{{ route('generation.show') }}"
+         class="{{ request()->routeIs('generation*') ? 'pac-active' : '' }}">
+        기수
+      </a>
+    </li>
+    @endif
+
     {{-- 이벤트 --}}
     <li>
       <a href="{{ route('events.index') }}"
@@ -302,8 +311,16 @@
           ['route' => 'events.index',      'label' => '이벤트',    'match' => 'events*'],
           ['route' => 'bug-reports.create', 'label' => '버그제보',  'match' => 'bug-reports*'],
         ];
+        if (!empty($showGenerationNav)) {
+          array_splice($mobileNav, 2, 0, [[
+            'route' => 'generation.show',
+            'label' => '기수',
+            'match' => 'generation*',
+          ]]);
+        }
         if ($authed) {
-          array_splice($mobileNav, 3, 0, [[
+          $insertAt = !empty($showGenerationNav) ? 4 : 3;
+          array_splice($mobileNav, $insertAt, 0, [[
             'route' => 'training-notes.index',
             'label' => '훈련노트',
             'match' => 'training-notes*',

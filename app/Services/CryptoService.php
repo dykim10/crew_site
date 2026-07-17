@@ -41,7 +41,7 @@ class CryptoService
     public function encrypt(string $value): ?string
     {
         try {
-            $response = Http::timeout(5)->post("{$this->baseUrl}/api/crypto/encrypt", [
+            $response = Http::timeout(5)->connectTimeout(3)->post("{$this->baseUrl}/api/crypto/encrypt", [
                 'value' => $value,
             ]);
             return $response->json('encrypted');
@@ -49,6 +49,55 @@ class CryptoService
             Log::error('CryptoService encrypt 실패', ['error' => $e->getMessage()]);
             return null;
         }
+    }
+
+    /**
+     * 다건 암호화 (가져오기 등). 키 유지, 실패 키는 null.
+     *
+     * @param  array<string|int, string>  $values
+     * @return array<string|int, ?string>
+     */
+    public function encryptMany(array $values): array
+    {
+        if ($values === []) {
+            return [];
+        }
+
+        $out = [];
+        foreach (array_chunk($values, 15, true) as $chunk) {
+            try {
+                $responses = Http::pool(fn ($pool) => collect($chunk)->map(
+                    fn (string $value, string|int $key) => $pool
+                        ->as((string) $key)
+                        ->timeout(5)
+                        ->connectTimeout(3)
+                        ->post("{$this->baseUrl}/api/crypto/encrypt", ['value' => $value])
+                )->all());
+            } catch (\Exception $e) {
+                Log::error('CryptoService encryptMany 실패', ['error' => $e->getMessage()]);
+                foreach ($chunk as $key => $_) {
+                    $out[$key] = null;
+                }
+                continue;
+            }
+
+            foreach ($chunk as $key => $_) {
+                $response = $responses[(string) $key] ?? null;
+                if ($response && ! ($response instanceof \Throwable) && $response->successful()) {
+                    $out[$key] = $response->json('encrypted');
+                } else {
+                    $out[$key] = null;
+                    if ($response instanceof \Throwable) {
+                        Log::error('CryptoService encryptMany 항목 실패', [
+                            'key'   => $key,
+                            'error' => $response->getMessage(),
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return $out;
     }
 
     public function decrypt(string $value): ?string

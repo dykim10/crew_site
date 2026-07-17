@@ -19,11 +19,22 @@ class Application extends Model
         'status',
         'admin_memo',
         'agree_privacy',
+        'import_source',
+        'import_key',
+        'matched_user_id',
+        'matched_at',
+        'matched_by',
+        'generation_id',
+        'branch_id',
+        'preferred_branch_id',
+        'enrolled_at',
     ];
 
     protected $casts = [
         'field_values'  => 'array',
         'agree_privacy' => 'boolean',
+        'matched_at'    => 'datetime',
+        'enrolled_at'   => 'datetime',
     ];
 
     public const STATUS_LABELS = [
@@ -36,5 +47,25 @@ class Application extends Model
     public function form(): BelongsTo
     {
         return $this->belongsTo(ApplicationForm::class, 'form_id');
+    }
+
+    public function matchedUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'matched_user_id');
+    }
+
+    public function generation(): BelongsTo
+    {
+        return $this->belongsTo(Generation::class, 'generation_id');
+    }
+
+    public function preferredBranch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'preferred_branch_id');
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

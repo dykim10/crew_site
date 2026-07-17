@@ -12,6 +12,7 @@ use App\Models\UserGeneration;
 use App\Services\AdminLogService;
 use App\Services\AdministratorService;
 use App\Services\BranchAdminService;
+use App\Services\CryptoService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -156,7 +157,10 @@ class UserResource extends Resource
                 TextColumn::make('email')
                     ->label('이메일')
                     ->getStateUsing(fn ($record) => $record->email)
-                    ->searchable(query: fn ($query, $search) => $query->where('email_hash', hash('sha256', strtolower($search))))
+                    ->searchable(query: fn ($query, $search) => $query->where(
+                        'email_hash',
+                        app(CryptoService::class)->hashEmail($search)
+                    ))
                     ->copyable()
                     ->placeholder('-'),
 
@@ -336,6 +340,17 @@ class UserResource extends Resource
                                 ->placeholder('날짜를 선택하세요')
                                 ->helperText('비워두면 합류일을 기록하지 않습니다.'),
 
+                            Select::make('branch_id')
+                                ->label('활동 지부')
+                                ->options(fn () => Branch::query()
+                                    ->where('status', 'active')
+                                    ->orderBy('name')
+                                    ->pluck('name', 'id')
+                                    ->toArray())
+                                ->required()
+                                ->searchable()
+                                ->helperText('해당 기수에서의 활동 지부입니다. users.branch_id(현재 지부)도 같이 갱신됩니다.'),
+
                             Toggle::make('is_current')
                                 ->label('현재 소속 기수로 설정')
                                 ->helperText('켜면 해당 구성원들의 기존 현재 기수 표시가 자동으로 해제됩니다.')
@@ -345,6 +360,7 @@ class UserResource extends Resource
                         ->action(function (Collection $records, array $data) {
                             $generationId = (int) $data['generation_id'];
                             $joinedAt     = $data['joined_at'] ?? null;
+                            $branchId     = (int) $data['branch_id'];
                             $isCurrent    = (bool) ($data['is_current'] ?? false);
 
                             foreach ($records as $user) {
@@ -358,8 +374,16 @@ class UserResource extends Resource
 
                                 UserGeneration::updateOrCreate(
                                     ['user_id' => $user->id, 'generation_id' => $generationId],
-                                    ['joined_at' => $joinedAt, 'is_current' => $isCurrent]
+                                    [
+                                        'branch_id'  => $branchId,
+                                        'joined_at'  => $joinedAt,
+                                        'is_current' => $isCurrent,
+                                    ]
                                 );
+
+                                if ((int) $user->branch_id !== $branchId) {
+                                    $user->update(['branch_id' => $branchId]);
+                                }
                             }
 
                             $generation = Generation::find($generationId);

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Filament\Resources\MainHeroImageResource;
+use App\Services\GenerationVisibilityService;
 use App\Support\LiveDatabaseGuard;
 use App\Models\PhotoGallery;
 use App\Models\Setting;
@@ -45,6 +46,15 @@ class AppServiceProvider extends ServiceProvider
             View::share('activeTheme', Setting::get('active_theme', 'v1'));
         } catch (\Throwable) {
             View::share('activeTheme', 'v1');
+        }
+
+        try {
+            View::share(
+                'showGenerationNav',
+                app(GenerationVisibilityService::class)->hasVisible()
+            );
+        } catch (\Throwable) {
+            View::share('showGenerationNav', false);
         }
 
         // 게시판 역할별 Gate

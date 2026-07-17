@@ -68,6 +68,11 @@ class GoogleFormService
         $client = new Client();
         $client->setAuthConfig($credentialsPath);
         $client->addScope(Sheets::SPREADSHEETS_READONLY);
+        // 기본 Guzzle 무제한 대기 → PHP max_execution_time(30) FatalError 방지
+        $client->setHttpClient(new \GuzzleHttp\Client([
+            'timeout'         => 25,
+            'connect_timeout' => 5,
+        ]));
 
         $service = new Sheets($client);
 
