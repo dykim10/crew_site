@@ -220,6 +220,12 @@ h2{
 }
 
 /* stack */
+.duo{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:22px;
+}
+@media(max-width:860px){.duo{grid-template-columns:1fr}}
+.duo .note p{margin-top:6px}
+
 .stack{
   display:grid;grid-template-columns:repeat(2,1fr);gap:12px;
 }
@@ -312,8 +318,8 @@ h2{
       <p class="eyebrow">Backend · Platform Engineering · 2026</p>
       <h1>러닝 플랫폼을 <em>세 개의 경계</em>로 나눈 이유</h1>
       <p class="lede">
-        PAC-RUN은 대회 리뷰·크루 운영·AI/데이터 파이프라인을 한 제품에 몰아넣지 않고,
-        스키마 소유권과 API 경계를 기준으로 쪼갠 멀티서비스 백엔드입니다.
+        PAC-RUN은 리뷰 요약·레이스 플랜, 개인 러닝 분석, 크루 운영 콘솔을 한 앱에 몰아넣지 않고
+        스키마 소유권과 API 경계로 쪼갠 멀티서비스 백엔드입니다.
         이 페이지는 제품 소개가 아니라, 설계 선택과 검증 근거를 정리한 엔지니어링 케이스 스터디입니다.
       </p>
       <div class="cta-row">
@@ -389,24 +395,24 @@ h2{
         <article class="svc review reveal">
           <div class="tag">review.pac-run.com</div>
           <h3>REVIEW</h3>
-          <p>마라톤·러닝 대회 카탈로그, 연도별 에디션, 리뷰, AI 요약, 코스 지도·레이스 플랜.</p>
+          <p>대회 카탈로그·에디션 리뷰를 AI로 요약하고, 코스 지도와 레이스 플랜까지 한 서비스에서 제공합니다.</p>
           <ul>
-            <li>races → race_editions 1:N 리모델</li>
-            <li>GPX 코스 폴리라인·고저 프로파일</li>
-            <li>Filament `/admin` + 레거시 `/races-admin` 병행</li>
-            <li>리뷰 dirty → 야간 배치로 AI 종합</li>
+            <li>리뷰 개별 요약 + 감성분석</li>
+            <li>대회 종합은 dirty → 야간 배치</li>
+            <li>레이스 플랜 (GPX 고저 + 개인 로그)</li>
+            <li>races → race_editions · 코스 지도</li>
           </ul>
           <a class="link" href="https://github.com/dykim10/review_site" target="_blank" rel="noopener">github.com/dykim10/review_site →</a>
         </article>
         <article class="svc crew reveal">
           <div class="tag">crew.pac-run.com</div>
           <h3>CREW</h3>
-          <p>기수·지부·이벤트 점수, 러닝 로그, AI 코치(훈련노트), Filament 운영 콘솔.</p>
+          <p>멤버용 훈련노트(AI 러닝 분석)와 운영진용 관리 페이지를 같은 도메인에서 제공합니다. 모델 호출·민감 데이터는 CORE.</p>
           <ul>
-            <li>기수/희망지부/소속 이력 모델</li>
-            <li>이벤트 mileage_grade · fixed 점수</li>
-            <li>인바디·PB Vision 파싱(CORE 연동)</li>
-            <li>관리자 비밀번호 재확인 TTL</li>
+            <li>훈련노트: VDOT 페이스 · 주간 리포트/스케줄</li>
+            <li>Vision 파싱(로그·PB·인바디) 후 사용자 확인</li>
+            <li>Filament 운영: 기수·지부·이벤트·기록 검수</li>
+            <li>지부 관리자 연동 · 비밀번호 재확인 TTL</li>
           </ul>
           <a class="link" href="https://github.com/dykim10/crew_site" target="_blank" rel="noopener">github.com/dykim10/crew_site →</a>
         </article>
@@ -415,12 +421,42 @@ h2{
           <h3>CORE</h3>
           <p>크롤링·Vision·요약·레이스 플랜·GPX·SMS·백업·코치 API. cross-schema 집약의 유일한 예외.</p>
           <ul>
+            <li>AI 코치: 피드백·리포트·스케줄 캐시</li>
             <li>모델 티어링(경량/중량)</li>
             <li>업로드 1회 GPX 파싱 원칙</li>
-            <li>pgvector RAG · SNS 임베딩</li>
-            <li>스케줄러·S3 백업</li>
+            <li>체성분 Fernet — CREW는 평문 미보관</li>
           </ul>
           <a class="link" href="https://github.com/dykim10/python_core_api_site" target="_blank" rel="noopener">github.com/dykim10/python_core_api_site →</a>
+        </article>
+      </div>
+      <div class="duo">
+        <article class="note reveal">
+          <strong>대회 리뷰 AI 요약</strong>
+          <p>
+            리뷰 한 건은 즉시 요약·감성분석하고, 대회 종합은 CRUD 때 dirty만 찍은 뒤 야간 배치가 재생성합니다.
+            본문이 없으면 빈 카드를 띄우지 않습니다.
+          </p>
+        </article>
+        <article class="note reveal">
+          <strong>레이스 플랜</strong>
+          <p>
+            코스 고저·구간, 날씨 스냅샷, 본인 러닝 로그를 넣어 개인 플랜을 만듭니다.
+            같은 입력이면 캐시를 재사용하고, 중량 모델은 이 경로에만 씁니다.
+          </p>
+        </article>
+        <article class="note reveal">
+          <strong>AI 러닝 분석</strong>
+          <p>
+            러닝 로그·PB·체성분(동의 후)을 컨텍스트로 단건 피드백, 주간 리포트, 훈련 스케줄을 만듭니다.
+            페이스는 VDOT로 계산하고, 같은 주·같은 로그는 캐시해 재호출하지 않습니다.
+          </p>
+        </article>
+        <article class="note reveal">
+          <strong>CREW 운영 페이지</strong>
+          <p>
+            Filament <code>/admin</code>에서 기수·지부·이벤트 점수·기록 검수·신청 폼을 운영합니다.
+            멤버 화면과 운영 콘솔을 같은 CREW에 두고, 역할·재확인으로 진입만 나눴습니다.
+          </p>
         </article>
       </div>
     </div>
@@ -429,7 +465,7 @@ h2{
   <section id="decisions">
     <div class="wrap">
       <p class="sec-label reveal">03 — Decisions</p>
-      <h2 class="reveal">면접에서 물어봄직한 다섯 가지 선택</h2>
+      <h2 class="reveal">경계를 고정한 다섯 결정</h2>
       <p class="sec-intro reveal">기능 목록보다, 왜 그렇게 잘랐는지가 이 프로젝트의 핵심입니다.</p>
       <div class="decisions">
         <article class="decision reveal">
@@ -556,7 +592,7 @@ h2{
           <div class="tl-d">2026-06</div>
           <div class="tl-b">
             <strong>REVIEW 데이터 모델 리모델</strong>
-            <span>edition FK 통일 · completion 흡수 · AI 배치 · 비용 가드</span>
+            <span>edition FK 통일 · 리뷰 AI 요약/감성 · 대회 종합 야간 배치</span>
           </div>
         </div>
         <div class="tl-item">
@@ -569,8 +605,8 @@ h2{
         <div class="tl-item">
           <div class="tl-d">2026-07</div>
           <div class="tl-b">
-            <strong>CREW 기수 개편 · AI 코치</strong>
-            <span>희망지부/이력 · Vision 파싱 · VDOT 페이스 · 주간 리포트</span>
+            <strong>CREW 훈련노트 · 운영 콘솔</strong>
+            <span>AI 러닝 분석(VDOT·주간 리포트) · Filament 기수/지부/이벤트 검수</span>
           </div>
         </div>
         <div class="tl-item">
