@@ -102,6 +102,10 @@ Route::get('/preview', function () {
     return response(file_get_contents(public_path('preview.html')))->header('Content-Type', 'text/html; charset=utf-8');
 })->name('preview');
 
+Route::get('/dev', function () {
+    return response(file_get_contents(public_path('dev.html')))->header('Content-Type', 'text/html; charset=utf-8');
+})->name('dev.portfolio');
+
 // 메인 페이지 디자인 시안 (공개)
 Route::get('/design/v1', function () {
     return response(file_get_contents(public_path('design/v1.html')))->header('Content-Type', 'text/html; charset=utf-8');

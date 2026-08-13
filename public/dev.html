@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<!-- PAC-RUN 백엔드 포트폴리오 — IP·포트·API 경로·DB 호스트·.env 실값 기재 금지. -->
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="PAC-RUN — 러닝 플랫폼 3서비스 백엔드 아키텍처 케이스 스터디">
+<title>PAC-RUN — Backend Engineering Case Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14110F;
+  --paper:#F3EFE6;
+  --paper2:#E8E2D4;
+  --line:rgba(20,17,15,.14);
+  --mute:rgba(20,17,15,.58);
+  --soft:rgba(20,17,15,.38);
+  --y:#C9920A;
+  --y-deep:#8A6500;
+  --p:#C4003A;
+  --ok:#1F6B3A;
+  --code:#1A1714;
+  --max:1080px;
+  --font:"Instrument Sans",system-ui,sans-serif;
+  --display:"Newsreader",Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font);
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(201,146,10,.12), transparent 55%),
+    radial-gradient(900px 500px at 100% 20%, rgba(196,0,58,.07), transparent 50%),
+    linear-gradient(180deg, #F7F3EA 0%, var(--paper) 40%, #EDE7D8 100%);
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+a{color:inherit}
+img{max-width:100%;display:block}
+
+.wrap{position:relative;z-index:1;max-width:var(--max);margin:0 auto;padding:0 28px}
+@media(max-width:640px){.wrap{padding:0 18px}}
+
+/* nav */
+.top{
+  position:sticky;top:0;z-index:50;
+  backdrop-filter:blur(12px);
+  background:rgba(243,239,230,.82);
+  border-bottom:1px solid var(--line);
+}
+.top-inner{
+  max-width:var(--max);margin:0 auto;padding:14px 28px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+@media(max-width:640px){.top-inner{padding:12px 18px}}
+.brand{
+  font-family:var(--mono);font-weight:600;font-size:13px;letter-spacing:.08em;
+  text-transform:uppercase;text-decoration:none;
+}
+.brand span{color:var(--y-deep)}
+.top-links{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:13px}
+.top-links a{
+  text-decoration:none;color:var(--mute);border-bottom:1px solid transparent;
+  transition:color .15s,border-color .15s;
+}
+.top-links a:hover{color:var(--ink);border-color:var(--y)}
+
+/* hero */
+.hero{
+  padding:72px 0 56px;
+  border-bottom:1px solid var(--line);
+}
+.eyebrow{
+  font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--y-deep);margin-bottom:18px;
+}
+.hero h1{
+  font-family:var(--display);font-weight:600;
+  font-size:clamp(2.4rem,6vw,4.2rem);line-height:1.05;letter-spacing:-.02em;
+  max-width:14ch;margin-bottom:22px;
+}
+.hero h1 em{font-style:italic;color:var(--p)}
+.lede{
+  font-size:clamp(1.05rem,2vw,1.25rem);color:var(--mute);
+  max-width:52ch;margin-bottom:28px;
+}
+.cta-row{display:flex;flex-wrap:wrap;gap:10px}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:11px 16px;border-radius:999px;font-size:14px;font-weight:600;
+  text-decoration:none;border:1px solid var(--ink);transition:transform .15s,background .15s;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn-solid{background:var(--ink);color:var(--paper)}
+.btn-ghost{background:transparent;color:var(--ink)}
+.btn-ghost:hover{background:rgba(20,17,15,.05)}
+
+.meta-strip{
+  margin-top:36px;padding-top:22px;border-top:1px dashed var(--line);
+  display:grid;grid-template-columns:repeat(4,1fr);gap:16px;
+}
+@media(max-width:800px){.meta-strip{grid-template-columns:repeat(2,1fr)}}
+.meta-item .k{
+  font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);
+  margin-bottom:4px;
+}
+.meta-item .v{font-weight:600;font-size:15px}
+
+/* sections */
+section{padding:64px 0;border-bottom:1px solid var(--line)}
+.sec-label{
+  font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--y-deep);margin-bottom:12px;
+}
+h2{
+  font-family:var(--display);font-weight:600;
+  font-size:clamp(1.8rem,3.5vw,2.5rem);line-height:1.15;letter-spacing:-.015em;
+  margin-bottom:14px;max-width:22ch;
+}
+.sec-intro{color:var(--mute);max-width:60ch;margin-bottom:28px;font-size:1.05rem}
+
+/* architecture */
+.arch{
+  display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:stretch;
+}
+@media(max-width:860px){.arch{grid-template-columns:1fr}}
+.arch-board{
+  background:var(--code);color:#F2EDE3;border-radius:18px;padding:22px 20px;
+  font-family:var(--mono);font-size:12.5px;line-height:1.55;
+  box-shadow:0 24px 60px rgba(20,17,15,.18);
+  position:relative;overflow:hidden;
+}
+.arch-board::after{
+  content:"";position:absolute;inset:auto -20% -40% auto;width:280px;height:280px;
+  background:radial-gradient(circle,rgba(201,146,10,.22),transparent 65%);pointer-events:none;
+}
+.arch-board .row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.04);
+}
+.pill .dot{width:7px;height:7px;border-radius:50%}
+.pill.review .dot{background:#FF4D7A}
+.pill.crew .dot{background:var(--y)}
+.pill.core .dot{background:#5AD1A0}
+.arch-board .arrow{color:rgba(242,237,227,.35);margin:6px 0 10px;padding-left:4px}
+.arch-board .box{
+  border:1px dashed rgba(242,237,227,.22);border-radius:10px;padding:12px;margin-top:8px;
+}
+.arch-board .hl{color:#F0C14A}
+.arch-board .pk{color:#FF7A9C}
+.arch-board .gn{color:#7DDFB0}
+.arch-notes{display:flex;flex-direction:column;gap:12px}
+.note{
+  border:1px solid var(--line);background:rgba(255,255,255,.45);
+  border-radius:14px;padding:16px 18px;
+}
+.note strong{display:block;font-size:15px;margin-bottom:4px}
+.note p{font-size:14px;color:var(--mute)}
+
+/* services */
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:860px){.svc-grid{grid-template-columns:1fr}}
+.svc{
+  border:1px solid var(--line);border-radius:16px;padding:20px;
+  background:rgba(255,255,255,.4);
+  position:relative;overflow:hidden;
+}
+.svc::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
+}
+.svc.review::before{background:var(--p)}
+.svc.crew::before{background:var(--y)}
+.svc.core::before{background:var(--ok)}
+.svc .tag{
+  font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--soft);margin-bottom:8px;
+}
+.svc h3{font-size:1.25rem;margin-bottom:8px;letter-spacing:-.02em}
+.svc p{font-size:14px;color:var(--mute);margin-bottom:14px;min-height:3.2em}
+.svc ul{list-style:none;display:flex;flex-direction:column;gap:7px}
+.svc li{
+  font-size:13.5px;padding-left:14px;position:relative;color:var(--ink);
+}
+.svc li::before{
+  content:"";position:absolute;left:0;top:.55em;width:6px;height:6px;border-radius:1px;background:var(--y);
+}
+.svc a.link{
+  display:inline-block;margin-top:16px;font-family:var(--mono);font-size:12px;
+  color:var(--y-deep);text-decoration:none;border-bottom:1px solid rgba(138,101,0,.35);
+}
+
+/* decisions */
+.decisions{display:flex;flex-direction:column;gap:18px}
+.decision{
+  display:grid;grid-template-columns:120px 1fr;gap:18px;
+  padding:22px;border-radius:16px;border:1px solid var(--line);
+  background:linear-gradient(135deg, rgba(255,255,255,.55), rgba(255,255,255,.25));
+}
+@media(max-width:700px){.decision{grid-template-columns:1fr;gap:8px;padding:18px}}
+.decision .num{
+  font-family:var(--display);font-size:2.4rem;line-height:1;color:rgba(20,17,15,.14);font-weight:600;
+}
+.decision h3{font-size:1.15rem;margin-bottom:8px;letter-spacing:-.015em}
+.decision p{font-size:14.5px;color:var(--mute);margin-bottom:10px}
+.decision .trade{
+  font-family:var(--mono);font-size:12px;color:var(--ink);
+  background:var(--paper2);border-radius:8px;padding:10px 12px;border-left:3px solid var(--y);
+}
+
+/* stack */
+.stack{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:12px;
+}
+@media(max-width:700px){.stack{grid-template-columns:1fr}}
+.stack-card{
+  border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:rgba(255,255,255,.35);
+}
+.stack-card h3{
+  font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--soft);margin-bottom:10px;font-weight:500;
+}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  font-size:13px;padding:5px 10px;border-radius:999px;
+  background:rgba(20,17,15,.05);border:1px solid var(--line);
+}
+
+/* evidence */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+@media(max-width:800px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
+.kpi{
+  border:1px solid var(--line);border-radius:14px;padding:18px;background:rgba(255,255,255,.4);
+}
+.kpi .n{
+  font-family:var(--display);font-size:2rem;font-weight:600;line-height:1;letter-spacing:-.02em;
+  margin-bottom:6px;
+}
+.kpi .l{font-size:13px;color:var(--mute)}
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{
+  display:grid;grid-template-columns:100px 1fr;gap:16px;
+  padding:14px 0;border-top:1px solid var(--line);
+}
+@media(max-width:600px){.tl-item{grid-template-columns:1fr;gap:4px}}
+.tl-item:last-child{border-bottom:1px solid var(--line)}
+.tl-d{font-family:var(--mono);font-size:12px;color:var(--soft);padding-top:3px}
+.tl-b strong{display:block;font-size:15px;margin-bottom:2px}
+.tl-b span{font-size:13.5px;color:var(--mute)}
+
+/* footer */
+.foot{
+  padding:48px 0 64px;
+}
+.foot-grid{
+  display:grid;grid-template-columns:1.2fr .8fr;gap:28px;align-items:end;
+}
+@media(max-width:700px){.foot-grid{grid-template-columns:1fr}}
+.foot h2{margin-bottom:10px}
+.foot p{color:var(--mute);font-size:14.5px;max-width:46ch}
+.repo-list{display:flex;flex-direction:column;gap:8px}
+.repo-list a{
+  font-family:var(--mono);font-size:13px;text-decoration:none;
+  padding:10px 12px;border:1px solid var(--line);border-radius:10px;
+  background:rgba(255,255,255,.4);transition:border-color .15s,transform .15s;
+}
+.repo-list a:hover{border-color:var(--y);transform:translateX(2px)}
+.disc{
+  margin-top:28px;font-size:12px;color:var(--soft);font-family:var(--mono);
+  line-height:1.6;border-top:1px dashed var(--line);padding-top:16px;
+}
+
+/* motion */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <a class="brand" href="#top">PAC-RUN <span>/ DEV</span></a>
+    <nav class="top-links" aria-label="섹션">
+      <a href="#architecture">Architecture</a>
+      <a href="#services">Services</a>
+      <a href="#decisions">Decisions</a>
+      <a href="#stack">Stack</a>
+      <a href="#evidence">Evidence</a>
+      <a href="/preview">Product deck</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap">
+    <header class="hero reveal">
+      <p class="eyebrow">Backend · Platform Engineering · 2026</p>
+      <h1>러닝 플랫폼을 <em>세 개의 경계</em>로 나눈 이유</h1>
+      <p class="lede">
+        PAC-RUN은 대회 리뷰·크루 운영·AI/데이터 파이프라인을 한 제품에 몰아넣지 않고,
+        스키마 소유권과 API 경계를 기준으로 쪼갠 멀티서비스 백엔드입니다.
+        이 페이지는 제품 소개가 아니라, 설계 선택과 검증 근거를 정리한 엔지니어링 케이스 스터디입니다.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-solid" href="https://github.com/dykim10" target="_blank" rel="noopener">김대윤 · GitHub</a>
+        <a class="btn btn-ghost" href="/preview">제품 슬라이드 보기</a>
+        <a class="btn btn-ghost" href="https://review.pac-run.com" target="_blank" rel="noopener">review.pac-run.com</a>
+        <a class="btn btn-ghost" href="https://crew.pac-run.com" target="_blank" rel="noopener">crew.pac-run.com</a>
+      </div>
+      <div class="meta-strip">
+        <div class="meta-item"><div class="k">Services</div><div class="v">REVIEW · CREW · CORE</div></div>
+        <div class="meta-item"><div class="k">Runtime</div><div class="v">Laravel · FastAPI</div></div>
+        <div class="meta-item"><div class="k">Data</div><div class="v">PostgreSQL · pgvector · S3</div></div>
+        <div class="meta-item"><div class="k">Region</div><div class="v">ap-northeast-2</div></div>
+      </div>
+    </header>
+  </div>
+
+  <section id="architecture">
+    <div class="wrap">
+      <p class="sec-label reveal">01 — Architecture</p>
+      <h2 class="reveal">사용자 앱 둘, AI/데이터 코어 하나</h2>
+      <p class="sec-intro reveal">
+        공개 트래픽은 REVIEW/CREW가 받고, 비용·모델·교차 스키마 집약은 CORE가 담당합니다.
+        “기능은 키우되 결합도는 더 엄격히” — 스키마 소유권으로 경계를 고정했습니다.
+      </p>
+      <div class="arch reveal">
+        <div class="arch-board" aria-label="아키텍처 개요">
+          <div class="row">
+            <span class="pill review"><span class="dot"></span>REVIEW <span class="pk">Laravel</span></span>
+            <span class="pill crew"><span class="dot"></span>CREW <span class="hl">Laravel</span></span>
+          </div>
+          <div class="arrow">↓ 내부 HTTP (동일 호스트) · 공개 경로 비공개</div>
+          <div class="row">
+            <span class="pill core"><span class="dot"></span>CORE <span class="gn">FastAPI</span></span>
+          </div>
+          <div class="box">
+            <div><span class="hl">public.users</span> — 회원 정체성 공유</div>
+            <div><span class="pk">review.*</span> — 대회·리뷰·플랜 소유</div>
+            <div><span class="hl">crew.*</span> — 기록·이벤트·훈련 소유</div>
+            <div style="margin-top:8px;opacity:.7">타 서비스 활동 데이터 → <span class="gn">CORE API 경유</span></div>
+          </div>
+          <div class="arrow">↓</div>
+          <div class="row">
+            <span class="pill">PostgreSQL + pgvector</span>
+            <span class="pill">S3 + CDN</span>
+            <span class="pill">Claude · Apify</span>
+          </div>
+        </div>
+        <div class="arch-notes">
+          <article class="note">
+            <strong>왜 모놀리스가 아닌가</strong>
+            <p>AI 비용 가드·배치·Vision 파싱이 웹 요청 경로에 섞이면 장애 반경이 커집니다. CORE로 분리해 티어링·캐시·스케줄러를 한곳에서 통제합니다.</p>
+          </article>
+          <article class="note">
+            <strong>왜 네 번째 Admin 앱이 아닌가</strong>
+            <p>관리 UX는 CREW/REVIEW 각 Filament 패널로 정렬하고, SSO·단일 admin 도메인은 후속 과제로 남겼습니다. 먼저 권한·비밀번호 재확인·이메일 인증을 맞췄습니다.</p>
+          </article>
+          <article class="note">
+            <strong>배포 단위</strong>
+            <p>레포 3개 · 도메인 분기(Nginx) · GitHub → EC2. 서비스별 독립 배포로 롤백 범위를 제한합니다.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="wrap">
+      <p class="sec-label reveal">02 — Services</p>
+      <h2 class="reveal">역할이 다른 세 백엔드</h2>
+      <p class="sec-intro reveal">각 서비스는 “화면”이 아니라 “데이터 소유권”으로 정의됩니다.</p>
+      <div class="svc-grid">
+        <article class="svc review reveal">
+          <div class="tag">review.pac-run.com</div>
+          <h3>REVIEW</h3>
+          <p>마라톤·러닝 대회 카탈로그, 연도별 에디션, 리뷰, AI 요약, 코스 지도·레이스 플랜.</p>
+          <ul>
+            <li>races → race_editions 1:N 리모델</li>
+            <li>GPX 코스 폴리라인·고저 프로파일</li>
+            <li>Filament `/admin` + 레거시 `/races-admin` 병행</li>
+            <li>리뷰 dirty → 야간 배치로 AI 종합</li>
+          </ul>
+          <a class="link" href="https://github.com/dykim10/review_site" target="_blank" rel="noopener">github.com/dykim10/review_site →</a>
+        </article>
+        <article class="svc crew reveal">
+          <div class="tag">crew.pac-run.com</div>
+          <h3>CREW</h3>
+          <p>기수·지부·이벤트 점수, 러닝 로그, AI 코치(훈련노트), Filament 운영 콘솔.</p>
+          <ul>
+            <li>기수/희망지부/소속 이력 모델</li>
+            <li>이벤트 mileage_grade · fixed 점수</li>
+            <li>인바디·PB Vision 파싱(CORE 연동)</li>
+            <li>관리자 비밀번호 재확인 TTL</li>
+          </ul>
+          <a class="link" href="https://github.com/dykim10/crew_site" target="_blank" rel="noopener">github.com/dykim10/crew_site →</a>
+        </article>
+        <article class="svc core reveal">
+          <div class="tag">api.pac-run.com</div>
+          <h3>CORE</h3>
+          <p>크롤링·Vision·요약·레이스 플랜·GPX·SMS·백업·코치 API. cross-schema 집약의 유일한 예외.</p>
+          <ul>
+            <li>모델 티어링(경량/중량)</li>
+            <li>업로드 1회 GPX 파싱 원칙</li>
+            <li>pgvector RAG · SNS 임베딩</li>
+            <li>스케줄러·S3 백업</li>
+          </ul>
+          <a class="link" href="https://github.com/dykim10/python_core_api_site" target="_blank" rel="noopener">github.com/dykim10/python_core_api_site →</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="decisions">
+    <div class="wrap">
+      <p class="sec-label reveal">03 — Decisions</p>
+      <h2 class="reveal">면접에서 물어봄직한 다섯 가지 선택</h2>
+      <p class="sec-intro reveal">기능 목록보다, 왜 그렇게 잘랐는지가 이 프로젝트의 핵심입니다.</p>
+      <div class="decisions">
+        <article class="decision reveal">
+          <div class="num">01</div>
+          <div>
+            <h3>서비스 경계 = 스키마 소유권</h3>
+            <p>
+              회원 정체성(<code>public.users</code>)만 공유하고, 활동 데이터는 소유 스키마 밖으로 raw JOIN하지 않습니다.
+              CREW가 REVIEW 에디션을 직접 읽던 경로를 발견하면 CORE API로 되돌렸습니다.
+            </p>
+            <div class="trade">Trade-off: 호출 hop 증가 → 장애 격리·권한·비용 가시성 확보</div>
+          </div>
+        </article>
+        <article class="decision reveal">
+          <div class="num">02</div>
+          <div>
+            <h3>대회 마스터와 개최 인스턴스 분리</h3>
+            <p>
+              <code>races</code>는 카탈로그, <code>race_editions</code>는 연도별 개최로 리모델.
+              리뷰·날씨·플랜·공개 범위를 edition 기준으로 묶고, 무손실 백필 + 검증 커맨드로 이행했습니다.
+            </p>
+            <div class="trade">검증: remodel 27/27 · E2E 12/12</div>
+          </div>
+        </article>
+        <article class="decision reveal">
+          <div class="num">03</div>
+          <div>
+            <h3>GPX는 “업로드 시 1회 파싱”</h3>
+            <p>
+              좌표 단순화·km 마커·고도 세그먼트를 업로드 시점에 저장합니다.
+              레이스 플랜·지도 UI는 DB 컬럼만 읽어 사용자 수와 무관하게 코스당 비용을 고정합니다.
+            </p>
+            <div class="trade">원칙: AI/파싱 비용은 요청 경로가 아니라 자산에 고정</div>
+          </div>
+        </article>
+        <article class="decision reveal">
+          <div class="num">04</div>
+          <div>
+            <h3>AI 모델 티어링 + dirty 배치</h3>
+            <p>
+              이미지 파싱·개별 요약은 경량, 레이스 플랜·종합 분석은 중량 모델.
+              대회 종합은 리뷰 CRUD 때 dirty만 찍고 야간 배치가 재생성해 피크 비용을 평탄화합니다.
+            </p>
+            <div class="trade">UX: dirty만 있고 본문 없을 때 빈 카드가 뜨지 않도록 가드</div>
+          </div>
+        </article>
+        <article class="decision reveal">
+          <div class="num">05</div>
+          <div>
+            <h3>관리자 진입: 역할 + 재확인 + 이메일 인증</h3>
+            <p>
+              Filament 패널은 <code>super_admin</code>만, 비밀번호 재확인 세션(TTL), 이메일 미인증 차단.
+              REVIEW는 손제작 대회관리를 별도 prefix로 병행해 이관 리스크를 줄였습니다.
+            </p>
+            <div class="trade">보안 리뷰 피드백 → emailVerification을 패널에 명시적으로 연결</div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="stack">
+    <div class="wrap">
+      <p class="sec-label reveal">04 — Stack</p>
+      <h2 class="reveal">운영에 올린 구성</h2>
+      <p class="sec-intro reveal">스택 나열이 아니라, 경계와 비용 모델에 맞춘 선택입니다.</p>
+      <div class="stack">
+        <div class="stack-card reveal">
+          <h3>Application</h3>
+          <div class="chips">
+            <span class="chip">PHP 8.3+ / Laravel</span>
+            <span class="chip">Filament v4</span>
+            <span class="chip">Blade · Alpine · Tailwind</span>
+            <span class="chip">Python / FastAPI</span>
+            <span class="chip">APScheduler</span>
+          </div>
+        </div>
+        <div class="stack-card reveal">
+          <h3>Data &amp; Storage</h3>
+          <div class="chips">
+            <span class="chip">Supabase PostgreSQL</span>
+            <span class="chip">Schema isolation</span>
+            <span class="chip">pgvector</span>
+            <span class="chip">AWS S3 + CloudFront</span>
+          </div>
+        </div>
+        <div class="stack-card reveal">
+          <h3>AI &amp; Integration</h3>
+          <div class="chips">
+            <span class="chip">Claude Vision / LLM</span>
+            <span class="chip">Model tiering</span>
+            <span class="chip">Apify SNS</span>
+            <span class="chip">Kakao Map</span>
+            <span class="chip">Resend · Solapi</span>
+          </div>
+        </div>
+        <div class="stack-card reveal">
+          <h3>Ops</h3>
+          <div class="chips">
+            <span class="chip">AWS EC2 · Nginx</span>
+            <span class="chip">HTTPS / ACM</span>
+            <span class="chip">GitHub → deploy</span>
+            <span class="chip">System logs (admin)</span>
+            <span class="chip">Nightly backup → S3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="evidence">
+    <div class="wrap">
+      <p class="sec-label reveal">05 — Evidence</p>
+      <h2 class="reveal">말로만 끝난 설계가 아니게</h2>
+      <p class="sec-intro reveal">정의서·검증 커맨드·PR로 남긴 흔적입니다. (인프라 실값은 비공개)</p>
+      <div class="kpi-row">
+        <div class="kpi reveal"><div class="n">3</div><div class="l">독립 배포 서비스</div></div>
+        <div class="kpi reveal"><div class="n">27/27</div><div class="l">데이터 리모델 검증</div></div>
+        <div class="kpi reveal"><div class="n">12/12</div><div class="l">리모델 E2E</div></div>
+        <div class="kpi reveal"><div class="n">v1</div><div class="l">운영 중 (공개 도메인)</div></div>
+      </div>
+      <div class="timeline reveal">
+        <div class="tl-item">
+          <div class="tl-d">2026-06</div>
+          <div class="tl-b">
+            <strong>REVIEW 데이터 모델 리모델</strong>
+            <span>edition FK 통일 · completion 흡수 · AI 배치 · 비용 가드</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-d">2026-06</div>
+          <div class="tl-b">
+            <strong>코스 지도 · 고저 프로파일</strong>
+            <span>GPX 1회 파싱 → 카카오맵 폴리라인/마커 · elev gain/loss</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-d">2026-07</div>
+          <div class="tl-b">
+            <strong>CREW 기수 개편 · AI 코치</strong>
+            <span>희망지부/이력 · Vision 파싱 · VDOT 페이스 · 주간 리포트</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-d">2026-07</div>
+          <div class="tl-b">
+            <strong>관리자 보안 정렬</strong>
+            <span>비밀번호 재확인 · Filament 도입 · emailVerification · 패키지 보안 패치</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <div class="wrap foot-grid">
+      <div class="reveal">
+        <p class="sec-label">06 — Links</p>
+        <h2>코드를 직접 보세요</h2>
+        <p>
+          제품 스토리텔링은 <a href="/preview">/preview</a> 슬라이드에,
+          설계·경계·검증 요약은 이 페이지에 모아 두었습니다.
+          김대윤 · 문의는 GitHub 프로필을 통해 주세요.
+        </p>
+      </div>
+      <div class="repo-list reveal">
+        <a href="https://github.com/dykim10/review_site" target="_blank" rel="noopener">REVIEW · review_site</a>
+        <a href="https://github.com/dykim10/crew_site" target="_blank" rel="noopener">CREW · crew_site</a>
+        <a href="https://github.com/dykim10/python_core_api_site" target="_blank" rel="noopener">CORE · python_core_api_site</a>
+        <a href="https://github.com/dykim10" target="_blank" rel="noopener">@dykim10</a>
+      </div>
+    </div>
+    <div class="wrap">
+      <p class="disc">
+        Public-safe note: EC2 IP, internal ports, DB pooler hosts, env secrets, and private API paths are omitted by design.
+        Stack and architecture descriptions reflect the PAC-RUN production system as of 2026.
+      </p>
+    </div>
+  </footer>
+</main>
+
+<script>
+(() => {
+  const nodes = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) {
+    nodes.forEach((n) => n.classList.add('in'));
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  nodes.forEach((n) => io.observe(n));
+})();
+</script>
+</body>
+</html>
